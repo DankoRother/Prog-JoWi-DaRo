@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
       title: 'Fick deine Mutter',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
-        scaffoldBackgroundColor: Colors.blueGrey,
+        scaffoldBackgroundColor: Colors.blueGrey[400],
         useMaterial3: true,
       ),
       home: const MyHomePage(title: 'Flutter Demo Home Page'),
@@ -175,12 +175,20 @@ class _YourChallengesState extends State<YourChallenges> {
                     ),
                   ),
                   SizedBox(height: 20),  // Abstand zwischen dem letzten Textfeld und dem Button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Hier kannst du die Funktion für den Button hinzufügen
-                    },
-                    child: Text('Submit'),
-                  ),
+                  ElevatedButton.icon(onPressed: () {
+                    print('Button gedrückt');
+                  },
+                    icon: Icon(Icons.favorite_border),
+                    label: Text('Like'),
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,   // Textfarbe des Buttons
+                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15), // Abrundung der Ecken
+                      ),
+                    ),
+
+                  )
                 ],
               ),
             ),
@@ -193,7 +201,7 @@ class _YourChallengesState extends State<YourChallenges> {
             child: IconButton(
               icon: Icon(Icons.settings),
               color: Colors.white,  // Farbe des Icons
-              iconSize: 25,  // Größe des Icons
+              iconSize: 30,  // Größe des Icons
               onPressed: () {
                 // Hier kommt die Navigation zur Einstellungsseite
                 Navigator.push(
@@ -224,54 +232,126 @@ class _CreateChallengeState extends State<CreateChallenge> {
           Align(
             alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
             child: Container(
-              width: 375,  // Feste Breite
-              margin: EdgeInsets.only(top: 60),  // Abstand von oben
-              padding: EdgeInsets.all(15),  // Innerer Abstand
+              width: 400,
+              height: 570,// Feste Breite
+              margin: EdgeInsets.only(top: 6.5),  // Abstand von oben
+              padding: EdgeInsets.all(10),  // Innerer Abstand
               decoration: BoxDecoration(
-                color: Colors.indigoAccent,  // Hintergrundfarbe des Containers
+                color: Colors.indigoAccent[300],  // Hintergrundfarbe des Containers
                 borderRadius: BorderRadius.circular(5),  // Abrundung der Ecken
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,  // Minimiert die Größe der Spalte
                 children: [
                   Text(
-                    'Your Challenges',
+                    'Create your Challenge',
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: 25,
+                      fontSize: 30,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 0.5,
-                    ),  // Textstil
+                    ), // Textstil
                     textAlign: TextAlign.center,  // Textzentrierung
                   ),
-                  SizedBox(height: 20),  // Abstand zwischen Text und erstem Textfeld
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 1',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
+                  //Icon(Icons.draw, color: Colors.white),
+                  SizedBox(height: 30),
+                  Container(
+                    height: 100,
+                    child: TextFormField(
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        prefixText: 'Name: ',
+                        prefixStyle: TextStyle(
+                          color: Colors.white,
+                          fontStyle: FontStyle.normal,
+                          fontSize: 15,
+                        ),
+                        suffixIcon: Icon(Icons.draw_outlined, color: Colors.white, size: 20),
+                        hintText: '(Give your challenge a fancy name)',
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 15,
+                        ),
+                        errorText: '* Default value!', // Entfernen, wenn Validator verwendet wird
+                        errorStyle: TextStyle(
+                          color: Colors.red[600],
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                          borderSide: BorderSide(color: Colors.black54)
+                        ),
+                        fillColor: Colors.pink[700],
+                        filled: true,
+                      ),
+                      /*obscureText: true,
+                      validator: (value) {
+                        if (value == null || value.length < 6) {
+                          return 'Das Passwort muss mindestens 6 Zeichen lang sein';
+                        }
+                        return null;
+                      },*/
                     ),
                   ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 2',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
+                  Container(
+                    height: 150,
+                    child: TextFormField(
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        prefixText: 'What: ',
+                        prefixStyle: TextStyle(
+                          color: Colors.white,
+                          fontStyle: FontStyle.normal,
+                          fontSize: 15,
+                        ),
+                        suffixIcon: Icon(Icons.draw_outlined, color: Colors.white, size: 20),
+                        hintText: '(On what to compete? Tell us :))',
+                        hintStyle: TextStyle(
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                          fontSize: 15,
+                        ),
+                        errorText: '* Default value!', // Entfernen, wenn Validator verwendet wird
+                        errorStyle: TextStyle(
+                          color: Colors.red[600],
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                            borderSide: BorderSide(color: Colors.black54)
+                        ),
+                        fillColor: Colors.pink[700],
+                        filled: true,
+                        contentPadding: EdgeInsets.symmetric(vertical: 35.0, horizontal: 15.0),
+                      ),
                     ),
                   ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 3',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
+                  SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Time'),
+                          Text('Intensity'),
+                          Text('Obstacle'),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text('Time'),
+                          Text('Intensity'),
+                          Text('Obstacle'),
+                        ],
+                      )
+                    ],
                   ),
-                  SizedBox(height: 20),  // Abstand zwischen dem letzten Textfeld und dem Button
+                  SizedBox(height: 20,),
                   ElevatedButton(
                     onPressed: () {
                       // Hier kannst du die Funktion für den Button hinzufügen
@@ -290,7 +370,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
             child: IconButton(
               icon: Icon(Icons.settings),
               color: Colors.white,  // Farbe des Icons
-              iconSize: 25,  // Größe des Icons
+              iconSize: 30,  // Größe des Icons
               onPressed: () {
                 // Hier kommt die Navigation zur Einstellungsseite
                 Navigator.push(
@@ -492,7 +572,7 @@ class _FriendsListState extends State<FriendsList> {
             child: IconButton(
               icon: Icon(Icons.settings),
               color: Colors.white,  // Farbe des Icons
-              iconSize: 25,  // Größe des Icons
+              iconSize: 30,  // Größe des Icons
               onPressed: () {
                 // Hier kommt die Navigation zur Einstellungsseite
                 Navigator.push(

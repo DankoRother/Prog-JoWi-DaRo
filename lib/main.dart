@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Fick deine Mutter',
+      title: 'Etwas Familienfreundliches',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         scaffoldBackgroundColor: Colors.blueGrey[400],
@@ -34,10 +34,25 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-
+double screenHeight = 1440.0; //Standardwert, damit bei fehlender Initialisierung nicht nichts geht
+double screenWidth = 3168.0;  //Standardwert, damit bei fehlender Initialisierung nicht nichts geht
+double screenWidthAndHeight = screenWidth+screenHeight;
+late TextStyle standardText;  //Standard TextStyle: Wenn nötig überschreibbar mit "standardText.copyWith(zu-überschreibende-Daten)
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 0;
-
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    screenHeight = MediaQuery.of(context).size.height;  //Setzen der Screenhöhe
+    screenWidth = MediaQuery.of(context).size.width;    //Setzen der Screenbreite
+    screenWidthAndHeight = screenWidth+screenHeight;
+    standardText = TextStyle(                           //TODO: FontStyle der zur Anwendung passt entwickeln
+      color: Colors.white,
+      fontSize: screenHeight * 0.02,
+      fontWeight: FontWeight.normal,
+      letterSpacing: 0.5,
+    );
+  }
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -127,62 +142,63 @@ class _YourChallengesState extends State<YourChallenges> {
           Align(
             alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
             child: Container(
-              width: 375,  // Feste Breite
-              margin: EdgeInsets.only(top: 60),  // Abstand von oben
-              padding: EdgeInsets.all(15),  // Innerer Abstand
+              width: screenWidth * 0.75,  // Feste Breite
+              margin: EdgeInsets.only(top: screenHeight * 0.04),  // Abstand von oben
+              padding: EdgeInsets.all(screenWidth * 0.02),  // Innerer Abstand
               decoration: BoxDecoration(
                 color: Colors.indigoAccent,  // Hintergrundfarbe des Containers
-                borderRadius: BorderRadius.circular(5),  // Abrundung der Ecken
+                borderRadius: BorderRadius.circular(screenWidth * 0.4*0.08),  // Abrundung der Ecken
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,  // Minimiert die Größe der Spalte
                 children: [
                   Text(
                     'Your Challenges',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),  // Textstil
+                    style: standardText.copyWith(fontWeight: FontWeight.bold, fontSize: screenHeight*0.03),  // Textstil Überschrift
                     textAlign: TextAlign.center,  // Textzentrierung
                   ),
-                  SizedBox(height: 20),  // Abstand zwischen Text und erstem Textfeld
+                  SizedBox(height: screenHeight * 0.02),  // Abstand zwischen Text und erstem Textfeld
                   TextField(
                     decoration: InputDecoration(
-                      hintText: 'Challenge 1',
+                      hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
+                      hintText: 'Chöhe: $screenHeight breite: $screenWidth', //Anzeige der Maße zum entwickeln TODO: Entfernen vor finalem Produkt
                       border: OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
                     ),
                   ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
+                  SizedBox(height: screenHeight * 0.01),  // Abstand zwischen den Textfeldern
                   TextField(
                     decoration: InputDecoration(
+                      hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
                       hintText: 'Challenge 2',
                       border: OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
                     ),
                   ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
+                  SizedBox(height: screenHeight * 0.01),  // Abstand zwischen den Textfeldern
                   TextField(
                     decoration: InputDecoration(
+                      hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
                       hintText: 'Challenge 3',
                       border: OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
+                      contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
                     ),
                   ),
-                  SizedBox(height: 20),  // Abstand zwischen dem letzten Textfeld und dem Button
+                  SizedBox(height: screenHeight * 0.02),  // Abstand zwischen dem letzten Textfeld und dem Button
                   ElevatedButton.icon(onPressed: () {
                     print('Button gedrückt');
                   },
                     icon: Icon(Icons.favorite_border),
-                    label: Text('Like'),
+                    label: Text('Like',style: standardText.copyWith(fontWeight: FontWeight.bold, fontSize: screenHeight * 0.03)),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,   // Textfarbe des Buttons
-                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
+                      padding: EdgeInsets.only(right: screenWidth * 0.025, left: screenWidth*0.025, top: screenHeight * 0.005, bottom: screenHeight * 0.005), // Innenabstand des Buttons
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(15), // Abrundung der Ecken
                       ),
@@ -196,12 +212,12 @@ class _YourChallengesState extends State<YourChallenges> {
 
           // Einstellungs-Icon oben links
           Positioned(
-            top: 15,  // Abstand von oben (inklusive Statusleiste)
-            left: 15,  // Abstand von links
+            top: screenWidth * 0.008,  // Abstand von oben (inklusive Statusleiste)
+            left: screenWidth * 0.008,  // Abstand von links
             child: IconButton(
               icon: Icon(Icons.settings),
               color: Colors.white,  // Farbe des Icons
-              iconSize: 30,  // Größe des Icons
+              iconSize: screenWidthAndHeight*0.025,  // Größe des Icons
               onPressed: () {
                 // Hier kommt die Navigation zur Einstellungsseite
                 Navigator.push(
@@ -232,10 +248,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
           Align(
             alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
             child: Container(
-              width: 400,
-              height: 570,// Feste Breite
-              margin: EdgeInsets.only(top: 6.5),  // Abstand von oben
-              padding: EdgeInsets.all(10),  // Innerer Abstand
+              width: screenWidth * 0.75,  // Feste Breite
+              height: screenHeight *0.6,// Feste Breite
+              margin: EdgeInsets.only(top: screenHeight*0.05),  // Abstand von oben
+              padding: EdgeInsets.all(screenWidthAndHeight*0.001),  // Innerer Abstand
               decoration: BoxDecoration(
                 color: Colors.indigoAccent[300],  // Hintergrundfarbe des Containers
                 borderRadius: BorderRadius.circular(5),  // Abrundung der Ecken
@@ -245,91 +261,92 @@ class _CreateChallengeState extends State<CreateChallenge> {
                 children: [
                   Text(
                     'Create your Challenge',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ), // Textstil
+                    style: standardText.copyWith(fontSize: screenHeight * 0.035, fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,  // Textzentrierung
                   ),
                   //Icon(Icons.draw, color: Colors.white),
-                  SizedBox(height: 30),
+                  SizedBox(height: screenHeight*0.008),
                   Container(
-                    height: 100,
+                    height: screenHeight * 0.07,
+                    alignment: Alignment.topCenter,
                     child: TextFormField(
-                      style: TextStyle(color: Colors.white),
+                      style: standardText.copyWith(
+                          color: Colors.black,
+                          fontSize: screenHeight * 0.035
+                      ),
                       decoration: InputDecoration(
                         prefixText: 'Name: ',
-                        prefixStyle: TextStyle(
+                        prefixStyle: standardText.copyWith(
                           color: Colors.white,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 15,
+                          fontSize: screenHeight * 0.02
                         ),
-                        suffixIcon: Icon(Icons.draw_outlined, color: Colors.white, size: 20),
+                        suffixIcon: Icon(
+                            Icons.draw_outlined,
+                            color: Colors.white,
+                            size: screenWidth * 0.012
+                        ),
                         hintText: '(Give your challenge a fancy name)',
-                        hintStyle: TextStyle(
+                        hintStyle: standardText.copyWith(
                           color: Colors.white,
                           fontStyle: FontStyle.italic,
-                          fontSize: 15,
+                          fontSize: screenHeight * 0.02,
                         ),
-                        errorText: '* Default value!', // Entfernen, wenn Validator verwendet wird
+                        errorText: '* Default value!',
                         errorStyle: TextStyle(
                           color: Colors.red[600],
-                          fontSize: 10,
+                          fontSize: screenHeight * 0.007,
                           fontWeight: FontWeight.bold,
                         ),
                         border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(20),
-                          borderSide: BorderSide(color: Colors.black54)
-                        ),
-                        fillColor: Colors.pink[700],
-                        filled: true,
-                      ),
-                      /*obscureText: true,
-                      validator: (value) {
-                        if (value == null || value.length < 6) {
-                          return 'Das Passwort muss mindestens 6 Zeichen lang sein';
-                        }
-                        return null;
-                      },*/
-                    ),
-                  ),
-                  Container(
-                    height: 150,
-                    child: TextFormField(
-                      style: TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        prefixText: 'What: ',
-                        prefixStyle: TextStyle(
-                          color: Colors.white,
-                          fontStyle: FontStyle.normal,
-                          fontSize: 15,
-                        ),
-                        suffixIcon: Icon(Icons.draw_outlined, color: Colors.white, size: 20),
-                        hintText: '(On what to compete? Tell us :))',
-                        hintStyle: TextStyle(
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          fontSize: 15,
-                        ),
-                        errorText: '* Default value!', // Entfernen, wenn Validator verwendet wird
-                        errorStyle: TextStyle(
-                          color: Colors.red[600],
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(20),
+                            borderRadius: BorderRadius.circular(screenWidth * 0.012),
                             borderSide: BorderSide(color: Colors.black54)
                         ),
                         fillColor: Colors.pink[700],
                         filled: true,
-                        contentPadding: EdgeInsets.symmetric(vertical: 35.0, horizontal: 15.0),
                       ),
                     ),
                   ),
-                  SizedBox(height: 10),
+                  Container(
+                    height: screenHeight * 0.105,
+                    child: TextFormField(
+                      style: standardText.copyWith(color: Colors.white),
+                      decoration: InputDecoration(
+                        prefixText: 'What: ',
+                        prefixStyle: standardText.copyWith(
+                          color: Colors.white,
+                          fontSize: screenHeight * 0.015,
+                        ),
+                        suffixIcon: Icon(
+                            Icons.draw_outlined,
+                            color: Colors.white,
+                            size: screenWidth * 0.012
+                        ),
+                        hintText: '(On what to compete? Tell us :))',
+                        hintStyle: standardText.copyWith(
+                          color: Colors.white,
+                          fontStyle: FontStyle.italic,
+                          fontSize: screenHeight * 0.015,
+                        ),
+                        errorText: '* Default value!',
+                        errorStyle: TextStyle(
+                          color: Colors.red[600],
+                          fontSize: screenHeight * 0.007,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(screenWidth * 0.012),
+                            borderSide: BorderSide(color: Colors.black54)
+                        ),
+                        fillColor: Colors.pink[700],
+                        filled: true,
+                        contentPadding: EdgeInsets.symmetric(
+                            vertical: screenHeight * 0.025,
+                            horizontal: screenWidth * 0.009
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: screenHeight * 0.007),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

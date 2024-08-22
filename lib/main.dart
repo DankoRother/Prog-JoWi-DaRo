@@ -425,7 +425,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               color: Colors.blueGrey[50], // Hintergrundfarbe
                               borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
                             ),
-                            cild: Column(
+                            child: Column(
                               //crossAxisAlignment: CrossAxisAlignment.start, // Links ausrichten
                               children: [
                                 SizedBox(

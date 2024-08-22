@@ -239,6 +239,8 @@ class CreateChallenge extends StatefulWidget {
 }
 
 class _CreateChallengeState extends State<CreateChallenge> {
+  int days = 0;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -246,47 +248,50 @@ class _CreateChallengeState extends State<CreateChallenge> {
         children: [
           // Der Container mit dem Inhalt der Seite
           Align(
-            alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
+            alignment: Alignment.topCenter, // Horizontale Zentrierung, oben angeordnet
             child: Container(
-              width: screenWidth * 0.75,  // Feste Breite
-              height: screenHeight *0.6,// Feste Breite
-              margin: EdgeInsets.only(top: screenHeight*0.05),  // Abstand von oben
-              padding: EdgeInsets.all(screenWidthAndHeight*0.001),  // Innerer Abstand
+              width: screenWidth * 0.75, // Feste Breite
+              //height: screenHeight * 0.6, // Feste Höhe
+              margin: EdgeInsets.only(top: screenHeight * 0.05), // Abstand von oben
+              padding: EdgeInsets.all(screenWidthAndHeight * 0.001), // Innerer Abstand
               decoration: BoxDecoration(
-                color: Colors.indigoAccent[300],  // Hintergrundfarbe des Containers
-                borderRadius: BorderRadius.circular(5),  // Abrundung der Ecken
+                color: Colors.indigoAccent[300], // Hintergrundfarbe des Containers
+                borderRadius: BorderRadius.circular(5), // Abrundung der Ecken
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,  // Minimiert die Größe der Spalte
+                mainAxisSize: MainAxisSize.min, // Minimiert die Größe der Spalte
                 children: [
                   Text(
                     'Create your Challenge',
-                    style: standardText.copyWith(fontSize: screenHeight * 0.035, fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,  // Textzentrierung
+                    style: TextStyle(
+                      fontSize: screenHeight * 0.035,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center, // Textzentrierung
                   ),
-                  //Icon(Icons.draw, color: Colors.white),
-                  SizedBox(height: screenHeight*0.008),
+                  SizedBox(height: screenHeight * 0.008),
                   Container(
                     height: screenHeight * 0.07,
                     alignment: Alignment.topCenter,
                     child: TextFormField(
-                      style: standardText.copyWith(
-                          color: Colors.black,
-                          fontSize: screenHeight * 0.035
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: screenHeight * 0.035,
                       ),
                       decoration: InputDecoration(
                         prefixText: 'Name: ',
-                        prefixStyle: standardText.copyWith(
-                          color: Colors.white,
-                          fontSize: screenHeight * 0.02
+                        prefixStyle: TextStyle(
+                          color: Colors.blueGrey,
+                          fontSize: screenHeight * 0.02,
                         ),
                         suffixIcon: Icon(
-                            Icons.draw_outlined,
-                            color: Colors.white,
-                            size: screenWidth * 0.012
+                          Icons.draw_outlined,
+                          color: Colors.white,
+                          size: screenWidth * 0.012,
                         ),
                         hintText: '(Give your challenge a fancy name)',
-                        hintStyle: standardText.copyWith(
+                        hintStyle: TextStyle(
                           color: Colors.white,
                           fontStyle: FontStyle.italic,
                           fontSize: screenHeight * 0.02,
@@ -298,10 +303,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           fontWeight: FontWeight.bold,
                         ),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(screenWidth * 0.012),
-                            borderSide: BorderSide(color: Colors.black54)
+                          borderRadius: BorderRadius.circular(screenWidth * 0.012),
+                          borderSide: BorderSide(color: Colors.black54),
                         ),
-                        fillColor: Colors.pink[700],
+                        fillColor: Colors.white,
                         filled: true,
                       ),
                     ),
@@ -309,20 +314,20 @@ class _CreateChallengeState extends State<CreateChallenge> {
                   Container(
                     height: screenHeight * 0.105,
                     child: TextFormField(
-                      style: standardText.copyWith(color: Colors.white),
+                      style: TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         prefixText: 'What: ',
-                        prefixStyle: standardText.copyWith(
+                        prefixStyle: TextStyle(
                           color: Colors.white,
                           fontSize: screenHeight * 0.015,
                         ),
                         suffixIcon: Icon(
-                            Icons.draw_outlined,
-                            color: Colors.white,
-                            size: screenWidth * 0.012
+                          Icons.draw_outlined,
+                          color: Colors.white,
+                          size: screenWidth * 0.012,
                         ),
                         hintText: '(On what to compete? Tell us :))',
-                        hintStyle: standardText.copyWith(
+                        hintStyle: TextStyle(
                           color: Colors.white,
                           fontStyle: FontStyle.italic,
                           fontSize: screenHeight * 0.015,
@@ -334,14 +339,14 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           fontWeight: FontWeight.bold,
                         ),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(screenWidth * 0.012),
-                            borderSide: BorderSide(color: Colors.black54)
+                          borderRadius: BorderRadius.circular(screenWidth * 0.012),
+                          borderSide: BorderSide(color: Colors.black54),
                         ),
                         fillColor: Colors.pink[700],
                         filled: true,
                         contentPadding: EdgeInsets.symmetric(
-                            vertical: screenHeight * 0.025,
-                            horizontal: screenWidth * 0.009
+                          vertical: screenHeight * 0.025,
+                          horizontal: screenWidth * 0.009,
                         ),
                       ),
                     ),
@@ -353,22 +358,175 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Time'),
-                          Text('Intensity'),
-                          Text('Obstacle'),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50], // Hintergrundfarbe
+                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.access_time, color: Colors.blueGrey), // Beispiel-Icon für "Time"
+                                SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                Text(
+                                  'Time',
+                                  style: TextStyle(fontSize: 20), // Textstil
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50], // Hintergrundfarbe
+                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.whatshot, color: Colors.red), // Beispiel-Icon für "Intensity"
+                                SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                Text(
+                                  'Intensity',
+                                  style: TextStyle(fontSize: 20), // Textstil
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50], // Hintergrundfarbe
+                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.sports_kabaddi, color: Colors.orange), // Beispiel-Icon für "Obstacle"
+                                SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                Text(
+                                  'Obstacle',
+                                  style: TextStyle(fontSize: 20), // Textstil
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('Time'),
-                          Text('Intensity'),
-                          Text('Obstacle'),
+                          // Erstes Textfeld mit zugehörigem Input-Feld
+                      Container(
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50], // Hintergrundfarbe
+                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                            ),
+                            cild: Column(
+                              //crossAxisAlignment: CrossAxisAlignment.start, // Links ausrichten
+                              children: [
+                                SizedBox(
+                                  width: 175,
+                                  child: Row(
+                                    children: [
+                                      // Minus-Button
+                                      IconButton(
+                                        icon: Icon(Icons.remove),
+                                        onPressed: () {
+                                          setState(() {
+                                            if (days > 0) days--;  // Verringert die Anzahl der Tage
+                                          });
+                                        },
+                                      ),
+
+                                      // Textfeld, das den aktuellen Wert anzeigt
+                                      Expanded(
+                                        child: TextField(
+                                          controller: TextEditingController(text: days.toString() + ' days'),
+                                          readOnly: true,  // Verhindert manuelle Eingabe
+                                          textAlign: TextAlign.center,  // Zentriert den Text
+                                        ),
+                                      ),
+
+                                      // Plus-Button
+                                      IconButton(
+                                        icon: Icon(Icons.add),
+                                        onPressed: () {
+                                          setState(() {
+                                            days++;  // Erhöht die Anzahl der Tage
+                                          });
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          // Zweites Textfeld mit Dropdown-Menü
+                          Container(
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 175,
+                                  child: DropdownButtonFormField<String>(
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: <String>['daily', 'weekly', 'biweekly'].map((String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                    onChanged: (newValue) {
+                                      // Handle the value change here
+                                    },
+                                    hint: Text('Select intensity'),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          // Drittes Textfeld mit zugehörigem Input-Feld
+                          Container(
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50],
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                SizedBox(
+                                  width: 175,
+                                  child: TextField(
+                                    decoration: InputDecoration(
+                                      border: OutlineInputBorder(),
+                                      hintText: 'Enter obstacle',
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
-                      )
+                      ),
                     ],
                   ),
-                  SizedBox(height: 20,),
+                  SizedBox(height: 20),
                   ElevatedButton(
                     onPressed: () {
                       // Hier kannst du die Funktion für den Button hinzufügen
@@ -379,15 +537,14 @@ class _CreateChallengeState extends State<CreateChallenge> {
               ),
             ),
           ),
-
           // Einstellungs-Icon oben links
           Positioned(
-            top: 15,  // Abstand von oben (inklusive Statusleiste)
-            left: 15,  // Abstand von links
+            top: 15, // Abstand von oben (inklusive Statusleiste)
+            left: 15, // Abstand von links
             child: IconButton(
               icon: Icon(Icons.settings),
-              color: Colors.white,  // Farbe des Icons
-              iconSize: 30,  // Größe des Icons
+              color: Colors.white, // Farbe des Icons
+              iconSize: 30, // Größe des Icons
               onPressed: () {
                 // Hier kommt die Navigation zur Einstellungsseite
                 Navigator.push(
@@ -402,6 +559,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
     );
   }
 }
+
 
 class CurrentChallenges extends StatefulWidget {
   @override

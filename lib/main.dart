@@ -270,7 +270,62 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     ),
                     textAlign: TextAlign.center, // Textzentrierung
                   ),
+<<<<<<< Updated upstream
                   SizedBox(height: screenHeight * 0.008),
+=======
+                  //Icon(Icons.draw, color: Colors.white),
+                  SizedBox(height: screenHeight*0.012),
+                  Container(
+                    height: screenHeight * 0.05,
+                    child: LayoutBuilder(
+                        builder: (BuildContext context, BoxConstraints constraints) {
+                          return Stack(
+                            children: [
+                            TextField(
+                            textAlignVertical: TextAlignVertical.center,
+                            style: standardText.copyWith(
+                              color: Colors.black,
+                              fontSize: constraints.maxHeight * 0.33,
+                            ),
+                            decoration: InputDecoration(
+                              contentPadding: EdgeInsets.only(
+                                // Adjust bottom padding to make space for error text
+                                bottom: constraints.maxHeight * 0.4,
+                                // You might need to fine-tune this value
+                                left: constraints.maxWidth * 0.02,
+                              ),
+                              prefix: Text('Name: '),
+                              prefixStyle: standardText.copyWith(
+                                color: Colors.white,
+                                fontSize: constraints.maxHeight * 0.4,
+                              ),
+                              suffixIcon: Icon(
+                                Icons.draw_outlined,
+                                color: Colors.white,
+                                size: constraints.maxHeight * 0.4,
+                              ),
+                              hintText: 'Give your challenge a fancy name!',
+                              hintStyle: standardText.copyWith(
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic,
+                                fontSize: constraints.maxHeight * 0.4,
+                              ),
+                              // Remove errorText from InputDecoration
+                              border: OutlineInputBorder(),
+                              // You can add border styling if needed
+                              fillColor: Colors.pink[700],
+                              filled: true,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: constraints.maxHeight * -0.13, // Position the error text at the bottom
+                            left: constraints.maxWidth*0.5, // Align it in the center
+                            child: Text(
+                              '* Default value!',
+                              style: standardText.copyWith(
+                                color: Colors.blue,
+                                fontSize: constraints.maxHeight * 0.2,
+>>>>>>> Stashed changes
 
                   Container(
                     height: screenHeight * 0.07,

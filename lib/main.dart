@@ -323,46 +323,12 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               style: standardText.copyWith(
                                 color: Colors.blue,
                                 fontSize: constraints.maxHeight * 0.2,
->>>>>>> Stashed changes
-
-                  Container(
-                    height: screenHeight * 0.07,
-                    alignment: Alignment.topCenter,
-                    child: TextFormField(
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: screenHeight * 0.035,
-                      ),
-                      decoration: InputDecoration(
-                        prefixText: 'Name: ',
-                        prefixStyle: TextStyle(
-                          color: Colors.blueGrey,
-                          fontSize: screenHeight * 0.02,
-                        ),
-                        suffixIcon: Icon(
-                          Icons.draw_outlined,
-                          color: Colors.white,
-                          size: screenWidth * 0.012,
-                        ),
-                        hintText: '(Give your challenge a fancy name)',
-                        hintStyle: TextStyle(
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          fontSize: screenHeight * 0.02,
-                        ),
-                        errorText: '* Default value!',
-                        errorStyle: TextStyle(
-                          color: Colors.red[600],
-                          fontSize: screenHeight * 0.007,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(screenWidth * 0.012),
-                          borderSide: BorderSide(color: Colors.black54),
-                        ),
-                        fillColor: Colors.white,
-                        filled: true,
-                      ),
+                              ),
+                            ),
+                          ),
+                            ],
+                          );
+                        }
                     ),
                   ),
                   Container(

@@ -383,11 +383,15 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             margin: EdgeInsets.symmetric(vertical: 5),
                             decoration: BoxDecoration(
                               color: Colors.blueGrey[50], // Hintergrundfarbe
-                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.black54,
+                                width: 3,
+                              ),// Abrundung der Ecken
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.access_time, color: Colors.blueGrey), // Beispiel-Icon für "Time"
+                                Icon(Icons.access_time, color: Colors.black54), // Beispiel-Icon für "Time"
                                 SizedBox(width: 10), // Abstand zwischen Icon und Text
                                 Text(
                                   'Time',
@@ -396,12 +400,17 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ],
                             ),
                           ),
+                          SizedBox(height: 10),
                           Container(
                             padding: EdgeInsets.all(10),
                             margin: EdgeInsets.symmetric(vertical: 5),
                             decoration: BoxDecoration(
                               color: Colors.blueGrey[50], // Hintergrundfarbe
-                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.red,
+                                width: 3,
+                              ),// Abrundung der Ecken
                             ),
                             child: Row(
                               children: [
@@ -414,12 +423,17 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ],
                             ),
                           ),
+                          SizedBox(height: 10),
                           Container(
                             padding: EdgeInsets.all(10),
                             margin: EdgeInsets.symmetric(vertical: 5),
                             decoration: BoxDecoration(
                               color: Colors.blueGrey[50], // Hintergrundfarbe
-                              borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.orange,
+                                width: 3,
+                              ),// Abrundung der Ecken
                             ),
                             child: Row(
                               children: [
@@ -449,7 +463,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               //crossAxisAlignment: CrossAxisAlignment.start, // Links ausrichten
                               children: [
                                 SizedBox(
-                                  width: 175,
+                                  width: 210,
                                   child: Row(
                                     children: [
                                       // Minus-Button
@@ -465,7 +479,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                       // Textfeld, das den aktuellen Wert anzeigt
                                       Expanded(
                                         child: TextField(
-                                          controller: TextEditingController(text: days.toString() + ' days'),
+                                          controller: TextEditingController(text: days.toString()),
                                           readOnly: true,  // Verhindert manuelle Eingabe
                                           textAlign: TextAlign.center,  // Zentriert den Text
                                         ),
@@ -480,12 +494,31 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                           });
                                         },
                                       ),
+                                      SizedBox(
+                                        width: 110,
+                                        child: DropdownButtonFormField<String>(
+                                          decoration: InputDecoration(
+                                            border: OutlineInputBorder(),
+                                          ),
+                                          items: <String>['days', 'weeks', 'months', 'years'].map((String value) {
+                                            return DropdownMenuItem<String>(
+                                              value: value,
+                                              child: Text(value),
+                                            );
+                                          }).toList(),
+                                          onChanged: (newValue) {
+                                            // Handle the value change here
+                                          },
+                                          hint: Text(' '),
+                                        ),
+                                      ),
                                     ],
                                   ),
                                 ),
                               ],
                             ),
                           ),
+                          SizedBox(height: 7),
                           // Zweites Textfeld mit Dropdown-Menü
                           Container(
                             padding: EdgeInsets.all(5),
@@ -498,7 +531,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 175,
+                                  width: 210,
                                   child: DropdownButtonFormField<String>(
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
@@ -518,7 +551,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ],
                             ),
                           ),
-
+                          SizedBox(height: 7),
                           // Drittes Textfeld mit zugehörigem Input-Feld
                           Container(
                             padding: EdgeInsets.all(5),
@@ -531,7 +564,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 175,
+                                  width: 210,
                                   child: TextField(
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
@@ -546,12 +579,74 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: () {
-                      // Hier kannst du die Funktion für den Button hinzufügen
+                  SizedBox(height: 30),
+                  SizedBox(
+                    width: 300,
+                    height: 50,
+                    child: ElevatedButton.icon(onPressed: () {
+                      print('Freund hinzufügen');
                     },
-                    child: Text('Submit'),
+                      icon: Icon(
+                          Icons.add_circle_outline_sharp,
+                          size: 25,
+                      ),
+                      label: Text(
+                          'Add Friends',
+                          style: TextStyle(
+                            fontSize: 15,
+                          )
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.pink,   // Textfarbe des Buttons
+                        padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(height: 30),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                          'Is everything correct?',
+                          style: TextStyle(
+                            fontSize: 10,
+                            fontStyle: FontStyle.italic,
+                            color: Colors.white,
+                          ),
+                      ),
+                      SizedBox(width: 20,),
+                      SizedBox(
+                        width: 150,
+                        height: 40,
+                        child: ElevatedButton.icon(onPressed: () {
+                          print('Erstelle Challenge');
+                        },
+                          label: Text(
+                              'Create',
+                              style: TextStyle(
+                                fontSize: 20,
+                              )
+                          ),
+                          icon: Icon(
+                            Icons.done_outline_sharp,
+                            size: 20,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.green,   // Textfarbe des Buttons
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25), // Abrundung der Ecken
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

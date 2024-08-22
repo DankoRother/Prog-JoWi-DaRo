@@ -270,6 +270,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     height: screenHeight * 0.07,
                     alignment: Alignment.topCenter,
                     child: TextFormField(
+                      textAlignVertical: TextAlignVertical.center,
                       style: standardText.copyWith(
                           color: Colors.black,
                           fontSize: screenHeight * 0.035
@@ -283,19 +284,20 @@ class _CreateChallengeState extends State<CreateChallenge> {
                         suffixIcon: Icon(
                             Icons.draw_outlined,
                             color: Colors.white,
-                            size: screenWidth * 0.012
+                            size: screenHeight * 0.02
                         ),
                         hintText: '(Give your challenge a fancy name)',
                         hintStyle: standardText.copyWith(
                           color: Colors.white,
                           fontStyle: FontStyle.italic,
-                          fontSize: screenHeight * 0.02,
+                          fontSize: screenHeight * 0.025,
                         ),
                         errorText: '* Default value!',
                         errorStyle: TextStyle(
                           color: Colors.red[600],
                           fontSize: screenHeight * 0.007,
                           fontWeight: FontWeight.bold,
+
                         ),
                         border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(screenWidth * 0.012),

@@ -270,9 +270,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     ),
                     textAlign: TextAlign.center, // Textzentrierung
                   ),
-<<<<<<< Updated upstream
                   SizedBox(height: screenHeight * 0.008),
-=======
                   //Icon(Icons.draw, color: Colors.white),
                   SizedBox(height: screenHeight*0.012),
                   Container(

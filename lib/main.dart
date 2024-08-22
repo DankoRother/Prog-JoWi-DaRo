@@ -248,7 +248,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
           Align(
             alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
             child: Container(
-              width: screenWidth * 0.75,  // Feste Breite
+              width: screenWidth * 0.8,  // Feste Breite
               height: screenHeight *0.6,// Feste Breite
               margin: EdgeInsets.only(top: screenHeight*0.05),  // Abstand von oben
               padding: EdgeInsets.all(screenWidthAndHeight*0.001),  // Innerer Abstand
@@ -265,50 +265,69 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     textAlign: TextAlign.center,  // Textzentrierung
                   ),
                   //Icon(Icons.draw, color: Colors.white),
-                  SizedBox(height: screenHeight*0.008),
+                  SizedBox(height: screenHeight*0.012),
                   Container(
-                    height: screenHeight * 0.07,
-                    alignment: Alignment.topCenter,
-                    child: TextFormField(
-                      textAlignVertical: TextAlignVertical.center,
-                      style: standardText.copyWith(
-                          color: Colors.black,
-                          fontSize: screenHeight * 0.035
-                      ),
-                      decoration: InputDecoration(
-                        prefixText: 'Name: ',
-                        prefixStyle: standardText.copyWith(
-                          color: Colors.white,
-                          fontSize: screenHeight * 0.02
-                        ),
-                        suffixIcon: Icon(
-                            Icons.draw_outlined,
-                            color: Colors.white,
-                            size: screenHeight * 0.02
-                        ),
-                        hintText: '(Give your challenge a fancy name)',
-                        hintStyle: standardText.copyWith(
-                          color: Colors.white,
-                          fontStyle: FontStyle.italic,
-                          fontSize: screenHeight * 0.025,
-                        ),
-                        errorText: '* Default value!',
-                        errorStyle: TextStyle(
-                          color: Colors.red[600],
-                          fontSize: screenHeight * 0.007,
-                          fontWeight: FontWeight.bold,
+                    height: screenHeight * 0.05,
+                    child: LayoutBuilder(
+                        builder: (BuildContext context, BoxConstraints constraints) {
+                          return Stack(
+                            children: [
+                            TextField(
+                            textAlignVertical: TextAlignVertical.center,
+                            style: standardText.copyWith(
+                              color: Colors.black,
+                              fontSize: constraints.maxHeight * 0.33,
+                            ),
+                            decoration: InputDecoration(
+                              isCollapsed: true,
+                              contentPadding: EdgeInsets.only(
+                                // Adjust bottom padding to make space for error text
+                                bottom: constraints.maxHeight * 0.4,
+                                // You might need to fine-tune this value
+                                left: constraints.maxWidth * 0.02,
+                              ),
+                              prefix: Text('Name: '),
+                              prefixStyle: standardText.copyWith(
+                                color: Colors.white,
+                                fontSize: constraints.maxHeight * 0.4,
+                              ),
+                              suffixIcon: Icon(
+                                Icons.draw_outlined,
+                                color: Colors.white,
+                                size: constraints.maxHeight * 0.4,
+                              ),
+                              hintText: 'Give your challenge a fancy name!',
+                              hintStyle: standardText.copyWith(
+                                color: Colors.white,
+                                fontStyle: FontStyle.italic,
+                                fontSize: constraints.maxHeight * 0.4,
+                              ),
+                              // Remove errorText from InputDecoration
+                              border: OutlineInputBorder(),
+                              // You can add border styling if needed
+                              fillColor: Colors.pink[700],
+                              filled: true,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: constraints.maxHeight * -0.13, // Position the error text at the bottom
+                            right: constraints.maxWidth*0.5,
+                            left: constraints.maxWidth*0.5, // Align it in the center
+                            child: Text(
+                              '* Default value!',
+                              style: standardText.copyWith(
+                                color: Colors.blue,
+                                fontSize: constraints.maxHeight * 0.2,
 
-                        ),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(screenWidth * 0.012),
-                            borderSide: BorderSide(color: Colors.black54)
-                        ),
-                        fillColor: Colors.pink[700],
-                        filled: true,
-                      ),
-                    ),
+                              ),
+                            ),
+                          ),]
+                          ,
+                          );
+                        })
                   ),
                   Container(
+                    margin: EdgeInsets.only(top: screenHeight*0.005),
                     height: screenHeight * 0.105,
                     child: TextFormField(
                       style: standardText.copyWith(color: Colors.white),
@@ -323,7 +342,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             color: Colors.white,
                             size: screenWidth * 0.012
                         ),
-                        hintText: '(On what to compete? Tell us :))',
+                        hintText: 'On what to compete? Tell us!',
                         hintStyle: standardText.copyWith(
                           color: Colors.white,
                           fontStyle: FontStyle.italic,
@@ -336,19 +355,19 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           fontWeight: FontWeight.bold,
                         ),
                         border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(screenWidth * 0.012),
-                            borderSide: BorderSide(color: Colors.black54)
+                            //borderRadius: BorderRadius.circular(screenWidth * 0.012),
+                            //borderSide: BorderSide(color: Colors.black54)
                         ),
                         fillColor: Colors.pink[700],
                         filled: true,
-                        contentPadding: EdgeInsets.symmetric(
+                        /*contentPadding: EdgeInsets.symmetric(
                             vertical: screenHeight * 0.025,
                             horizontal: screenWidth * 0.009
-                        ),
+                        ),*/
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.007),
+                  SizedBox(height: screenHeight * 0.005),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [

@@ -239,7 +239,6 @@ class CurrentChallenges extends StatefulWidget {
 }
 
 class _CurrentChallengesState extends State<CurrentChallenges> {
-  int _currentStep = 0;
   int days = 0;
 
   @override

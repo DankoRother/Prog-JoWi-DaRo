@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = YourChallenges();
         break;
       case 1:
-        page = FriendsList();
+        page = Placeholder();
         break;
       case 2:
         page = CreateChallenge();
@@ -109,14 +109,14 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Konto',
           ),
         ],
-        selectedItemColor: Colors.indigoAccent,
+        selectedItemColor: Colors.pink[700],
         unselectedItemColor: Colors.blueGrey,
         backgroundColor: Colors.black87,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         unselectedLabelStyle: const TextStyle(color: Colors.grey),
 
         selectedIconTheme: const IconThemeData(
-          size: 35,
+          size: 30,
         ),
         unselectedIconTheme: const IconThemeData(
           size: 25,
@@ -233,99 +233,219 @@ class _YourChallengesState extends State<YourChallenges> {
   }
 }
 
+class CurrentChallenges extends StatefulWidget {
+  @override
+  _CurrentChallengesState createState() => _CurrentChallengesState();
+}
+
+class _CurrentChallengesState extends State<CurrentChallenges> {
+  int _currentStep = 0;
+  int days = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.settings),
+                color: Colors.white, // Farbe des Icons
+                iconSize: 30, // Größe des Icons
+                onPressed: () {
+                  // Hier kommt die Navigation zur Einstellungsseite
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                },
+              ),
+              SizedBox(width: 8),
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  'Your current Challenges',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.pink, Colors.blueGrey.shade400],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+          ),
+        ),
+        body: ListView(
+          padding: EdgeInsets.all(16.0), // Abstand am Rand der Liste
+          children: List.generate(10, (index) {
+            return Container(
+              alignment: Alignment.center,
+              margin: EdgeInsets.symmetric(vertical: 10.0), // Abstand zwischen den Containern
+              width: 300,
+              height: 400,
+              color: Colors.white,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Text('Name der Challenge $index'),
+                  Text('Obstacle'),
+                  Text('Days left'),
+                  Text('Rank')
+                ],
+              ),
+            );
+          }),
+        ),
+    );
+  }
+}
+
+
+
 class CreateChallenge extends StatefulWidget {
   @override
   _CreateChallengeState createState() => _CreateChallengeState();
 }
 
 class _CreateChallengeState extends State<CreateChallenge> {
+  int _currentStep = 0;
   int days = 0;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Der Container mit dem Inhalt der Seite
-          Align(
-            alignment: Alignment.topCenter, // Horizontale Zentrierung, oben angeordnet
-            child: Container(
-              width: screenWidth * 0.75, // Feste Breite
-              //height: screenHeight * 0.6, // Feste Höhe
-              margin: EdgeInsets.only(top: screenHeight * 0.05), // Abstand von oben
-              padding: EdgeInsets.all(screenWidthAndHeight * 0.001), // Innerer Abstand
-              decoration: BoxDecoration(
-                color: Colors.indigoAccent[300], // Hintergrundfarbe des Containers
-                borderRadius: BorderRadius.circular(5), // Abrundung der Ecken
+      appBar: AppBar(
+        title: Row(
+          children: [
+            IconButton(
+              icon: Icon(Icons.settings),
+              color: Colors.white, // Farbe des Icons
+              iconSize: 30, // Größe des Icons
+              onPressed: () {
+                // Hier kommt die Navigation zur Einstellungsseite
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
+            ),
+            SizedBox(width: 8),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                'Create your Challenge',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
               ),
+            ),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.pink, Colors.blueGrey.shade400],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
+      ),
+      body: Stepper(
+        currentStep: _currentStep,
+        onStepTapped: (step) => setState(() => _currentStep = step),
+        onStepContinue: () {
+          if (_currentStep < 2) {
+            setState(() {
+              _currentStep++;
+            });
+          }
+        },
+        onStepCancel: () {
+          if (_currentStep > 0) {
+            setState(() {
+              _currentStep--;
+            });
+          }
+        },
+        steps: [
+          Step(
+            title: Text(
+              'Start',
+              style: TextStyle(
+                color: _currentStep == 0 ? Colors.indigoAccent : Colors.black,
+                fontWeight: _currentStep == 0 ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            content: Container(
+              height: 400,
               child: Column(
-                mainAxisSize: MainAxisSize.min, // Minimiert die Größe der Spalte
                 children: [
-                  Text(
-                    'Create your Challenge',
-                    style: TextStyle(
-                      fontSize: screenHeight * 0.035,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                    textAlign: TextAlign.center, // Textzentrierung
-                  ),
-                  SizedBox(height: screenHeight * 0.008),
-                  //Icon(Icons.draw, color: Colors.white),
-                  SizedBox(height: screenHeight*0.012),
                   Container(
                     height: screenHeight * 0.05,
                     child: LayoutBuilder(
                         builder: (BuildContext context, BoxConstraints constraints) {
                           return Stack(
                             children: [
-                            TextField(
-                            textAlignVertical: TextAlignVertical.center,
-                            style: standardText.copyWith(
-                              color: Colors.black,
-                              fontSize: constraints.maxHeight * 0.33,
-                            ),
-                            decoration: InputDecoration(
-                              contentPadding: EdgeInsets.only(
-                                // Adjust bottom padding to make space for error text
-                                bottom: constraints.maxHeight * 0.4,
-                                // You might need to fine-tune this value
-                                left: constraints.maxWidth * 0.02,
+                              TextField(
+                                textAlignVertical: TextAlignVertical.center,
+                                style: standardText.copyWith(
+                                  color: Colors.black,
+                                  fontSize: constraints.maxHeight * 0.33,
+                                ),
+                                decoration: InputDecoration(
+                                  contentPadding: EdgeInsets.only(
+                                    // Adjust bottom padding to make space for error text
+                                    bottom: constraints.maxHeight * 0.4,
+                                    // You might need to fine-tune this value
+                                    left: constraints.maxWidth * 0.02,
+                                  ),
+                                  prefix: Text('Name: '),
+                                  prefixStyle: standardText.copyWith(
+                                    color: Colors.white,
+                                    fontSize: constraints.maxHeight * 0.4,
+                                  ),
+                                  suffixIcon: Icon(
+                                    Icons.draw_outlined,
+                                    color: Colors.white,
+                                    size: constraints.maxHeight * 0.4,
+                                  ),
+                                  hintText: 'Give your challenge a fancy name!',
+                                  hintStyle: standardText.copyWith(
+                                    color: Colors.white,
+                                    fontStyle: FontStyle.italic,
+                                    fontSize: constraints.maxHeight * 0.4,
+                                  ),
+                                  // Remove errorText from InputDecoration
+                                  border: OutlineInputBorder(),
+                                  // You can add border styling if needed
+                                  fillColor: Colors.pink[700],
+                                  filled: true,
+                                ),
                               ),
-                              prefix: Text('Name: '),
-                              prefixStyle: standardText.copyWith(
-                                color: Colors.white,
-                                fontSize: constraints.maxHeight * 0.4,
+                              Positioned(
+                                bottom: constraints.maxHeight * -0.13, // Position the error text at the bottom
+                                left: constraints.maxWidth*0.5, // Align it in the center
+                                child: Text(
+                                  '* Default value!',
+                                  style: standardText.copyWith(
+                                    color: Colors.blue,
+                                    fontSize: constraints.maxHeight * 0.2,
+                                  ),
+                                ),
                               ),
-                              suffixIcon: Icon(
-                                Icons.draw_outlined,
-                                color: Colors.white,
-                                size: constraints.maxHeight * 0.4,
-                              ),
-                              hintText: 'Give your challenge a fancy name!',
-                              hintStyle: standardText.copyWith(
-                                color: Colors.white,
-                                fontStyle: FontStyle.italic,
-                                fontSize: constraints.maxHeight * 0.4,
-                              ),
-                              // Remove errorText from InputDecoration
-                              border: OutlineInputBorder(),
-                              // You can add border styling if needed
-                              fillColor: Colors.pink[700],
-                              filled: true,
-                            ),
-                          ),
-                          Positioned(
-                            bottom: constraints.maxHeight * -0.13, // Position the error text at the bottom
-                            left: constraints.maxWidth*0.5, // Align it in the center
-                            child: Text(
-                              '* Default value!',
-                              style: standardText.copyWith(
-                                color: Colors.blue,
-                                fontSize: constraints.maxHeight * 0.2,
-                              ),
-                            ),
-                          ),
                             ],
                           );
                         }
@@ -371,7 +491,22 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       ),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.007),
+                ],
+              ),
+            )
+          ),
+          Step(
+            title: Text(
+              'Commit',
+              style: TextStyle(
+                color: _currentStep == 1 ? Colors.indigoAccent : Colors.black,
+                fontWeight: _currentStep == 1 ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            content: Container(
+              height: 400,
+              child: Column(
+                children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -389,13 +524,57 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                 width: 3,
                               ),// Abrundung der Ecken
                             ),
-                            child: Row(
+                            child: Column(
                               children: [
-                                Icon(Icons.access_time, color: Colors.black54), // Beispiel-Icon für "Time"
-                                SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                Row(
+                                  children: [
+                                    Icon(Icons.access_time, color: Colors.black54), // Beispiel-Icon für "Time"
+                                    SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                    Text(
+                                      'Time',
+                                      style: TextStyle(fontSize: 20), // Textstil
+                                    ),
+                                  ],
+                                ),
                                 Text(
-                                  'Time',
-                                  style: TextStyle(fontSize: 20), // Textstil
+                                    '(Duration?)',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontStyle: FontStyle.italic,
+                                    )),
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            padding: EdgeInsets.all(10),
+                            margin: EdgeInsets.symmetric(vertical: 5),
+                            decoration: BoxDecoration(
+                              color: Colors.blueGrey[50], // Hintergrundfarbe
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                color: Colors.pink,
+                                width: 3,
+                              ),// Abrundung der Ecken
+                            ),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.whatshot, color: Colors.pink), // Beispiel-Icon für "Intensity"
+                                    SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                    Text(
+                                      'Intensity',
+                                      style: TextStyle(fontSize: 20), // Textstil
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                    '(How often?)',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontStyle: FontStyle.italic,
+                                    )
                                 ),
                               ],
                             ),
@@ -408,40 +587,28 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               color: Colors.blueGrey[50], // Hintergrundfarbe
                               borderRadius: BorderRadius.circular(10),
                               border: Border.all(
-                                color: Colors.red,
+                                color: Colors.indigoAccent,
                                 width: 3,
                               ),// Abrundung der Ecken
                             ),
-                            child: Row(
+                            child: Column(
                               children: [
-                                Icon(Icons.whatshot, color: Colors.red), // Beispiel-Icon für "Intensity"
-                                SizedBox(width: 10), // Abstand zwischen Icon und Text
-                                Text(
-                                  'Intensity',
-                                  style: TextStyle(fontSize: 20), // Textstil
+                                Row(
+                                  children: [
+                                    Icon(Icons.sports_kabaddi, color: Colors.indigoAccent), // Beispiel-Icon für "Obstacle"
+                                    SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                    Text(
+                                      'Obstacle',
+                                      style: TextStyle(fontSize: 20), // Textstil
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Container(
-                            padding: EdgeInsets.all(10),
-                            margin: EdgeInsets.symmetric(vertical: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.blueGrey[50], // Hintergrundfarbe
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                color: Colors.orange,
-                                width: 3,
-                              ),// Abrundung der Ecken
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.sports_kabaddi, color: Colors.orange), // Beispiel-Icon für "Obstacle"
-                                SizedBox(width: 10), // Abstand zwischen Icon und Text
                                 Text(
-                                  'Obstacle',
-                                  style: TextStyle(fontSize: 20), // Textstil
+                                    '(Objective?)',
+                                    style: TextStyle(
+                                      fontSize: 10,
+                                      fontStyle: FontStyle.italic,
+                                    )
                                 ),
                               ],
                             ),
@@ -463,7 +630,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               //crossAxisAlignment: CrossAxisAlignment.start, // Links ausrichten
                               children: [
                                 SizedBox(
-                                  width: 210,
+                                  width: 200,
                                   child: Row(
                                     children: [
                                       // Minus-Button
@@ -481,7 +648,8 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                         child: TextField(
                                           controller: TextEditingController(text: days.toString()),
                                           readOnly: true,  // Verhindert manuelle Eingabe
-                                          textAlign: TextAlign.center,  // Zentriert den Text
+                                          textAlign: TextAlign.center,
+                                          decoration: null,// Zentriert den Text
                                         ),
                                       ),
 
@@ -494,13 +662,14 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                           });
                                         },
                                       ),
+                                      SizedBox(width: 15,),
                                       SizedBox(
-                                        width: 110,
+                                        width: 80,
                                         child: DropdownButtonFormField<String>(
                                           decoration: InputDecoration(
                                             border: OutlineInputBorder(),
                                           ),
-                                          items: <String>['days', 'weeks', 'months', 'years'].map((String value) {
+                                          items: <String>['D', 'W', 'M', 'Y'].map((String value) {
                                             return DropdownMenuItem<String>(
                                               value: value,
                                               child: Text(value),
@@ -509,7 +678,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                           onChanged: (newValue) {
                                             // Handle the value change here
                                           },
-                                          hint: Text(' '),
+                                          hint: Text('Unit'),
                                         ),
                                       ),
                                     ],
@@ -518,7 +687,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 7),
+                          SizedBox(height: 20),
                           // Zweites Textfeld mit Dropdown-Menü
                           Container(
                             padding: EdgeInsets.all(5),
@@ -531,7 +700,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 210,
+                                  width: 200,
                                   child: DropdownButtonFormField<String>(
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
@@ -551,7 +720,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ],
                             ),
                           ),
-                          SizedBox(height: 7),
+                          SizedBox(height: 20),
                           // Drittes Textfeld mit zugehörigem Input-Feld
                           Container(
                             padding: EdgeInsets.all(5),
@@ -564,7 +733,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 SizedBox(
-                                  width: 210,
+                                  width: 200,
                                   child: TextField(
                                     decoration: InputDecoration(
                                       border: OutlineInputBorder(),
@@ -579,16 +748,35 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 30),
+                ],
+              ),
+            )
+          ),
+          Step(
+            title: Text(
+              'Ready?',
+              style: TextStyle(
+                color: _currentStep == 2 ? Colors.indigoAccent : Colors.black,
+                fontWeight: _currentStep == 2 ? FontWeight.bold : FontWeight.normal,
+              ),
+            ),
+            content: Container(
+              height: 400,
+              child: Column(
+                children: [
                   SizedBox(
                     width: 300,
                     height: 50,
                     child: ElevatedButton.icon(onPressed: () {
                       print('Freund hinzufügen');
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => AddFriendToChallenge()),
+                      );
                     },
                       icon: Icon(
-                          Icons.add_circle_outline_sharp,
-                          size: 25,
+                        Icons.add_circle_outline_sharp,
+                        size: 25,
                       ),
                       label: Text(
                           'Add Friends',
@@ -606,18 +794,18 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 30),
+                  SizedBox(height: 20),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                          'Is everything correct?',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontStyle: FontStyle.italic,
-                            color: Colors.white,
-                          ),
+                        'Is everything correct?',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                        ),
                       ),
                       SizedBox(width: 20,),
                       SizedBox(
@@ -638,7 +826,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           ),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
-                            backgroundColor: Colors.green,   // Textfarbe des Buttons
+                            backgroundColor: Colors.indigoAccent,   // Textfarbe des Buttons
                             padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25), // Abrundung der Ecken
@@ -650,230 +838,86 @@ class _CreateChallengeState extends State<CreateChallenge> {
                   ),
                 ],
               ),
-            ),
-          ),
-
-          // Einstellungs-Icon oben links
-          Positioned(
-            top: 15, // Abstand von oben (inklusive Statusleiste)
-            left: 15, // Abstand von links
-            child: IconButton(
-              icon: Icon(Icons.settings),
-              color: Colors.white, // Farbe des Icons
-              iconSize: 30, // Größe des Icons
-              onPressed: () {
-                // Hier kommt die Navigation zur Einstellungsseite
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              },
-            ),
+            )
           ),
         ],
+        type: StepperType.horizontal,
+        controlsBuilder: (BuildContext context, ControlsDetails details) {
+          return Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                onPressed: details.onStepCancel,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.blueGrey, // Textfarbe
+                  backgroundColor: Colors.white, // Hintergrundfarbe
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Innenabstand
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), // Abrundung der Ecken
+                  ),
+                ),
+                child: Icon(
+                  Icons.keyboard_double_arrow_left_sharp,
+                  size: 25,
+                ),
+              ),
+              SizedBox(width: 40), // Abstand zwischen den Buttons
+              ElevatedButton(
+                onPressed: details.onStepContinue,
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.blueGrey, // Textfarbe
+                  backgroundColor: Colors.white, // Hintergrundfarbe
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Innenabstand
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8), // Abrundung der Ecken
+                  ),
+                ),
+                child: Icon(
+                  Icons.keyboard_double_arrow_right_sharp,
+                  size: 25,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 }
 
-
-class CurrentChallenges extends StatefulWidget {
-  @override
-  _CurrentChallengesState createState() => _CurrentChallengesState();
-}
-
-class _CurrentChallengesState extends State<CurrentChallenges> {
+class AddFriendToChallenge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Der Container mit dem Inhalt der Seite
-          Align(
-            alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
-            child: Container(
-              width: 375,  // Feste Breite
-              margin: EdgeInsets.only(top: 60),  // Abstand von oben
-              padding: EdgeInsets.all(15),  // Innerer Abstand
-              decoration: BoxDecoration(
-                color: Colors.indigoAccent,  // Hintergrundfarbe des Containers
-                borderRadius: BorderRadius.circular(5),  // Abrundung der Ecken
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,  // Minimiert die Größe der Spalte
-                children: [
-                  Text(
-                    'Your Challenges',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),  // Textstil
-                    textAlign: TextAlign.center,  // Textzentrierung
-                  ),
-                  SizedBox(height: 20),  // Abstand zwischen Text und erstem Textfeld
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 1',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 2',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 3',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 20),  // Abstand zwischen dem letzten Textfeld und dem Button
-                  ElevatedButton(
-                    onPressed: () {
-                      // Hier kannst du die Funktion für den Button hinzufügen
-                    },
-                    child: Text('Submit'),
-                  ),
-                ],
+      appBar: AppBar(
+        title: Row(
+          children: [
+            SizedBox(width: 8),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                'Add your Friends',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
               ),
             ),
-          ),
-
-          // Einstellungs-Icon oben links
-          Positioned(
-            top: 15,  // Abstand von oben (inklusive Statusleiste)
-            left: 15,  // Abstand von links
-            child: IconButton(
-              icon: Icon(Icons.settings),
-              color: Colors.white,  // Farbe des Icons
-              iconSize: 25,  // Größe des Icons
-              onPressed: () {
-                // Hier kommt die Navigation zur Einstellungsseite
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              },
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueGrey.shade400, Colors.pink],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
             ),
           ),
-        ],
+        ),
       ),
-    );
-  }
-}
-
-class FriendsList extends StatefulWidget {
-  @override
-  _FriendsListState createState() => _FriendsListState();
-}
-
-class _FriendsListState extends State<FriendsList> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          // Der Container mit dem Inhalt der Seite
-          Align(
-            alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
-            child: Container(
-              width: 375,  // Feste Breite
-              margin: EdgeInsets.only(top: 60),  // Abstand von oben
-              padding: EdgeInsets.all(15),  // Innerer Abstand
-              decoration: BoxDecoration(
-                color: Colors.indigoAccent,  // Hintergrundfarbe des Containers
-                borderRadius: BorderRadius.circular(5),  // Abrundung der Ecken
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,  // Minimiert die Größe der Spalte
-                children: [
-                  Text(
-                    'Your Challenges',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 25,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 0.5,
-                    ),  // Textstil
-                    textAlign: TextAlign.center,  // Textzentrierung
-                  ),
-                  SizedBox(height: 20),  // Abstand zwischen Text und erstem Textfeld
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 1',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 2',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 10),  // Abstand zwischen den Textfeldern
-                  TextField(
-                    decoration: InputDecoration(
-                      hintText: 'Challenge 3',
-                      border: OutlineInputBorder(),
-                      fillColor: Colors.white,
-                      filled: true,
-                    ),
-                  ),
-                  SizedBox(height: 20),  // Abstand zwischen dem letzten Textfeld und dem Button
-                  ElevatedButton.icon(onPressed: () {
-                    print('Button gedrückt');
-                  },
-                    icon: Icon(Icons.favorite_border),
-                    label: Text('Like'),
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,   // Textfarbe des Buttons
-                      padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15), // Abrundung der Ecken
-                      ),
-                    ),
-
-                  )
-                ],
-              ),
-            ),
-          ),
-
-          // Einstellungs-Icon oben links
-          Positioned(
-            top: 15,  // Abstand von oben (inklusive Statusleiste)
-            left: 15,  // Abstand von links
-            child: IconButton(
-              icon: Icon(Icons.settings),
-              color: Colors.white,  // Farbe des Icons
-              iconSize: 30,  // Größe des Icons
-              onPressed: () {
-                // Hier kommt die Navigation zur Einstellungsseite
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              },
-            ),
-          ),
-        ],
+      body: Center(
+        child: Text('Here you can add the friends you´d like to challenge.'),
       ),
     );
   }
@@ -884,7 +928,31 @@ class SettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Settings'),
+        title: Row(
+          children: [
+            SizedBox(width: 8),
+            Container(
+              alignment: Alignment.center,
+              child: Text(
+                'Settings',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 25,
+                ),
+              ),
+            ),
+          ],
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueGrey.shade400, Colors.pink],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
       ),
       body: Center(
         child: Text('Hier kommen deine Einstellungen hin.'),
@@ -892,3 +960,5 @@ class SettingsPage extends StatelessWidget {
     );
   }
 }
+
+

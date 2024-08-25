@@ -23,10 +23,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
           children: [
             IconButton(
               icon: Icon(Icons.settings),
-              color: Colors.white, // Farbe des Icons
-              iconSize: 30, // Größe des Icons
+              color: Colors.white, // Color of the icon
+              iconSize: 30, // Size of the icon
               onPressed: () {
-                // Hier kommt die Navigation zur Einstellungsseite
+                // Here comes the navigation to the settings page
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -211,22 +211,22 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               padding: EdgeInsets.all(10),
                               margin: EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey[50], // Hintergrundfarbe
+                                color: Colors.blueGrey[50], // Background color
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: Colors.black54,
                                   width: 3,
-                                ),// Abrundung der Ecken
+                                ), // Rounding the corners
                               ),
                               child: Column(
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Icons.access_time, color: Colors.black54), // Beispiel-Icon für "Time"
-                                      SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                      Icon(Icons.access_time, color: Colors.black54), // Example icon for "Time"
+                                      SizedBox(width: 10), // Spacing between icon and text
                                       Text(
                                         'Time',
-                                        style: TextStyle(fontSize: 20), // Textstil
+                                        style: TextStyle(fontSize: 20), // Text style
                                       ),
                                     ],
                                   ),
@@ -235,7 +235,8 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                       style: TextStyle(
                                         fontSize: 10,
                                         fontStyle: FontStyle.italic,
-                                      )),
+                                      )
+                                  ),
                                 ],
                               ),
                             ),
@@ -244,22 +245,22 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               padding: EdgeInsets.all(10),
                               margin: EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey[50], // Hintergrundfarbe
+                                color: Colors.blueGrey[50], // Background color
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: Colors.pink,
                                   width: 3,
-                                ),// Abrundung der Ecken
+                                ), // Rounding the corners
                               ),
                               child: Column(
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Icons.whatshot, color: Colors.pink), // Beispiel-Icon für "Intensity"
-                                      SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                      Icon(Icons.whatshot, color: Colors.pink), // Example icon for "Intensity"
+                                      SizedBox(width: 10), // Spacing between icon and text
                                       Text(
                                         'Intensity',
-                                        style: TextStyle(fontSize: 20), // Textstil
+                                        style: TextStyle(fontSize: 20), // Text style
                                       ),
                                     ],
                                   ),
@@ -278,22 +279,22 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               padding: EdgeInsets.all(10),
                               margin: EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey[50], // Hintergrundfarbe
+                                color: Colors.blueGrey[50], // Background color
                                 borderRadius: BorderRadius.circular(10),
                                 border: Border.all(
                                   color: Colors.indigoAccent,
                                   width: 3,
-                                ),// Abrundung der Ecken
+                                ), // Rounding the corners
                               ),
                               child: Column(
                                 children: [
                                   Row(
                                     children: [
-                                      Icon(Icons.sports_kabaddi, color: Colors.indigoAccent), // Beispiel-Icon für "Obstacle"
-                                      SizedBox(width: 10), // Abstand zwischen Icon und Text
+                                      Icon(Icons.sports_kabaddi, color: Colors.indigoAccent), // Example icon for "Obstacle"
+                                      SizedBox(width: 10), // Spacing between icon and text
                                       Text(
                                         'Obstacle',
-                                        style: TextStyle(fontSize: 20), // Textstil
+                                        style: TextStyle(fontSize: 20), // Text style
                                       ),
                                     ],
                                   ),
@@ -312,47 +313,47 @@ class _CreateChallengeState extends State<CreateChallenge> {
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            // Erstes Textfeld mit zugehörigem Input-Feld
+                            // First text field with associated input field
                             Container(
                               padding: EdgeInsets.all(5),
                               margin: EdgeInsets.symmetric(vertical: 5),
                               decoration: BoxDecoration(
-                                color: Colors.blueGrey[50], // Hintergrundfarbe
-                                borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                                color: Colors.blueGrey[50], // Background color
+                                borderRadius: BorderRadius.circular(10), // Rounding the corners
                               ),
                               child: Column(
-                                //crossAxisAlignment: CrossAxisAlignment.start, // Links ausrichten
+                                //crossAxisAlignment: CrossAxisAlignment.start, // Align left
                                 children: [
                                   SizedBox(
                                     width: 200,
                                     child: Row(
                                       children: [
-                                        // Minus-Button
+                                        // Minus button
                                         IconButton(
                                           icon: Icon(Icons.remove),
                                           onPressed: () {
                                             setState(() {
-                                              if (days > 0) days--;  // Verringert die Anzahl der Tage
+                                              if (days > 0) days--;  // Decreases the number of days
                                             });
                                           },
                                         ),
 
-                                        // Textfeld, das den aktuellen Wert anzeigt
+                                        // Text field that displays the current value
                                         Expanded(
                                           child: TextField(
                                             controller: TextEditingController(text: days.toString()),
-                                            readOnly: true,  // Verhindert manuelle Eingabe
+                                            readOnly: true,  // Prevents manual input
                                             textAlign: TextAlign.center,
-                                            decoration: null,// Zentriert den Text
+                                            decoration: null, // Centers the text
                                           ),
                                         ),
 
-                                        // Plus-Button
+                                        // Plus button
                                         IconButton(
                                           icon: Icon(Icons.add),
                                           onPressed: () {
                                             setState(() {
-                                              days++;  // Erhöht die Anzahl der Tage
+                                              days++;  // Increases the number of days
                                             });
                                           },
                                         ),
@@ -382,7 +383,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ),
                             ),
                             SizedBox(height: 20),
-                            // Zweites Textfeld mit Dropdown-Menü
+                            // Second text field with dropdown menu
                             Container(
                               padding: EdgeInsets.all(5),
                               margin: EdgeInsets.symmetric(vertical: 5),
@@ -415,7 +416,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               ),
                             ),
                             SizedBox(height: 20),
-                            // Drittes Textfeld mit zugehörigem Input-Feld
+                            // Third text field with associated input field
                             Container(
                               padding: EdgeInsets.all(5),
                               margin: EdgeInsets.symmetric(vertical: 5),
@@ -462,7 +463,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                       width: 300,
                       height: 50,
                       child: ElevatedButton.icon(onPressed: () {
-                        print('Freund hinzufügen');
+                        print('Add friend');
                         Navigator.push(
                           context,
                           MaterialPageRoute(builder: (context) => AddFriendToChallenge()),
@@ -480,10 +481,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
                         ),
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.white,
-                          backgroundColor: Colors.pink,   // Textfarbe des Buttons
-                          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
+                          backgroundColor: Colors.pink,
+                          padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
@@ -506,7 +507,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           width: 150,
                           height: 40,
                           child: ElevatedButton.icon(onPressed: () {
-                            print('Erstelle Challenge');
+                            print('Create Challenge');
                           },
                             label: Text(
                                 'Create',
@@ -520,10 +521,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             ),
                             style: ElevatedButton.styleFrom(
                               foregroundColor: Colors.white,
-                              backgroundColor: Colors.indigoAccent,   // Textfarbe des Buttons
-                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0), // Innenabstand des Buttons
+                              backgroundColor: Colors.indigoAccent,
+                              padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                               shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25), // Abrundung der Ecken
+                                borderRadius: BorderRadius.circular(25),
                               ),
                             ),
                           ),
@@ -543,11 +544,11 @@ class _CreateChallengeState extends State<CreateChallenge> {
               ElevatedButton(
                 onPressed: details.onStepCancel,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.blueGrey, // Textfarbe
-                  backgroundColor: Colors.white, // Hintergrundfarbe
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Innenabstand
+                  foregroundColor: Colors.blueGrey, // Text color
+                  backgroundColor: Colors.white, // Background color
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Inner spacing
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Abrundung der Ecken
+                    borderRadius: BorderRadius.circular(8), // Corner rounding
                   ),
                 ),
                 child: Icon(
@@ -555,15 +556,15 @@ class _CreateChallengeState extends State<CreateChallenge> {
                   size: 25,
                 ),
               ),
-              SizedBox(width: 40), // Abstand zwischen den Buttons
+              SizedBox(width: 40), // Spacing between the buttons
               ElevatedButton(
                 onPressed: details.onStepContinue,
                 style: ElevatedButton.styleFrom(
-                  foregroundColor: Colors.blueGrey, // Textfarbe
-                  backgroundColor: Colors.white, // Hintergrundfarbe
-                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Innenabstand
+                  foregroundColor: Colors.blueGrey, // Text color
+                  backgroundColor: Colors.white, // Background color
+                  padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Inner spacing
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8), // Abrundung der Ecken
+                    borderRadius: BorderRadius.circular(8), // Corner rounding
                   ),
                 ),
                 child: Icon(

@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Etwas Familienfreundliches',
+      title: 'Something family friendly', // Translated from 'Etwas Familienfreundliches'
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         scaffoldBackgroundColor: Colors.blueGrey[400],
@@ -40,19 +40,20 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-double screenHeight = 1440.0; //Standardwert, damit bei fehlender Initialisierung nicht nichts geht
-double screenWidth = 3168.0;  //Standardwert, damit bei fehlender Initialisierung nicht nichts geht
+double screenHeight = 1440.0; // Default value, so that nothing happens in case of missing initialization
+double screenWidth = 3168.0; // Default value, so that nothing happens in case of missing initialization
 double screenWidthAndHeight = screenWidth+screenHeight;
-late TextStyle standardText;  //Standard TextStyle: Wenn nötig überschreibbar mit "standardText.copyWith(zu-überschreibende-Daten)
+late TextStyle standardText;  // Standard TextStyle: Can be overwritten with "standardText.copyWith(data-to-be-overwritten)" if necessary
+
 class _MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 2;
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    screenHeight = MediaQuery.of(context).size.height;  //Setzen der Screenhöhe
-    screenWidth = MediaQuery.of(context).size.width;    //Setzen der Screenbreite
+    screenHeight = MediaQuery.of(context).size.height;  // Set the screen height
+    screenWidth = MediaQuery.of(context).size.width;    // Set the screen width
     screenWidthAndHeight = screenWidth+screenHeight;
-    standardText = TextStyle(                           //TODO: FontStyle der zur Anwendung passt entwickeln
+    standardText = TextStyle(                           // TODO: Develop font style that fits the application
       color: Colors.white,
       fontSize: screenHeight * 0.02,
       fontWeight: FontWeight.normal,
@@ -144,37 +145,37 @@ class _YourChallengesState extends State<YourChallenges> {
     return Scaffold(
       body: Stack(
         children: [
-          // Der Container mit dem Inhalt der Seite
+          // The container with the page content
           Align(
-            alignment: Alignment.topCenter,  // Horizontale Zentrierung, oben angeordnet
+            alignment: Alignment.topCenter,  // Horizontal centering, arranged at the top
             child: Container(
-              width: screenWidth * 0.75,  // Feste Breite
-              margin: EdgeInsets.only(top: screenHeight * 0.04),  // Abstand von oben
-              padding: EdgeInsets.all(screenWidth * 0.02),  // Innerer Abstand
+              width: screenWidth * 0.75,  // Fixed width
+              margin: EdgeInsets.only(top: screenHeight * 0.04),  // Spacing from the top
+              padding: EdgeInsets.all(screenWidth * 0.02),  // Inner spacing
               decoration: BoxDecoration(
-                color: Colors.indigoAccent,  // Hintergrundfarbe des Containers
-                borderRadius: BorderRadius.circular(screenWidth * 0.4*0.08),  // Abrundung der Ecken
+                color: Colors.indigoAccent,  // Background color of the container
+                borderRadius: BorderRadius.circular(screenWidth * 0.4*0.08),  // Rounding the corners
               ),
               child: Column(
-                mainAxisSize: MainAxisSize.min,  // Minimiert die Größe der Spalte
+                mainAxisSize: MainAxisSize.min,  // Minimizes the size of the column
                 children: [
                   Text(
                     'Your Challenges',
-                    style: standardText.copyWith(fontWeight: FontWeight.bold, fontSize: screenHeight*0.03),  // Textstil Überschrift
-                    textAlign: TextAlign.center,  // Textzentrierung
+                    style: standardText.copyWith(fontWeight: FontWeight.bold, fontSize: screenHeight*0.03),  // Text style heading
+                    textAlign: TextAlign.center,  // Text centering
                   ),
-                  SizedBox(height: screenHeight * 0.02),  // Abstand zwischen Text und erstem Textfeld
+                  SizedBox(height: screenHeight * 0.02),  // Spacing between text and first text field
                   TextField(
                     decoration: InputDecoration(
                       hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
-                      hintText: 'Chöhe: $screenHeight breite: $screenWidth', //Anzeige der Maße zum entwickeln TODO: Entfernen vor finalem Produkt
+                      hintText: 'Height: $screenHeight width: $screenWidth', // Display the dimensions for development TODO: Remove before final product
                       border: OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
                       contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.01),  // Abstand zwischen den Textfeldern
+                  SizedBox(height: screenHeight * 0.01),  // Spacing between the text fields
                   TextField(
                     decoration: InputDecoration(
                       hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
@@ -185,7 +186,7 @@ class _YourChallengesState extends State<YourChallenges> {
                       contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.01),  // Abstand zwischen den Textfeldern
+                  SizedBox(height: screenHeight * 0.01),  // Spacing between the text fields
                   TextField(
                     decoration: InputDecoration(
                       hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
@@ -196,17 +197,17 @@ class _YourChallengesState extends State<YourChallenges> {
                       contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
                     ),
                   ),
-                  SizedBox(height: screenHeight * 0.02),  // Abstand zwischen dem letzten Textfeld und dem Button
+                  SizedBox(height: screenHeight * 0.02),  // Spacing between the last text field and the button
                   ElevatedButton.icon(onPressed: () {
-                    print('Button gedrückt');
+                    print('Button pressed'); // Translated from 'Button gedrückt'
                   },
                     icon: Icon(Icons.favorite_border),
                     label: Text('Like',style: standardText.copyWith(fontWeight: FontWeight.bold, fontSize: screenHeight * 0.03)),
                     style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,   // Textfarbe des Buttons
-                      padding: EdgeInsets.only(right: screenWidth * 0.025, left: screenWidth*0.025, top: screenHeight * 0.005, bottom: screenHeight * 0.005), // Innenabstand des Buttons
+                      foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,   // Button text color
+                      padding: EdgeInsets.only(right: screenWidth * 0.025, left: screenWidth*0.025, top: screenHeight * 0.005, bottom: screenHeight * 0.005), // Button inner spacing
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15), // Abrundung der Ecken
+                        borderRadius: BorderRadius.circular(15), // Rounding the corners
                       ),
                     ),
 
@@ -216,16 +217,16 @@ class _YourChallengesState extends State<YourChallenges> {
             ),
           ),
 
-          // Einstellungs-Icon oben links
+          // Settings icon top left
           Positioned(
-            top: screenWidth * 0.008,  // Abstand von oben (inklusive Statusleiste)
-            left: screenWidth * 0.008,  // Abstand von links
+            top: screenWidth * 0.008,  // Spacing from the top (including status bar)
+            left: screenWidth * 0.008,  // Spacing from the left
             child: IconButton(
               icon: Icon(Icons.settings),
-              color: Colors.white,  // Farbe des Icons
-              iconSize: screenWidthAndHeight*0.025,  // Größe des Icons
+              color: Colors.white,  // Color of the icon
+              iconSize: screenWidthAndHeight*0.025,  // Size of the icon
               onPressed: () {
-                // Hier kommt die Navigation zur Einstellungsseite
+                // Here comes the navigation to the settings page
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => SettingsPage()),
@@ -278,7 +279,3 @@ class AddFriendToChallenge extends StatelessWidget {
     );
   }
 }
-
-
-
-

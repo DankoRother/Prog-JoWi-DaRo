@@ -33,7 +33,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     Future.delayed(Duration(seconds: 5), () {
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => MyHomePage(title: 'Etwas Familienfreundliches'),
+          pageBuilder: (context, animation1, animation2) => MyHomePage(title: 'Something Family Friendly'), // Translated from 'Etwas Familienfreundliches'
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
             return FadeTransition(
               opacity: animation,
@@ -59,8 +59,8 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
         body: Container(
           decoration: BoxDecoration(
             image: DecorationImage(
-              image: const AssetImage('assets/background_splasherscreen.png'), // Pfad zum Bild
-              fit: BoxFit.cover, // Bild soll den ganzen Bildschirm ausfüllen
+              image: const AssetImage('assets/background_splasherscreen.png'), // Path to the image
+              fit: BoxFit.cover, // Image should fill the entire screen
             ),
           ),
           child: Center(
@@ -69,7 +69,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo oder anderes Widget
+                    // Logo or other widget
                     const Text(
                       'NOTHING IS IMPOSSIBLE',
                       style: TextStyle(

@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 
 
-
 class EditChallenge extends StatefulWidget {
   @override
   _EditChallengeState createState() => _EditChallengeState();
@@ -14,7 +13,7 @@ class _EditChallengeState extends State<EditChallenge> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false, // Verhindert, dass der Standard-Zurückpfeil erscheint
+        automaticallyImplyLeading: false, // Prevents the default back arrow from appearing
         title: Row(
           children: [
             IconButton(

@@ -6,7 +6,7 @@ import 'settings.dart';
 import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
-
+import 'my_account.dart';
 
 void main() {
   runApp(const MyApp());
@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         page = CurrentChallenges();
         break;
       case 4:
-        page = Placeholder();
+        page = MyAccountState();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }

@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import 'settings.dart';
 import 'current_challenges.dart';
@@ -26,10 +24,10 @@ Widget build(BuildContext context) {
   return Scaffold(
     appBar: isLoggedIn
         ? AppBar(
-      title: Text("My Account"),
+      title: const Text("My Account"),
       actions: [
         IconButton(
-          icon: Icon(Icons.edit),
+          icon: const Icon(Icons.edit),
           onPressed: () {
             // Navigate to settings page
             Navigator.push(
@@ -42,7 +40,7 @@ Widget build(BuildContext context) {
           setState(() {
             isLoggedIn = false;
           });
-          }, icon: Icon(Icons.logout))
+          }, icon: const Icon(Icons.logout))
       ],
     )
         : AppBar(), // Empty AppBar when not logged in
@@ -62,13 +60,13 @@ Widget build(BuildContext context) {
   );
 }
 Widget _buildAccountPage(double screenWidth, double screenHeight) {
-  return Column( // Removed the Scaffold here
+  return Column(
     mainAxisAlignment: MainAxisAlignment.start,
     children: <Widget>[
       SizedBox(height: screenHeight * 0.04),
       CircleAvatar(
         radius: screenHeight * 0.07,
-        backgroundImage: AssetImage('assets/images/profile_placeholder.png'),
+        backgroundImage: const AssetImage('assets/images/profile_placeholder.png'),
       ),
       SizedBox(height: screenHeight * 0.022),
       Container(
@@ -99,7 +97,7 @@ Widget _buildAccountPage(double screenWidth, double screenHeight) {
             ElevatedButton(
               style: ButtonStyle(
                   backgroundColor:
-                  MaterialStateProperty.all(Colors.blue[900])),
+                  WidgetStateProperty.all(Colors.blue[900])),
               onPressed: () {
                 Navigator.push(
                     context,
@@ -135,7 +133,7 @@ Widget _buildLoginPage(double screenWidth, double screenHeight) {
         padding: const EdgeInsets.all(16.0),
         child: TextField(
           controller: _usernameController,
-          decoration: InputDecoration(labelText: 'Username'),
+          decoration: const InputDecoration(labelText: 'Username'),
         ),
       ),
       Padding(
@@ -143,12 +141,12 @@ Widget _buildLoginPage(double screenWidth, double screenHeight) {
         child: TextField(
           controller: _passwordController,
           obscureText: true,
-          decoration: InputDecoration(labelText: 'Password'),
+          decoration: const InputDecoration(labelText: 'Password'),
         ),
       ),
       ElevatedButton(
         style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
+          backgroundColor: WidgetStateProperty.all(Colors.blue[900]),
         ),
         onPressed: () {
           if (_usernameController.text == '123' &&
@@ -159,7 +157,7 @@ Widget _buildLoginPage(double screenWidth, double screenHeight) {
           } else {
             // Show an error message or handle invalid login
             ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Invalid username or password')),
+              const SnackBar(content: Text('Invalid username or password')),
             );
           }
         },

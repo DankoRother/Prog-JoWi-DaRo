@@ -30,7 +30,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
     _controller.forward();
 
     // Simulate a delay, then navigate to the main page
-    Future.delayed(Duration(seconds: 5), () {
+    Future.delayed(Duration(seconds: 1), () { //TODO: Nach Programmierung wieder anpassen
       Navigator.of(context).pushReplacement(
         PageRouteBuilder(
           pageBuilder: (context, animation1, animation2) => MyHomePage(title: 'Something Family Friendly'), // Translated from 'Etwas Familienfreundliches'

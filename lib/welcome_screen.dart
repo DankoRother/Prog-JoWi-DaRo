@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'dart:async';
 
 import 'settings.dart';
 import 'current_challenges.dart';
@@ -15,13 +16,14 @@ class WelcomeScreen extends StatefulWidget {
 class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _animation;
+  double _progressValue = 0.0;
 
   @override
   void initState() {
     super.initState();
 
     _controller = AnimationController(
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 1),
       vsync: this,
     );
 
@@ -29,19 +31,28 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
 
     _controller.forward();
 
-    // Simulate a delay, then navigate to the main page
-    Future.delayed(Duration(seconds: 5), () {
-      Navigator.of(context).pushReplacement(
-        PageRouteBuilder(
-          pageBuilder: (context, animation1, animation2) => MyHomePage(title: 'Something Family Friendly'), // Translated from 'Etwas Familienfreundliches'
-          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
-        ),
-      );
+    // progrss indicator runs 7 seconds
+    Timer.periodic(Duration(milliseconds: 70), (Timer timer) {
+      setState(() {
+        _progressValue += 0.02; //lifts the progress by 2 %
+
+        if (_progressValue >= 1.0) {
+          _progressValue = 1.0; // limit progress to 100 %
+          timer.cancel();
+          // navigate to create challenges page
+          Navigator.of(context).pushReplacement(
+            PageRouteBuilder(
+              pageBuilder: (context, animation1, animation2) => MyHomePage(title: 'challengr - beat your habits'),
+              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+              },
+            ),
+          );
+        }
+      });
     });
   }
 
@@ -65,7 +76,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
           ),
           child: Center(
               child: Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(0, 300, 0, 0),
+                padding: EdgeInsetsDirectional.fromSTEB(0, 400, 0, 0),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -76,6 +87,16 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                         fontSize: 25,
                         fontStyle: FontStyle.italic,
                         color: Colors.white,
+                      ),
+                    ),
+                    SizedBox(height: 50,),
+                    SizedBox(height: 20), // Abstand zwischen Text und Progress Indicator
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0), // Padding für den Progress Indicator
+                      child: LinearProgressIndicator(
+                        value: _progressValue,
+                        backgroundColor: Colors.white54, // Hintergrundfarbe des Indikators
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white), // Farbe des Fortschritts
                       ),
                     ),
                   ],

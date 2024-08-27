@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Something family friendly', // Translated from 'Etwas Familienfreundliches'
+      title: 'challengr - beat your habits', // Translated from 'Etwas Familienfreundliches'
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         scaffoldBackgroundColor: Colors.blueGrey[400],

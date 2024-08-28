@@ -32,7 +32,7 @@ Widget build(BuildContext context) {
             // Navigate to settings page
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => SettingsPage()),
+              MaterialPageRoute(builder: (context) => _buildEditAccountPage(screenWidth, screenHeight)),
             );
           },
         ),
@@ -119,6 +119,7 @@ Widget _buildAccountPage(double screenWidth, double screenHeight) {
                 fontSize: standardText.fontSize! * 1.2,
               ),
             ),
+            SizedBox(height: screenHeight * 0.015),
           ],
         ),
       ),
@@ -167,6 +168,94 @@ Widget _buildLoginPage(double screenWidth, double screenHeight) {
         ),
       ),
     ],
+  );
+}
+Widget _buildEditAccountPage(double screenWidth, double screenHeight) {
+  // Create TextEditingControllers to manage the input fields
+  final TextEditingController _userNameController = TextEditingController(
+      text: userName);
+  final TextEditingController _emailController = TextEditingController(
+      text: email);
+
+  return Scaffold( // Wrap the entire content with Scaffold
+    body: Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: <Widget>[
+        SizedBox(height: screenHeight * 0.04),
+        CircleAvatar(
+          radius: screenHeight * 0.07,
+          backgroundImage: const AssetImage(
+              'assets/images/profile_placeholder.png'),
+        ),
+        SizedBox(height: screenHeight * 0.022),
+        Container(
+          padding: EdgeInsets.symmetric(
+              vertical: screenHeight * 0.012, horizontal: screenWidth * 0.014),
+          decoration: BoxDecoration(
+            color: Colors.blueGrey,
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Column(
+            children: [
+              // Editable username field
+              TextField(
+                controller: _userNameController,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: standardText.copyWith(
+                  fontSize: standardText.fontSize! * 1.4,
+                  fontWeight: FontWeight.bold,
+                ),
+                decoration: const InputDecoration(
+                  hintText: 'Enter new username',
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              // Editable email field
+              TextField(
+                controller: _emailController,
+                textAlign: TextAlign.center,
+                style: standardText.copyWith(color: Colors.grey),
+                decoration: const InputDecoration(
+                  hintText: 'Enter new email',
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.025),
+              ElevatedButton(
+                style: ButtonStyle(
+                    backgroundColor:
+                    WidgetStateProperty.all(Colors.blue[900])),
+                onPressed: () {
+                  // TODO: Datenbanklogik!! Erst danach darf myAccountState neu geladen werden
+                  setState(() {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context)
+                      => _buildAccountPage(screenWidth, screenHeight)),
+                    );
+                  });
+                },
+                child: Text(
+                  textAlign: TextAlign.center,
+                  "Submit Changes",
+                  style: standardText,
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.015),
+              // Display completed challenges (non-editable)
+              Text(
+                textAlign: TextAlign.center,
+                "Abgeschlossene Challenges: $completedChallenges",
+                style: standardText.copyWith(
+                  fontSize: standardText.fontSize! * 1.2,
+                ),
+              ),
+              SizedBox(height: screenHeight * 0.015),
+            ],
+          ),
+        ),
+      ],
+    ),
   );
 }
 }

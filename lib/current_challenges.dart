@@ -4,6 +4,7 @@ import 'package:flutter/painting.dart';
 
 import 'settings.dart';
 import 'edit_challenge.dart';
+import 'challenge_created_confirmation.dart';
 
 class CurrentChallenges extends StatefulWidget {
   @override
@@ -11,27 +12,25 @@ class CurrentChallenges extends StatefulWidget {
 }
 
 class _CurrentChallengesState extends State<CurrentChallenges> {
-  int days = 0;
+  final int day = 10;
+  final int durationTotal = 30;
+  late int daysLeft;
+  final int rank = 1;
+
+  @override
+  void initState() {
+    super.initState();
+    daysLeft = durationTotal - day; // Initialisiere daysLeft hier
+    print('$daysLeft');
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              icon: Icon(Icons.settings),
-              color: Colors.white, // Color of the icon
-              iconSize: 30, // Size of the icon
-              onPressed: () {
-                // Here comes the navigation to the settings page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              },
-            ),
-            SizedBox(width: 8),
             Container(
               alignment: Alignment.center,
               child: Text(
@@ -42,6 +41,18 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                   fontSize: 25,
                 ),
               ),
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              color: Colors.white, // Color of the icon
+              iconSize: 30, // Size of the icon
+              onPressed: () {
+                // Navigation to the settings page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
             ),
           ],
         ),
@@ -103,7 +114,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                         Text(
                           'Name of Challenge $index',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
@@ -125,7 +136,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
                                           border: Border.all(
-                                            color: Colors.black54,
+                                            color: Colors.blue.shade900,
                                             width: 3,
                                           ), // Rounding the corners
                                         ),
@@ -133,7 +144,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           children: [
                                             Row(
                                               children: [
-                                                Icon(Icons.timeline_sharp, color: Colors.black54), // Example icon for "Time"
+                                                Icon(Icons.timeline_sharp, color: Colors.blue.shade900), // Example icon for "Time"
                                                 SizedBox(width: 10), // Spacing between icon and text
                                                 Text(
                                                   'Progress',
@@ -179,7 +190,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
                                           border: Border.all(
-                                            color: Colors.indigoAccent,
+                                            color: Colors.black54 ,
                                             width: 3,
                                           ), // Rounding the corners
                                         ),
@@ -187,7 +198,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           children: [
                                             Row(
                                               children: [
-                                                Icon(Icons.numbers_sharp, color: Colors.indigoAccent), // Example icon for "Obstacle"
+                                                Icon(Icons.numbers_sharp, color: Colors.black54), // Example icon for "Obstacle"
                                                 SizedBox(width: 10), // Spacing between icon and text
                                                 Text(
                                                   'Rank',
@@ -205,35 +216,62 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                     children: [
                                       // Erstes Textfeld mit zugehörigem Input-Feld
                                       Container(
-                                        padding: EdgeInsets.all(5),
+                                        padding: EdgeInsets.all(10),
                                         margin: EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
-                                          color: Colors.blueGrey[50], // Hintergrundfarbe
-                                          borderRadius: BorderRadius.circular(10), // Abrundung der Ecken
+                                          color: Colors.blueGrey[50], // Background color
+                                          borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.blue.shade900,
+                                            width: 3,
+                                          ), // Rounding the corners
                                         ),
-                                        child: Column(),
+                                        child: Text(
+                                          '$day / $durationTotal',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
                                       ),
                                       SizedBox(height: 7),
                                       // Zweites Textfeld mit Dropdown-Menü
                                       Container(
-                                        padding: EdgeInsets.all(5),
+                                        padding: EdgeInsets.all(10),
                                         margin: EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
-                                          color: Colors.blueGrey[50],
+                                          color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.pink,
+                                            width: 3,
+                                          ), // Rounding the corners
                                         ),
-                                        child: Column(),
+                                        child: Text(
+                                          '$daysLeft',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
                                       ),
                                       SizedBox(height: 7),
                                       // Drittes Textfeld mit zugehörigem Input-Feld
                                       Container(
-                                        padding: EdgeInsets.all(5),
+                                        padding: EdgeInsets.all(10),
                                         margin: EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
-                                          color: Colors.blueGrey[50],
+                                          color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
+                                          border: Border.all(
+                                            color: Colors.black54,
+                                            width: 3,
+                                          ), // Rounding the corners
                                         ),
-                                        child: Column(),
+                                        child: Text(
+                                          '$rank. Place',
+                                          style: TextStyle(
+                                            fontSize: 20,
+                                          ),
+                                        ),
                                       ),
                                     ],
                                   ),

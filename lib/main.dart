@@ -7,6 +7,7 @@ import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
 import 'my_account.dart';
+import 'challenge_created_confirmation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,18 +16,22 @@ void main() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'challengr - beat your habits', // Translated from 'Etwas Familienfreundliches'
+      title: 'challengr - beat your habits',
+      initialRoute: '/',
+      routes: {
+        '/': (context) => WelcomeScreen(),
+        '/currentChallenges': (context) => CurrentChallenges(),
+      },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         scaffoldBackgroundColor: Colors.blueGrey[400],
         useMaterial3: true,
       ),
-      debugShowCheckedModeBanner: true,
-      home: WelcomeScreen(),
+      debugShowCheckedModeBanner: false,
+      //home: WelcomeScreen(),
     );
   }
 }
@@ -37,7 +42,7 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<MyHomePage> createState() => MyHomePageState();
 }
 
 double screenHeight = 1440.0; // Default value, so that nothing happens in case of missing initialization
@@ -45,8 +50,15 @@ double screenWidth = 3168.0; // Default value, so that nothing happens in case o
 double screenWidthAndHeight = screenWidth+screenHeight;
 late TextStyle standardText;  // Standard TextStyle: Can be overwritten with "standardText.copyWith(data-to-be-overwritten)" if necessary
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 2;
+
+  void navigateToPage(int index) {
+    setState(() {
+      selectedIndex = index;
+    });
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -60,6 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
       letterSpacing: 0.5,
     );
   }
+
   @override
   Widget build(BuildContext context) {
     Widget page;
@@ -90,9 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: selectedIndex,
         onTap: (index) {
-          setState(() {
-            selectedIndex = index;
-          });
+          navigateToPage(index);
         },
         items: const [
           BottomNavigationBarItem(
@@ -121,7 +132,6 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Colors.black87,
         selectedLabelStyle: const TextStyle(fontWeight: FontWeight.bold),
         unselectedLabelStyle: const TextStyle(color: Colors.grey),
-
         selectedIconTheme: const IconThemeData(
           size: 30,
         ),
@@ -235,46 +245,6 @@ class _YourChallengesState extends State<YourChallenges> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-
-
-class AddFriendToChallenge extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          children: [
-            SizedBox(width: 8),
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                'Add your Friends',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-            ),
-          ],
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blueGrey.shade400, Colors.pink],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-      ),
-      body: Center(
-        child: Text('Here you can add the friends you´d like to challenge.'),
       ),
     );
   }

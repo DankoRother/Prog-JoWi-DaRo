@@ -7,6 +7,7 @@ import 'settings.dart';
 import 'current_challenges.dart';
 import 'main.dart';
 import 'challenge_created_confirmation.dart';
+import 'addfriend_createchallenge.dart';
 
 class CreateChallenge extends StatefulWidget {
   @override
@@ -22,30 +23,30 @@ class _CreateChallengeState extends State<CreateChallenge> {
     return Scaffold(
       appBar: AppBar(
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              icon: Icon(Icons.settings),
-              color: Colors.white, // Color of the icon
-              iconSize: 30, // Size of the icon
-              onPressed: () {
-                // Here comes the navigation to the settings page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
-                );
-              },
-            ),
-            SizedBox(width: 8),
             Container(
               alignment: Alignment.center,
               child: Text(
-                'Create your Challenge',
+                'Create a new Challenge',
                 style: TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
               ),
+            ),
+            IconButton(
+              icon: Icon(Icons.settings),
+              color: Colors.white, // Color of the icon
+              iconSize: 30, // Size of the icon
+              onPressed: () {
+                // Navigation to the settings page
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                );
+              },
             ),
           ],
         ),
@@ -90,7 +91,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                 title: Text(
                   'Start',
                   style: TextStyle(
-                    color: _currentStep == 0 ? Colors.indigoAccent : Colors.black,
+                    color: _currentStep == 0 ? Colors.blue[900] : Colors.black,
                     fontWeight: _currentStep == 0 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -205,7 +206,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                 title: Text(
                   'Commit',
                   style: TextStyle(
-                    color: _currentStep == 1 ? Colors.indigoAccent : Colors.black,
+                    color: _currentStep == 1 ? Colors.blue[900] : Colors.black,
                     fontWeight: _currentStep == 1 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -464,7 +465,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                 title: Text(
                   'Ready?',
                   style: TextStyle(
-                    color: _currentStep == 2 ? Colors.indigoAccent : Colors.black,
+                    color: _currentStep == 2 ? Colors.blue[900] : Colors.black,
                     fontWeight: _currentStep == 2 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
@@ -503,55 +504,56 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 20),
-                      Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Is everything correct?',
-                            style: TextStyle(
-                              fontSize: 10,
-                              fontStyle: FontStyle.italic,
-                              color: Colors.white,
-                            ),
-                          ),
-                          SizedBox(width: 20,),
-                          SizedBox(
-                            width: 150,
-                            height: 40,
-                            child: ElevatedButton.icon(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  PageRouteBuilder(
-                                    opaque: false, // Seite wird transparent
-                                    pageBuilder: (BuildContext context, _, __) =>
-                                        ChallengeCreatedConfirmation(duration: Duration(seconds: 5)),
-                                  ),
-                                );
-                              },
-                              label: Text(
-                                  'Create',
-                                  style: TextStyle(
-                                    fontSize: 20,
-                                  )
-                              ),
-                              icon: Icon(
-                                Icons.done_outline_sharp,
-                                size: 20,
-                              ),
-                              style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.indigoAccent,
-                                padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(25),
+                      SizedBox(height: 40),
+                      Text(
+                        'Is everything correct?',
+                        style: TextStyle(
+                          fontSize: 15,
+                          fontStyle: FontStyle.italic,
+                          color: Colors.white,
+                        ),
+                      ),
+                      SizedBox(height: 40,),
+                      SizedBox(
+                        width: 200,
+                        height: 40,
+                        child: ElevatedButton.icon(
+                          onPressed: () {
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                opaque: false,
+                                pageBuilder: (context, animation, secondaryAnimation) => ChallengeCreatedConfirmation(
+                                  duration: Duration(seconds: 5),
+                                  onNavigate: (int selectedIndex) {
+                                    Navigator.of(context).pop(); // Schließt die Bestätigungsseite
+
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context)
+                                      => CurrentChallenges()),
+                                    );
+                                  },
                                 ),
                               ),
+                            );
+                          },
+                          label: Text(
+                            'Create',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          icon: Icon(
+                            Icons.done_outline_sharp,
+                            size: 20,
+                          ),
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.blue[900],
+                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
                             ),
                           ),
-                        ],
+                        ),
                       ),
                     ],
                   ),

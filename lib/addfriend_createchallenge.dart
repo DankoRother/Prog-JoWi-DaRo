@@ -1,25 +1,19 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
-import 'settings.dart';
-import 'current_challenges.dart';
-import 'create_challenges.dart';
-import 'welcome_screen.dart';
-import 'my_account.dart';
-import 'challenge_created_confirmation.dart';
 
 class AddFriendToChallenge extends StatelessWidget {
+  const AddFriendToChallenge({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Container(
               alignment: Alignment.center,
-              child: Text(
+              child: const Text(
                 'Add your Friends',
                 style: TextStyle(
                   color: Colors.white,
@@ -40,7 +34,7 @@ class AddFriendToChallenge extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Here you can add the friends you´d like to challenge.'),
       ),
     );

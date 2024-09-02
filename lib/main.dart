@@ -1,13 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import 'settings.dart';
 import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
 import 'my_account.dart';
-import 'challenge_created_confirmation.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,8 +19,8 @@ class MyApp extends StatelessWidget {
       title: 'challengr - beat your habits',
       initialRoute: '/',
       routes: {
-        '/': (context) => WelcomeScreen(),
-        '/currentChallenges': (context) => CurrentChallenges(),
+        '/': (context) => const WelcomeScreen(),
+        '/currentChallenges': (context) => const CurrentChallenges(),
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
@@ -78,19 +75,19 @@ class MyHomePageState extends State<MyHomePage> {
     Widget page;
     switch (selectedIndex) {
       case 0:
-        page = YourChallenges();
+        page = const YourChallenges();
         break;
       case 1:
-        page = Placeholder();
+        page = const Placeholder();
         break;
       case 2:
-        page = CreateChallenge();
+        page = const CreateChallenge();
         break;
       case 3:
-        page = CurrentChallenges();
+        page = const CurrentChallenges();
         break;
       case 4:
-        page = MyAccountState();
+        page = const MyAccountState();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }
@@ -145,6 +142,8 @@ class MyHomePageState extends State<MyHomePage> {
 }
 
 class YourChallenges extends StatefulWidget {
+  const YourChallenges({super.key});
+
   @override
   _YourChallengesState createState() => _YourChallengesState();
 }
@@ -179,7 +178,7 @@ class _YourChallengesState extends State<YourChallenges> {
                     decoration: InputDecoration(
                       hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
                       hintText: 'Height: $screenHeight width: $screenWidth', // Display the dimensions for development TODO: Remove before final product
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
                       contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
@@ -190,7 +189,7 @@ class _YourChallengesState extends State<YourChallenges> {
                     decoration: InputDecoration(
                       hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
                       hintText: 'Challenge 2',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
                       contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
@@ -201,7 +200,7 @@ class _YourChallengesState extends State<YourChallenges> {
                     decoration: InputDecoration(
                       hintStyle: standardText.copyWith(fontSize: screenWidth*0.04, color: Colors.black),
                       hintText: 'Challenge 3',
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       fillColor: Colors.white,
                       filled: true,
                       contentPadding: EdgeInsets.symmetric(vertical: screenWidth*0.01, horizontal: screenWidth*0.02),
@@ -211,7 +210,7 @@ class _YourChallengesState extends State<YourChallenges> {
                   ElevatedButton.icon(onPressed: () {
                     print('Button pressed'); // Translated from 'Button gedrückt'
                   },
-                    icon: Icon(Icons.favorite_border),
+                    icon: const Icon(Icons.favorite_border),
                     label: Text('Like',style: standardText.copyWith(fontWeight: FontWeight.bold, fontSize: screenHeight * 0.03)),
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white, backgroundColor: Colors.blueGrey,   // Button text color
@@ -232,14 +231,14 @@ class _YourChallengesState extends State<YourChallenges> {
             top: screenWidth * 0.008,  // Spacing from the top (including status bar)
             left: screenWidth * 0.008,  // Spacing from the left
             child: IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               color: Colors.white,  // Color of the icon
               iconSize: screenWidthAndHeight*0.025,  // Size of the icon
               onPressed: () {
                 // Here comes the navigation to the settings page
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
                 );
               },
             ),

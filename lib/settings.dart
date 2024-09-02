@@ -1,18 +1,18 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            SizedBox(width: 8),
+            const SizedBox(width: 8),
             Container(
               alignment: Alignment.center,
-              child: Text(
+              child: const Text(
                 'Settings',
                 style: TextStyle(
                   color: Colors.white,
@@ -33,7 +33,7 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
       ),
-      body: Center(
+      body: const Center(
         child: Text('Choose your Language etc.'),
       ),
     );

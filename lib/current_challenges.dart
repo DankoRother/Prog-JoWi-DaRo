@@ -1,12 +1,11 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 
 import 'settings.dart';
 import 'edit_challenge.dart';
-import 'challenge_created_confirmation.dart';
 
 class CurrentChallenges extends StatefulWidget {
+  const CurrentChallenges({super.key});
+
   @override
   _CurrentChallengesState createState() => _CurrentChallengesState();
 }
@@ -33,7 +32,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
           children: [
             Container(
               alignment: Alignment.center,
-              child: Text(
+              child: const Text(
                 'Your current Challenges',
                 style: TextStyle(
                   color: Colors.white,
@@ -43,14 +42,14 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               color: Colors.white, // Color of the icon
               iconSize: 30, // Size of the icon
               onPressed: () {
                 // Navigation to the settings page
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
                 );
               },
             ),
@@ -69,14 +68,14 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       body: Container(
         decoration: BoxDecoration(
           image: DecorationImage(
-              image: AssetImage('assets/account_background.png'),
+              image: const AssetImage('assets/account_background.png'),
               fit: BoxFit.cover,
               colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7),
                 BlendMode.dstATop,)
           ),
         ),
         child: ListView(
-          padding: EdgeInsets.all(16.0), // Spacing at the edge of the list
+          padding: const EdgeInsets.all(16.0), // Spacing at the edge of the list
           children: List.generate(5, (index) {
             return InkWell(
                 onTap: () {
@@ -85,17 +84,17 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                     PageRouteBuilder(
                       opaque: false, // Seite wird transparent
                       pageBuilder: (BuildContext context, _, __) =>
-                          EditChallenge(),
+                          const EditChallenge(),
                     ),
                   );
                 },
                 child: Container(
                   alignment: Alignment.center,
-                  margin: EdgeInsets.symmetric(vertical: 10.0), // Spacing between the containers
+                  margin: const EdgeInsets.symmetric(vertical: 10.0), // Spacing between the containers
                   width: 300,
                   height: 280,
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
+                    gradient: const LinearGradient(
                       colors: [Colors.pink, Colors.white], // Colors of the gradient
                       begin: Alignment.topLeft, // Starting point of the gradient
                       end: Alignment.bottomRight, // Ending point of the gradient
@@ -107,19 +106,19 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                     ), // Round the corners
                   ),
                   child: Container(
-                    padding: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0, right: 15.0,),
+                    padding: const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0, right: 15.0,),
                     child: Column(
                       //mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
                           'Name of Challenge $index',
-                          style: TextStyle(
+                          style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        SizedBox(height: 15,),
+                        const SizedBox(height: 15,),
                         Container(
                           child: Column(
                             children: [
@@ -130,8 +129,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                     crossAxisAlignment: CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        margin: EdgeInsets.symmetric(vertical: 5),
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
@@ -145,8 +144,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                             Row(
                                               children: [
                                                 Icon(Icons.timeline_sharp, color: Colors.blue.shade900), // Example icon for "Time"
-                                                SizedBox(width: 10), // Spacing between icon and text
-                                                Text(
+                                                const SizedBox(width: 10), // Spacing between icon and text
+                                                const Text(
                                                   'Progress',
                                                   style: TextStyle(fontSize: 20), // Text style
                                                 ),
@@ -155,10 +154,10 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        margin: EdgeInsets.symmetric(vertical: 5),
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
@@ -167,7 +166,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                             width: 3,
                                           ), // Rounding the corners
                                         ),
-                                        child: Column(
+                                        child: const Column(
                                           children: [
                                             Row(
                                               children: [
@@ -182,10 +181,10 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           ],
                                         ),
                                       ),
-                                      SizedBox(height: 5),
+                                      const SizedBox(height: 5),
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        margin: EdgeInsets.symmetric(vertical: 5),
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
@@ -194,7 +193,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                             width: 3,
                                           ), // Rounding the corners
                                         ),
-                                        child: Column(
+                                        child: const Column(
                                           children: [
                                             Row(
                                               children: [
@@ -216,8 +215,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                     children: [
                                       // Erstes Textfeld mit zugehörigem Input-Feld
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        margin: EdgeInsets.symmetric(vertical: 5),
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
@@ -228,16 +227,16 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                         ),
                                         child: Text(
                                           '$day / $durationTotal',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 20,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 7),
+                                      const SizedBox(height: 7),
                                       // Zweites Textfeld mit Dropdown-Menü
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        margin: EdgeInsets.symmetric(vertical: 5),
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
@@ -248,16 +247,16 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                         ),
                                         child: Text(
                                           '$daysLeft',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 20,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(height: 7),
+                                      const SizedBox(height: 7),
                                       // Drittes Textfeld mit zugehörigem Input-Feld
                                       Container(
-                                        padding: EdgeInsets.all(10),
-                                        margin: EdgeInsets.symmetric(vertical: 5),
+                                        padding: const EdgeInsets.all(10),
+                                        margin: const EdgeInsets.symmetric(vertical: 5),
                                         decoration: BoxDecoration(
                                           color: Colors.blueGrey[50], // Background color
                                           borderRadius: BorderRadius.circular(10),
@@ -268,7 +267,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                         ),
                                         child: Text(
                                           '$rank. Place',
-                                          style: TextStyle(
+                                          style: const TextStyle(
                                             fontSize: 20,
                                           ),
                                         ),

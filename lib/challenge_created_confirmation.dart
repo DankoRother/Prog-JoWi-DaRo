@@ -1,17 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
 import 'dart:async';
 
-import 'current_challenges.dart';
-import 'main.dart';
-import 'create_challenges.dart';
 
 class ChallengeCreatedConfirmation extends StatefulWidget {
   final Duration duration;
   final void Function(int) onNavigate;
 
-  ChallengeCreatedConfirmation({required this.duration, required this.onNavigate});
+  const ChallengeCreatedConfirmation({super.key, required this.duration, required this.onNavigate});
 
   @override
   _ChallengeCreatedConfirmationState createState() => _ChallengeCreatedConfirmationState();
@@ -23,7 +18,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
   late Timer _timer;
 
   void startTimer() {
-    _timer = Timer.periodic(Duration(seconds: 1), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (!mounted) return;
 
       if (_startTime == 0) {
@@ -50,7 +45,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
         _opacity = 0.0;
       });
 
-      Timer(Duration(seconds: 1), () {
+      Timer(const Duration(seconds: 1), () {
         // Navigiere zur CurrentChallenges-Seite
         widget.onNavigate(3);
       });
@@ -72,7 +67,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
           Center(
             child: AnimatedOpacity(
               opacity: _opacity,
-              duration: Duration(seconds: 1),
+              duration: const Duration(seconds: 1),
               child: Container(
                 width: 400,
                 height: 150,
@@ -83,7 +78,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text(
+                    const Text(
                       '"Name of Challenge" was created successfully.',
                       style: TextStyle(
                         color: Colors.white,
@@ -92,10 +87,10 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 10),
+                    const SizedBox(height: 10),
                     Text(
                       'You will be guided to "Your current challenges" in $_startTime seconds',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontStyle: FontStyle.italic,

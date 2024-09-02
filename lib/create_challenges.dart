@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/painting.dart';
-import 'dart:async';
 
 import 'settings.dart';
 import 'current_challenges.dart';
@@ -10,6 +7,8 @@ import 'challenge_created_confirmation.dart';
 import 'addfriend_createchallenge.dart';
 
 class CreateChallenge extends StatefulWidget {
+  const CreateChallenge({super.key});
+
   @override
   _CreateChallengeState createState() => _CreateChallengeState();
 }
@@ -27,7 +26,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
           children: [
             Container(
               alignment: Alignment.center,
-              child: Text(
+              child: const Text(
                 'Create a new Challenge',
                 style: TextStyle(
                   color: Colors.white,
@@ -37,14 +36,14 @@ class _CreateChallengeState extends State<CreateChallenge> {
               ),
             ),
             IconButton(
-              icon: Icon(Icons.settings),
+              icon: const Icon(Icons.settings),
               color: Colors.white, // Color of the icon
               iconSize: 30, // Size of the icon
               onPressed: () {
                 // Navigation to the settings page
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => SettingsPage()),
+                  MaterialPageRoute(builder: (context) => const SettingsPage()),
                 );
               },
             ),
@@ -95,12 +94,12 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     fontWeight: _currentStep == 0 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                content: Container(
+                content: SizedBox(
                   height: 400,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
+                      SizedBox(
                         height: screenHeight * 0.05,
                         child: LayoutBuilder(
                             builder: (BuildContext context, BoxConstraints constraints) {
@@ -119,7 +118,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                         // You might need to fine-tune this value
                                         left: constraints.maxWidth * 0.02,
                                       ),
-                                      prefix: Text('Name: '),
+                                      prefix: const Text('Name: '),
                                       prefixStyle: standardText.copyWith(
                                         color: Colors.white,
                                         fontSize: constraints.maxHeight * 0.4,
@@ -136,7 +135,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                         fontSize: constraints.maxHeight * 0.4,
                                       ),
                                       // Remove errorText from InputDecoration
-                                      border: OutlineInputBorder(),
+                                      border: const OutlineInputBorder(),
                                       // You can add border styling if needed
                                       fillColor: Colors.pink[700],
                                       filled: true,
@@ -158,10 +157,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             }
                         ),
                       ),
-                      Container(
+                      SizedBox(
                         height: screenHeight * 0.105,
                         child: TextFormField(
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                           decoration: InputDecoration(
                             prefixText: 'What: ',
                             prefixStyle: TextStyle(
@@ -187,7 +186,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.circular(screenWidth * 0.012),
-                              borderSide: BorderSide(color: Colors.black54),
+                              borderSide: const BorderSide(color: Colors.black54),
                             ),
                             fillColor: Colors.pink[700],
                             filled: true,
@@ -210,7 +209,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     fontWeight: _currentStep == 1 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                content: Container(
+                content: SizedBox(
                   height: 400,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -222,8 +221,8 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Container(
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey[50], // Background color
                                   borderRadius: BorderRadius.circular(10),
@@ -232,7 +231,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                     width: 3,
                                   ), // Rounding the corners
                                 ),
-                                child: Column(
+                                child: const Column(
                                   children: [
                                     Row(
                                       children: [
@@ -254,10 +253,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Container(
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey[50], // Background color
                                   borderRadius: BorderRadius.circular(10),
@@ -266,7 +265,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                     width: 3,
                                   ), // Rounding the corners
                                 ),
-                                child: Column(
+                                child: const Column(
                                   children: [
                                     Row(
                                       children: [
@@ -288,10 +287,10 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 10),
+                              const SizedBox(height: 10),
                               Container(
-                                padding: EdgeInsets.all(10),
-                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(10),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey[50], // Background color
                                   borderRadius: BorderRadius.circular(10),
@@ -300,7 +299,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                     width: 3,
                                   ), // Rounding the corners
                                 ),
-                                child: Column(
+                                child: const Column(
                                   children: [
                                     Row(
                                       children: [
@@ -329,8 +328,8 @@ class _CreateChallengeState extends State<CreateChallenge> {
                             children: [
                               // First text field with associated input field
                               Container(
-                                padding: EdgeInsets.all(5),
-                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(5),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey[50], // Background color
                                   borderRadius: BorderRadius.circular(10), // Rounding the corners
@@ -344,7 +343,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                         children: [
                                           // Minus button
                                           IconButton(
-                                            icon: Icon(Icons.remove),
+                                            icon: const Icon(Icons.remove),
                                             onPressed: () {
                                               setState(() {
                                                 if (days > 0) days--;  // Decreases the number of days
@@ -364,18 +363,18 @@ class _CreateChallengeState extends State<CreateChallenge> {
 
                                           // Plus button
                                           IconButton(
-                                            icon: Icon(Icons.add),
+                                            icon: const Icon(Icons.add),
                                             onPressed: () {
                                               setState(() {
                                                 days++;  // Increases the number of days
                                               });
                                             },
                                           ),
-                                          SizedBox(width: 15,),
+                                          const SizedBox(width: 15,),
                                           SizedBox(
                                             width: 80,
                                             child: DropdownButtonFormField<String>(
-                                              decoration: InputDecoration(
+                                              decoration: const InputDecoration(
                                                 border: OutlineInputBorder(),
                                               ),
                                               items: <String>['D', 'W', 'M', 'Y'].map((String value) {
@@ -387,7 +386,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                               onChanged: (newValue) {
                                                 // Handle the value change here
                                               },
-                                              hint: Text('Unit'),
+                                              hint: const Text('Unit'),
                                             ),
                                           ),
                                         ],
@@ -396,11 +395,11 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               // Second text field with dropdown menu
                               Container(
-                                padding: EdgeInsets.all(5),
-                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(5),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey[50],
                                   borderRadius: BorderRadius.circular(10),
@@ -411,7 +410,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                     SizedBox(
                                       width: 200,
                                       child: DropdownButtonFormField<String>(
-                                        decoration: InputDecoration(
+                                        decoration: const InputDecoration(
                                           border: OutlineInputBorder(),
                                         ),
                                         items: <String>['daily', 'weekly', 'biweekly'].map((String value) {
@@ -423,22 +422,22 @@ class _CreateChallengeState extends State<CreateChallenge> {
                                         onChanged: (newValue) {
                                           // Handle the value change here
                                         },
-                                        hint: Text('Select intensity'),
+                                        hint: const Text('Select intensity'),
                                       ),
                                     ),
                                   ],
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              const SizedBox(height: 20),
                               // Third text field with associated input field
                               Container(
-                                padding: EdgeInsets.all(5),
-                                margin: EdgeInsets.symmetric(vertical: 5),
+                                padding: const EdgeInsets.all(5),
+                                margin: const EdgeInsets.symmetric(vertical: 5),
                                 decoration: BoxDecoration(
                                   color: Colors.blueGrey[50],
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                child: Column(
+                                child: const Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
@@ -469,7 +468,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                     fontWeight: _currentStep == 2 ? FontWeight.bold : FontWeight.normal,
                   ),
                 ),
-                content: Container(
+                content: SizedBox(
                   height: 400,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -481,14 +480,14 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           print('Add friend');
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (context) => AddFriendToChallenge()),
+                            MaterialPageRoute(builder: (context) => const AddFriendToChallenge()),
                           );
                         },
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.add_circle_outline_sharp,
                             size: 25,
                           ),
-                          label: Text(
+                          label: const Text(
                               'Add Friends',
                               style: TextStyle(
                                 fontSize: 15,
@@ -497,15 +496,15 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.pink,
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
-                      Text(
+                      const SizedBox(height: 40),
+                      const Text(
                         'Is everything correct?',
                         style: TextStyle(
                           fontSize: 15,
@@ -513,7 +512,7 @@ class _CreateChallengeState extends State<CreateChallenge> {
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(height: 40,),
+                      const SizedBox(height: 40,),
                       SizedBox(
                         width: 200,
                         height: 40,
@@ -523,32 +522,32 @@ class _CreateChallengeState extends State<CreateChallenge> {
                               PageRouteBuilder(
                                 opaque: false,
                                 pageBuilder: (context, animation, secondaryAnimation) => ChallengeCreatedConfirmation(
-                                  duration: Duration(seconds: 5),
+                                  duration: const Duration(seconds: 5),
                                   onNavigate: (int selectedIndex) {
                                     Navigator.of(context).pop(); // Schließt die Bestätigungsseite
 
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(builder: (context)
-                                      => CurrentChallenges()),
+                                      => const CurrentChallenges()),
                                     );
                                   },
                                 ),
                               ),
                             );
                           },
-                          label: Text(
+                          label: const Text(
                             'Create',
                             style: TextStyle(fontSize: 20),
                           ),
-                          icon: Icon(
+                          icon: const Icon(
                             Icons.done_outline_sharp,
                             size: 20,
                           ),
                           style: ElevatedButton.styleFrom(
                             foregroundColor: Colors.white,
                             backgroundColor: Colors.blue[900],
-                            padding: EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+                            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(25),
                             ),
@@ -570,28 +569,28 @@ class _CreateChallengeState extends State<CreateChallenge> {
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.blueGrey, // Text color
                     backgroundColor: Colors.white, // Background color
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Inner spacing
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Inner spacing
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8), // Corner rounding
                     ),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.keyboard_double_arrow_left_sharp,
                     size: 25,
                   ),
                 ),
-                SizedBox(width: 40), // Spacing between the buttons
+                const SizedBox(width: 40), // Spacing between the buttons
                 ElevatedButton(
                   onPressed: details.onStepContinue,
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.blueGrey, // Text color
                     backgroundColor: Colors.white, // Background color
-                    padding: EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Inner spacing
+                    padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15), // Inner spacing
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8), // Corner rounding
                     ),
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.keyboard_double_arrow_right_sharp,
                     size: 25,
                   ),

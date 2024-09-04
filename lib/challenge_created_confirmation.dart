@@ -5,8 +5,9 @@ import 'dart:async';
 class ChallengeCreatedConfirmation extends StatefulWidget {
   final Duration duration;
   final void Function(int) onNavigate;
+  final String data;
 
-  const ChallengeCreatedConfirmation({super.key, required this.duration, required this.onNavigate});
+  const ChallengeCreatedConfirmation({super.key, required this.duration, required this.onNavigate, required this.data});
 
   @override
   _ChallengeCreatedConfirmationState createState() => _ChallengeCreatedConfirmationState();
@@ -78,8 +79,8 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Text(
-                      '"Name of Challenge" was created successfully.',
+                    Text(
+                      '"${widget.data}" was created successfully.',
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: 15,

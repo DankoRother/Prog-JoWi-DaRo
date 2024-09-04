@@ -8,31 +8,33 @@ class AddFriendToChallenge extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Row(
-          children: [
-            const SizedBox(width: 8),
-            Container(
-              alignment: Alignment.center,
-              child: const Text(
-                'Add your Friends',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-            ),
-          ],
+        title: const Text(
+          'Add your friends',
+          style: TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+            fontSize: 25,
+          ),
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close, color: Colors.white,),
+            iconSize: 30,
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+          ),
+        ],
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blueGrey.shade400, Colors.pink],
+              colors: [Colors.pink, Colors.blueGrey.shade400],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
           ),
         ),
+        automaticallyImplyLeading: false, // Entfernt den Zurückpfeil
       ),
       body: const Center(
         child: Text('Here you can add the friends you´d like to challenge.'),

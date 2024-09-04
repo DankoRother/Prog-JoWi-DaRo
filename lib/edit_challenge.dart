@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-
 class EditChallenge extends StatefulWidget {
   const EditChallenge({super.key});
 
@@ -8,18 +7,54 @@ class EditChallenge extends StatefulWidget {
   _EditChallengeState createState() => _EditChallengeState();
 }
 
-class _EditChallengeState extends State<EditChallenge> {
+class _EditChallengeState extends State<EditChallenge> with SingleTickerProviderStateMixin {
   final double _opacity = 1.0;
   int day = 10;
-  String? _responseMessage;
 
-  void _updateResponseMessage(String message) {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  IconData _currentIcon = Icons.thumb_up_off_alt_outlined;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _controller = AnimationController(
+      duration: const Duration(seconds: 2), // Dauer der Fade-Animation
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    )..addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _showSmileyAnimation(IconData icon) {
     setState(() {
-      _responseMessage = message;
+      _currentIcon = icon;
+    });
+
+    // Starte die Fade-Animation
+    _controller.reset();
+    _controller.forward().then((_) {
+      Future.delayed(const Duration(seconds: 1), () {
+        _controller.reverse(); // Starte die Ausblend-Animation
+      });
     });
 
     // Warte 2 Sekunden, bevor die Seite geschlossen wird
-    Future.delayed(const Duration(seconds: 2), () {
+    Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pop(); // Schließe die Seite und navigiere zurück
     });
   }
@@ -71,7 +106,7 @@ class _EditChallengeState extends State<EditChallenge> {
                             children: [
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  _updateResponseMessage('Great! Keep going!');
+                                  _showSmileyAnimation(Icons.sentiment_satisfied_alt);
                                 },
                                 label: const Text(
                                   'Yes',
@@ -83,7 +118,7 @@ class _EditChallengeState extends State<EditChallenge> {
                               ),
                               ElevatedButton.icon(
                                 onPressed: () {
-                                  _updateResponseMessage('Maybe next time :(');
+                                  _showSmileyAnimation(Icons.sentiment_dissatisfied);
                                 },
                                 label: const Text(
                                   'No',
@@ -95,21 +130,24 @@ class _EditChallengeState extends State<EditChallenge> {
                               ),
                             ],
                           ),
-                          if (_responseMessage != null) ...[
-                            const SizedBox(height: 30),
-                            Text(
-                              _responseMessage!,
-                              style: const TextStyle(
-                                color: Colors.white, // Farbe der Nachricht
-                                fontSize: 20, // Schriftgröße
-                                fontStyle: FontStyle.italic, // Kursiv
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                          // Entfernen der Textanzeige für die Response-Nachricht
                         ],
                       ),
                     ),
+                    // Sanfte Fade-In und Fade-Out Animation für das Icon
+                    if (_currentIcon != Icons.thumb_up_off_alt_outlined && _currentIcon != Icons.thumb_down_alt_outlined)
+                      Center(
+                        child: FadeTransition(
+                          opacity: _fadeAnimation,
+                          child: Icon(
+                            _currentIcon,
+                            color: _currentIcon == Icons.sentiment_satisfied_alt
+                                ? Colors.pink
+                                : Colors.pink,
+                            size: 250, // Größeres Icon für bessere Sichtbarkeit
+                          ),
+                        ),
+                      ),
                     Align(
                       alignment: Alignment.topRight,
                       child: IconButton(
@@ -129,6 +167,3 @@ class _EditChallengeState extends State<EditChallenge> {
     );
   }
 }
-
-
-

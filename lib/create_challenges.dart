@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter/src/material/colors.dart';
+import 'package:confetti/confetti.dart';
 
 import 'settings.dart';
 import 'current_challenges.dart';
@@ -472,7 +473,7 @@ class CreateChallengeState extends State<CreateChallenge> {
           ),
           Step(
               title: Text(
-                'Ready?',
+                'Create',
                 style: TextStyle(
                   color: _currentStep == 2 ? Colors.blue[900] : Colors.black,
                   fontWeight: _currentStep == 2 ? FontWeight.bold : FontWeight.normal,

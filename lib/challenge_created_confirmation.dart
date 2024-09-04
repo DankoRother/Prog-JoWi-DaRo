@@ -1,13 +1,18 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
+import 'package:confetti/confetti.dart';
 
 class ChallengeCreatedConfirmation extends StatefulWidget {
   final Duration duration;
   final void Function(int) onNavigate;
   final String data;
 
-  const ChallengeCreatedConfirmation({super.key, required this.duration, required this.onNavigate, required this.data});
+  const ChallengeCreatedConfirmation({
+    Key? key,
+    required this.duration,
+    required this.onNavigate,
+    required this.data,
+  }) : super(key: key);
 
   @override
   _ChallengeCreatedConfirmationState createState() => _ChallengeCreatedConfirmationState();
@@ -17,6 +22,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
   double _opacity = 1.0;
   int _startTime = 4;
   late Timer _timer;
+  late ConfettiController _confettiController;
 
   void startTimer() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -37,6 +43,8 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
   @override
   void initState() {
     super.initState();
+    _confettiController = ConfettiController(duration: const Duration(seconds: 2));
+    _confettiController.play(); // Startet die Konfetti-Animation
     startTimer();
 
     Timer(widget.duration, () {
@@ -47,8 +55,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
       });
 
       Timer(const Duration(seconds: 1), () {
-        // Navigiere zur CurrentChallenges-Seite
-        widget.onNavigate(3);
+        widget.onNavigate(3); // Navigiere zur CurrentChallenges-Seite
       });
     });
   }
@@ -56,6 +63,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
   @override
   void dispose() {
     _timer.cancel();
+    _confettiController.dispose();
     super.dispose();
   }
 
@@ -81,7 +89,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
                   children: [
                     Text(
                       '"${widget.data}" was created successfully.',
-                      style: TextStyle(
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 15,
                         fontStyle: FontStyle.italic,
@@ -103,11 +111,25 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
               ),
             ),
           ),
+          // Füge hier das Konfetti-Widget hinzu
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confettiController,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              colors: [
+                Colors.pink,
+                Colors.blue.shade900,
+                Colors.white,
+                Colors.blueGrey,
+              ], // Optional: Farben für das Konfetti definieren
+              numberOfParticles: 50,
+              emissionFrequency: 0.1,
+            ),
+          ),
         ],
       ),
     );
   }
 }
-
-
-

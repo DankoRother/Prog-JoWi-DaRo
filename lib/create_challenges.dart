@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 //import 'package:flutter/src/material/colors.dart';
-import 'package:confetti/confetti.dart';
 
 import 'settings.dart';
 import 'current_challenges.dart';

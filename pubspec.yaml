@@ -30,8 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  provider: ^6.0.5 # Use the latest version
+  # Use the latest version
   confetti: ^0.6.0
+  provider: ^6.1.2
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 //import 'package:flutter/src/material/colors.dart';
 
+import 'authentication_provider.dart';
 import 'settings.dart';
 import 'current_challenges.dart';
 import 'main.dart';
@@ -28,6 +30,9 @@ class CreateChallengeState extends State<CreateChallenge> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoggedIn = authProvider.isLoggedIn;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -35,27 +40,27 @@ class CreateChallengeState extends State<CreateChallenge> {
           children: [
             Container(
               alignment: Alignment.center,
-              child: const Text(
-                'Create a new Challenge',
-                style: TextStyle(
+              child: Text(
+                isLoggedIn ? 'Create a new Challenge' : 'Create a new Challenge',
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.settings),
-              color: Colors.white, // Color of the icon
-              iconSize: 30, // Size of the icon
-              onPressed: () {
-                // Navigation to the settings page
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SettingsPage()),
-                );
-              },
-            ),
+            if (isLoggedIn)
+              IconButton(
+                icon: const Icon(Icons.settings),
+                color: Colors.white,
+                iconSize: 30,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SettingsPage()),
+                  );
+                },
+              ),
           ],
         ),
         flexibleSpace: Container(
@@ -68,7 +73,12 @@ class CreateChallengeState extends State<CreateChallenge> {
           ),
         ),
       ),
-      body: Stepper(
+      body: isLoggedIn ? _buildChallengeForm() : _buildLoginPrompt(),
+    );
+  }
+
+  Widget _buildChallengeForm() {
+    return Stepper(
         currentStep: _currentStep,
         onStepTapped: (step) => setState(() => _currentStep = step), //TODO: entscheiden ob bearbeitung direkt über stepperleiste notwendig sein soll
         onStepContinue: () {
@@ -616,6 +626,27 @@ class CreateChallengeState extends State<CreateChallenge> {
             ],
           );
         },
+    );
+  }
+
+  Widget _buildLoginPrompt() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Please log in to create new Challenges! \n Hier könnte deine Werbung stehen.',
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black54,
+                fontStyle: FontStyle.italic,
+              ),
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }

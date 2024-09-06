@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-
-import 'current_challenges.dart';
-import 'main.dart';
+import 'package:provider/provider.dart';
+import 'authentication_provider.dart'; // Importiere den AuthProvider
+import 'current_challenges.dart'; // Importiere die aktuelle Challenge-Seite
+import 'main.dart'; // Importiere die Standard Text-Stile oder andere nützliche Dinge
 
 class MyAccountState extends StatefulWidget {
   const MyAccountState({super.key});
@@ -17,7 +18,6 @@ class _MyAccountState extends State<MyAccountState> {
   int completedChallenges = 5; // TODO: Implement proper database logic here
   late double screenWidth;
   late double screenHeight;
-  bool isLoggedIn = false;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
@@ -33,11 +33,13 @@ class _MyAccountState extends State<MyAccountState> {
     9: '👨‍🍳 Kochen',
   };
 
-  // User's selected interests (list of IDs)
   List<int> interests = [1, 2, 3];
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context);
+    final isLoggedIn = authProvider.isLoggedIn;
+
     return Scaffold(
       appBar: AppBar(
         flexibleSpace: Container(
@@ -49,7 +51,15 @@ class _MyAccountState extends State<MyAccountState> {
             ),
           ),
         ),
-        title: isLoggedIn ? const Text("My Account") : null,
+        title: isLoggedIn ? const Text(
+            "My Account",
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+              fontSize: 25,
+            ),
+        )
+            : null,
         actions: isLoggedIn
             ? [
           IconButton(
@@ -75,9 +85,7 @@ class _MyAccountState extends State<MyAccountState> {
           ),
           IconButton(
             onPressed: () {
-              setState(() {
-                isLoggedIn = false;
-              });
+              authProvider.logout(); // Log out the user
             },
             icon: const Icon(Icons.logout),
           ),
@@ -143,7 +151,7 @@ class _MyAccountState extends State<MyAccountState> {
               ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor:
-                    WidgetStateProperty.all(Colors.blue[900])),
+                    MaterialStateProperty.all(Colors.blue[900])),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -190,9 +198,8 @@ class _MyAccountState extends State<MyAccountState> {
     void attemptLogin() {
       if (_usernameController.text == '123' &&
           _passwordController.text == '123') {
-        setState(() {
-          isLoggedIn = true;
-        });
+        final authProvider = Provider.of<AuthProvider>(context, listen: false);
+        authProvider.login(); // Log in the user
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -226,7 +233,7 @@ class _MyAccountState extends State<MyAccountState> {
           ),
           ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: WidgetStateProperty.all(Colors.blue[900]),
+              backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
             ),
             onPressed: () {
               attemptLogin();
@@ -276,163 +283,85 @@ class _MyAccountState extends State<MyAccountState> {
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Column(
-                      children: [
-                        // Editable username field
-                        TextField(
-                          controller: _userNameController,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          style: standardText.copyWith(
-                            fontSize: standardText.fontSize! * 1.4,
-                            fontWeight: FontWeight.bold,
-                          ),
-                          decoration: const InputDecoration(
-                            hintText: 'Enter new username',
-                          ),
+                    children: [
+                      // Editable username field
+                      TextField(
+                        controller: _userNameController,
+                        textAlign: TextAlign.center,
+                        maxLines: 1,
+                        style: standardText.copyWith(
+                          fontSize: standardText.fontSize! * 1.4,
+                          fontWeight: FontWeight.bold,
                         ),
-                        SizedBox(height: screenHeight * 0.015),
-                        // Editable email field
-                        TextField(
-                          controller: _emailController,
-                          textAlign: TextAlign.center,
-                          style: standardText.copyWith(color: Colors.grey),
-                          decoration: const InputDecoration(
-                            hintText: 'Enter new email',
-                          ),
+                        decoration: const InputDecoration(
+                          hintText: 'Enter new username',
                         ),
-                        SizedBox(height: screenHeight * 0.015),
-                        // Short description field
-                        TextField(
-                          controller: _shortDescriptionController,
-                          textAlign: TextAlign.center,
-                          maxLines: 1,
-                          maxLength: 200,
-                          // Allow only one line for the description
-                          style: standardText.copyWith(color: Colors.grey),
-                          decoration: const InputDecoration(
-                            hintText: 'Enter a short description about yourself',
-                          ),
+                      ),
+                      SizedBox(height: screenHeight * 0.015),
+                      // Editable email field
+                      TextField(
+                        controller: _emailController,
+                        textAlign: TextAlign.center,
+                        style: standardText.copyWith(color: Colors.grey),
+                        decoration: const InputDecoration(
+                          hintText: 'Enter new email',
                         ),
-
-                        SizedBox(height: screenHeight * 0.025),
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            // Submit Changes button
-                            ElevatedButton(
-                              style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(Colors.blue[900]),
-                              ),
-                              onPressed: () {
-                                // Update user data and interests in the main _MyAccountState
-                                this.setState(() { // Use 'this' to refer to the _MyAccountState
-                                  userName = _userNameController.text;
-                                  email = _emailController.text;
-                                  shortDescription = _shortDescriptionController.text;
-                                  interests = List.from(selectedInterests); // Update the main interests list
-                                });
-
-                                Navigator.pop(context);
-                              },
-                              child: Text(
-                                textAlign: TextAlign.center,
-                                "Submit Changes",
-                                style: standardText,
-                              ),
-                            ),
-
-                          ],
+                      ),
+                      SizedBox(height: screenHeight * 0.015),
+                      // Editable short description field
+                      TextField(
+                        controller: _shortDescriptionController,
+                        textAlign: TextAlign.center,
+                        maxLines: 3,
+                        style: standardText.copyWith(color: Colors.grey[300]),
+                        decoration: const InputDecoration(
+                          hintText: 'Enter new description',
                         ),
-
-                        SizedBox(height: screenHeight * 0.015),
-                        // Display and edit interests
-                        Wrap(
-                          spacing: 8.0,
-                          runSpacing: 8.0,
-                          children: selectedInterests.map((interestId) {
-                            return Chip(
-                              label: Text(allInterests[interestId]!),
-                              backgroundColor: Colors.blueGrey[300],
-                              onDeleted: () {
-                                // Remove interest from the local selectedInterests list and rebuild the widget
-                                setState(() {
-                                  selectedInterests.remove(interestId);
-                                });
-                              },
-                            );
-                          }).toList(),
-                        ),
-                        SizedBox(height: screenHeight * 0.015),
-
-                        ElevatedButton(
-                          onPressed: () async {
-                            final List<int>? newSelectedInterests = await showDialog<List<int>>(
-                              context: context,
-                              builder: (BuildContext context) {
-                                // Pass the current selectedInterests to the dialog
-                                return _buildInterestSelectionDialog(context, selectedInterests);
-                              },
-                            );
-
-                            // If the user selected new interests, update the local state
-                            if (newSelectedInterests != null && newSelectedInterests.isNotEmpty) {
+                      ),
+                      SizedBox(height: screenHeight * 0.015),
+                      // Interest selection
+                      Wrap(
+                        spacing: 8.0,
+                        runSpacing: 8.0,
+                        children: allInterests.entries.map((entry) {
+                          return ChoiceChip(
+                            label: Text(entry.value),
+                            selected: selectedInterests.contains(entry.key),
+                            onSelected: (bool selected) {
                               setState(() {
-                                selectedInterests = newSelectedInterests;
-                                // Ensure we don't exceed the maximum of 3 interests
-                                selectedInterests = selectedInterests.sublist(0, selectedInterests.length > 3 ? 3 : selectedInterests.length);
+                                if (selected) {
+                                  selectedInterests.add(entry.key);
+                                } else {
+                                  selectedInterests.remove(entry.key);
+                                }
                               });
-                            }
-                          },
-                          child: Text('Add Interest'),
+                            },
+                          );
+                        }).toList(),
+                      ),
+                      SizedBox(height: screenHeight * 0.015),
+                      ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
                         ),
-                        SizedBox(height: screenHeight * 0.015),
-                      ]),
+                        onPressed: () {
+                          setState(() {
+                            userName = _userNameController.text;
+                            email = _emailController.text;
+                            shortDescription = _shortDescriptionController.text;
+                            interests = List.from(selectedInterests);
+                          });
+                          Navigator.pop(context); // Close the dialog
+                        },
+                        child: Text('Save Changes', style: standardText),
+                      ),
+                    ],
+                  ),
                 ),
               ],
             );
-          }),
-    );
-  }
-
-  // Dialog to select interests
-  Widget _buildInterestSelectionDialog(BuildContext context,
-      List<int> dialogSelectedInterests) {
-    return StatefulBuilder(
-      builder: (BuildContext context, StateSetter setState) {
-        return AlertDialog(
-          title: const Text('Select Interests'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: allInterests.entries
-                  .where((entry) => !dialogSelectedInterests.contains(entry.key)) // Use dialogSelectedInterests here
-                  .map((entry) {
-                return CheckboxListTile(
-                  title: Text(entry.value),
-                  value: dialogSelectedInterests.contains(entry.key), // Use dialogSelectedInterests here
-                  onChanged: (bool? value) {
-                    setState(() {
-                      if (value!) {
-                        dialogSelectedInterests.add(entry.key);
-                      } else {
-                        dialogSelectedInterests.remove(entry.key);
-                      }
-                    });
-                  },
-                );
-              }).toList(),
-            ),
-          ),
-          actions: <Widget>[
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(dialogSelectedInterests);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
+          }
+      ),
     );
   }
 }

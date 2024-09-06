@@ -75,7 +75,7 @@ class _MyAccountState extends State<MyAccountState> {
                         margin: EdgeInsets.symmetric(
                             vertical: screenHeight * 0.15,
                             horizontal: screenWidth * 0.1),
-                        child: _buildEditAccountPage(context),
+                        child: _buildEditAccountPage(context, authProvider)
                       ),
                     ),
                   );
@@ -248,120 +248,189 @@ class _MyAccountState extends State<MyAccountState> {
     );
   }
 
-  Widget _buildEditAccountPage(BuildContext context) {
+  Widget _buildEditAccountPage(BuildContext context, AuthProvider authProvider) {
     final TextEditingController _userNameController =
     TextEditingController(text: userName);
     final TextEditingController _emailController =
     TextEditingController(text: email);
     final TextEditingController _shortDescriptionController =
     TextEditingController(text: shortDescription);
-    List<int> selectedInterests = List.from(
-        interests); // Initialize with current interests
+    List<int> selectedInterests = List.from(interests ?? []);
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Edit Account"),
       ),
-      // Wrap the body with StatefulBuilder
       body: StatefulBuilder(
-          builder: (BuildContext context, StateSetter setState) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                SizedBox(height: screenHeight * 0.04),
-                CircleAvatar(
-                  radius: screenHeight * 0.07,
-                  backgroundImage: const AssetImage(
-                      'assets/images/profile_placeholder.png'),
+        builder: (BuildContext context, StateSetter setState) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              SizedBox(height: screenHeight * 0.04),
+              CircleAvatar(
+                radius: screenHeight * 0.07,
+                backgroundImage: const AssetImage('assets/images/profile_placeholder.png'),
+              ),
+              SizedBox(height: screenHeight * 0.022),
+              Container(
+                padding: EdgeInsets.symmetric(
+                    vertical: screenHeight * 0.012,
+                    horizontal: screenWidth * 0.014),
+                decoration: BoxDecoration(
+                  color: Colors.blueGrey,
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                SizedBox(height: screenHeight * 0.022),
-                Container(
-                  padding: EdgeInsets.symmetric(vertical: screenHeight * 0.012,
-                      horizontal: screenWidth * 0.014),
-                  decoration: BoxDecoration(
-                    color: Colors.blueGrey,
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: Column(
-                    children: [
-                      // Editable username field
-                      TextField(
-                        controller: _userNameController,
-                        textAlign: TextAlign.center,
-                        maxLines: 1,
-                        style: standardText.copyWith(
-                          fontSize: standardText.fontSize! * 1.4,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        decoration: const InputDecoration(
-                          hintText: 'Enter new username',
-                        ),
+                child: Column(
+                  children: [
+                    // Editable username field
+                    TextField(
+                      controller: _userNameController,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      style: standardText.copyWith(
+                        fontSize: standardText.fontSize! * 1.4,
+                        fontWeight: FontWeight.bold,
                       ),
-                      SizedBox(height: screenHeight * 0.015),
-                      // Editable email field
-                      TextField(
-                        controller: _emailController,
-                        textAlign: TextAlign.center,
-                        style: standardText.copyWith(color: Colors.grey),
-                        decoration: const InputDecoration(
-                          hintText: 'Enter new email',
-                        ),
+                      decoration: const InputDecoration(
+                        hintText: 'Enter new username',
                       ),
-                      SizedBox(height: screenHeight * 0.015),
-                      // Editable short description field
-                      TextField(
-                        controller: _shortDescriptionController,
-                        textAlign: TextAlign.center,
-                        maxLines: 3,
-                        style: standardText.copyWith(color: Colors.grey[300]),
-                        decoration: const InputDecoration(
-                          hintText: 'Enter new description',
-                        ),
+                    ),
+                    SizedBox(height: screenHeight * 0.015),
+                    // Editable email field
+                    TextField(
+                      controller: _emailController,
+                      textAlign: TextAlign.center,
+                      style: standardText.copyWith(color: Colors.grey),
+                      decoration: const InputDecoration(
+                        hintText: 'Enter new email',
                       ),
-                      SizedBox(height: screenHeight * 0.015),
-                      // Interest selection
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 8.0,
-                        children: allInterests.entries.map((entry) {
-                          return ChoiceChip(
-                            label: Text(entry.value),
-                            selected: selectedInterests.contains(entry.key),
-                            onSelected: (bool selected) {
-                              setState(() {
-                                if (selected) {
-                                  selectedInterests.add(entry.key);
-                                } else {
-                                  selectedInterests.remove(entry.key);
-                                }
-                              });
-                            },
-                          );
-                        }).toList(),
+                    ),
+                    SizedBox(height: screenHeight * 0.015),
+                    // Short description field
+                    TextField(
+                      controller: _shortDescriptionController,
+                      textAlign: TextAlign.center,
+                      maxLines: 1,
+                      maxLength: 200,
+                      style: standardText.copyWith(color: Colors.grey),
+                      decoration: const InputDecoration(
+                        hintText: 'Enter a short description about yourself',
                       ),
-                      SizedBox(height: screenHeight * 0.015),
-                      ElevatedButton(
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
+                    ),
+                    SizedBox(height: screenHeight * 0.025),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        // Submit Changes button
+                        ElevatedButton(
+                          style: ButtonStyle(
+                            backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
+                          ),
+                          onPressed: () {
+                            // Update user data and interests in the AuthenticatorProvider
+                            setState(() {
+                              userName = _userNameController.text;
+                              email = _emailController.text;
+                              shortDescription = _shortDescriptionController.text;
+                              interests = List.from(selectedInterests); // Update the main interests list
+                            });
+
+                            Navigator.pop(context);
+                          },
+                          child: Text(
+                            textAlign: TextAlign.center,
+                            "Submit Changes",
+                            style: standardText,
+                          ),
                         ),
-                        onPressed: () {
+                      ],
+                    ),
+                    SizedBox(height: screenHeight * 0.015),
+                    // Display and edit interests
+                    Wrap(
+                      spacing: 8.0,
+                      runSpacing: 8.0,
+                      children: selectedInterests.map((interestId) {
+                        return Chip(
+                          label: Text(allInterests[interestId]!),
+                          backgroundColor: Colors.blueGrey[300],
+                          onDeleted: () {
+                            // Remove interest from the local selectedInterests list and rebuild the widget
+                            setState(() {
+                              selectedInterests.remove(interestId);
+                            });
+                          },
+                        );
+                      }).toList(),
+                    ),
+                    SizedBox(height: screenHeight * 0.015),
+                    ElevatedButton(
+                      onPressed: () async {
+                        final List<int>? newSelectedInterests = await showDialog<List<int>>(
+                          context: context,
+                          builder: (BuildContext context) {
+                            return _buildInterestSelectionDialog(context, selectedInterests);
+                          },
+                        );
+
+                        if (newSelectedInterests != null && newSelectedInterests.isNotEmpty) {
                           setState(() {
-                            userName = _userNameController.text;
-                            email = _emailController.text;
-                            shortDescription = _shortDescriptionController.text;
-                            interests = List.from(selectedInterests);
+                            selectedInterests = newSelectedInterests;
+                            // Ensure we don't exceed the maximum of 3 interests
+                            selectedInterests = selectedInterests.sublist(0, selectedInterests.length > 3 ? 3 : selectedInterests.length);
                           });
-                          Navigator.pop(context); // Close the dialog
-                        },
-                        child: Text('Save Changes', style: standardText),
-                      ),
-                    ],
-                  ),
+                        }
+                      },
+                      child: Text('Add Interest'),
+                    ),
+                    SizedBox(height: screenHeight * 0.015),
+                  ],
                 ),
-              ],
-            );
-          }
+              ),
+            ],
+          );
+        },
       ),
+    );
+  }
+
+  // Neu hinzugefügte Methode für die Interessen-Auswahl
+  Widget _buildInterestSelectionDialog(BuildContext context, List<int> dialogSelectedInterests) {
+    return StatefulBuilder(
+      builder: (BuildContext context, StateSetter setState) {
+        return AlertDialog(
+          title: const Text('Select Interests'),
+          content: SingleChildScrollView(
+            child: Column(
+              children: allInterests.entries
+                  .where((entry) => !dialogSelectedInterests.contains(entry.key)) // Use dialogSelectedInterests here
+                  .map((entry) {
+                return CheckboxListTile(
+                  title: Text(entry.value),
+                  value: dialogSelectedInterests.contains(entry.key), // Use dialogSelectedInterests here
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value!) {
+                        dialogSelectedInterests.add(entry.key);
+                      } else {
+                        dialogSelectedInterests.remove(entry.key);
+                      }
+                    });
+                  },
+                );
+              }).toList(),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(dialogSelectedInterests);
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }

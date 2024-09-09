@@ -3,14 +3,12 @@ import 'package:provider/provider.dart';
 import 'authentication_provider.dart'; // Importiere den AuthProvider
 import 'current_challenges.dart'; // Importiere die aktuelle Challenge-Seite
 import 'main.dart'; // Importiere die Standard Text-Stile oder andere nützliche Dinge
-
 class MyAccountState extends StatefulWidget {
   const MyAccountState({super.key});
 
   @override
   _MyAccountState createState() => _MyAccountState();
 }
-
 class _MyAccountState extends State<MyAccountState> {
   String userName = 'Danko Rother';
   String email = 'john.doe@example.com';
@@ -59,7 +57,14 @@ class _MyAccountState extends State<MyAccountState> {
               fontSize: 25,
             ),
         )
-            : null,
+            : const Text("Log In",
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 25,
+              ),
+        ),
+
         actions: isLoggedIn
             ? [
           IconButton(
@@ -151,7 +156,7 @@ class _MyAccountState extends State<MyAccountState> {
               ElevatedButton(
                 style: ButtonStyle(
                     backgroundColor:
-                    MaterialStateProperty.all(Colors.blue[900])),
+                    WidgetStateProperty.all(Colors.blue[900])),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -174,7 +179,6 @@ class _MyAccountState extends State<MyAccountState> {
                 ),
               ),
               SizedBox(height: screenHeight * 0.015),
-
               // Display interests
               Wrap(
                 spacing: 8.0,
@@ -204,7 +208,7 @@ class _MyAccountState extends State<MyAccountState> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.pink[700],
-            content: Text('Invalid username or password'),
+            content: const Text('Invalid username or password'),
           ),
         );
       }
@@ -219,7 +223,7 @@ class _MyAccountState extends State<MyAccountState> {
             padding: const EdgeInsets.all(16.0),
             child: TextField(
               controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
+              decoration: InputDecoration(labelText: 'Username' + error),
             ),
           ),
           Padding(
@@ -233,7 +237,7 @@ class _MyAccountState extends State<MyAccountState> {
           ),
           ElevatedButton(
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
+              backgroundColor: WidgetStateProperty.all(Colors.blue[900]),
             ),
             onPressed: () {
               attemptLogin();
@@ -249,21 +253,34 @@ class _MyAccountState extends State<MyAccountState> {
   }
 
   Widget _buildEditAccountPage(BuildContext context, AuthProvider authProvider) {
-    final TextEditingController _userNameController =
+    final TextEditingController userNameController =
     TextEditingController(text: userName);
-    final TextEditingController _emailController =
+    final TextEditingController emailController =
     TextEditingController(text: email);
-    final TextEditingController _shortDescriptionController =
+    final TextEditingController shortDescriptionController =
     TextEditingController(text: shortDescription);
     List<int> selectedInterests = List.from(interests ?? []);
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.blueGrey.shade400, Colors.pink],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+          ),
+        ),
         title: const Text("Edit Account"),
       ),
       body: StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
-          return Column(
+          return Padding(
+            padding: EdgeInsets.symmetric(horizontal: screenWidth*0.03),
+            child: Column (
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               SizedBox(height: screenHeight * 0.04),
@@ -284,7 +301,7 @@ class _MyAccountState extends State<MyAccountState> {
                   children: [
                     // Editable username field
                     TextField(
-                      controller: _userNameController,
+                      controller: userNameController,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       style: standardText.copyWith(
@@ -298,23 +315,31 @@ class _MyAccountState extends State<MyAccountState> {
                     SizedBox(height: screenHeight * 0.015),
                     // Editable email field
                     TextField(
-                      controller: _emailController,
+                      controller: emailController,
                       textAlign: TextAlign.center,
-                      style: standardText.copyWith(color: Colors.grey),
-                      decoration: const InputDecoration(
+                      style: standardText.copyWith(
+                        fontWeight: FontWeight.normal,
+                        color: Colors.grey[800]
+                      ),
+                      decoration: InputDecoration(
                         hintText: 'Enter new email',
+                        filled: true,
+                        fillColor: Colors.blueGrey[300]
                       ),
                     ),
-                    SizedBox(height: screenHeight * 0.015),
+                    SizedBox(height: screenHeight * 0.001),
                     // Short description field
                     TextField(
-                      controller: _shortDescriptionController,
+                      controller: shortDescriptionController,
                       textAlign: TextAlign.center,
                       maxLines: 1,
                       maxLength: 200,
-                      style: standardText.copyWith(color: Colors.grey),
-                      decoration: const InputDecoration(
+                      style: standardText.copyWith(
+                          fontWeight: FontWeight.normal),
+                      decoration: InputDecoration(
                         hintText: 'Enter a short description about yourself',
+                        filled: true,
+                        fillColor: Colors.blueGrey[300]
                       ),
                     ),
                     SizedBox(height: screenHeight * 0.025),
@@ -324,14 +349,14 @@ class _MyAccountState extends State<MyAccountState> {
                         // Submit Changes button
                         ElevatedButton(
                           style: ButtonStyle(
-                            backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
+                            backgroundColor: WidgetStateProperty.all(Colors.blue[900]),
                           ),
                           onPressed: () {
                             // Update user data and interests in the AuthenticatorProvider
                             setState(() {
-                              userName = _userNameController.text;
-                              email = _emailController.text;
-                              shortDescription = _shortDescriptionController.text;
+                              userName = userNameController.text;
+                              email = emailController.text;
+                              shortDescription = shortDescriptionController.text;
                               interests = List.from(selectedInterests); // Update the main interests list
                             });
 
@@ -381,13 +406,14 @@ class _MyAccountState extends State<MyAccountState> {
                           });
                         }
                       },
-                      child: Text('Add Interest'),
+                      child: const Text('Add Interest'),
                     ),
                     SizedBox(height: screenHeight * 0.015),
                   ],
                 ),
               ),
             ],
+          )
           );
         },
       ),

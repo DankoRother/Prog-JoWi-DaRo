@@ -146,7 +146,7 @@ class CreateChallengeState extends State<CreateChallenge> {
                             fontStyle: FontStyle.italic,
                             fontSize: screenHeight * 0.02, // Einheitliche Schriftgröße
                           ),*/
-                          border: OutlineInputBorder(),
+                          border: const OutlineInputBorder(),
                           fillColor: Colors.pink[700],
                           filled: true,
                         ),
@@ -212,7 +212,7 @@ class CreateChallengeState extends State<CreateChallenge> {
                         },
                       ),
                     ),
-                    SizedBox(height: 20), // Abstand zwischen dem letzten Feld und dem Button
+                    const SizedBox(height: 20), // Abstand zwischen dem letzten Feld und dem Button
                   ],
                 ),
               ),
@@ -321,14 +321,14 @@ class CreateChallengeState extends State<CreateChallenge> {
                                   Row(
                                     children: [
                                       Icon(Icons.sports_kabaddi, color: Colors.blue.shade900), // Example icon for "Obstacle"
-                                      SizedBox(width: 10), // Spacing between icon and text
-                                      Text(
+                                      const SizedBox(width: 10), // Spacing between icon and text
+                                      const Text(
                                         'Obstacle',
                                         style: TextStyle(fontSize: 20), // Text style
                                       ),
                                     ],
                                   ),
-                                  Text(
+                                  const Text(
                                       '(Objective?)',
                                       style: TextStyle(
                                         fontSize: 10,
@@ -463,7 +463,7 @@ class CreateChallengeState extends State<CreateChallenge> {
                                     width: 200,
                                     child: TextField(
                                       controller: _obstacle,
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
                                         hintText: 'Enter obstacle',
                                       ),
@@ -630,9 +630,9 @@ class CreateChallengeState extends State<CreateChallenge> {
   }
 
   Widget _buildLoginPrompt() {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [

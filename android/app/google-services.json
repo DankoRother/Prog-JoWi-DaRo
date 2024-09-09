@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "313491771538",
+    "project_id": "challengr-database",
+    "storage_bucket": "challengr-database.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:313491771538:android:117a5ffe9fd72780f0964b",
+        "android_client_info": {
+          "package_name": "com.challengrapp.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBIDjKG-LY6P6m_xH6AnOtl95DTA8YYKlU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

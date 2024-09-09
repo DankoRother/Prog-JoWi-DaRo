@@ -42,7 +42,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
               alignment: Alignment.center,
               child: Text(
                 isLoggedIn ? 'Your current Challenges' : 'Current Challenges', // Titel abhängig vom Anmeldestatus
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
@@ -320,9 +320,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
   // Widget für nicht eingeloggte Benutzer
   Widget _buildLoginPromptPage() {
-    return Center(
+    return const Center(
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: EdgeInsets.all(16.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[

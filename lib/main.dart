@@ -1,24 +1,53 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'authentication_provider.dart';
-
-import 'settings.dart';
 import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
 import 'my_account.dart';
 import 'chat.dart';
-
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'firebase_options.dart';
+String error = "abc";
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options:
+    DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
+  // Get all documents
+  FirebaseFirestore.instance
+      .collection('userbase')
+      .get()
+      .then((QuerySnapshot querySnapshot) {
+    for (var doc in querySnapshot.docs) {
+      print(doc.data());
+
+  }
+  });
+  try {
+    final userCollection = FirebaseFirestore.instance.collection('userbase');
+    await userCollection.add({
+      'username': 'testuser',
+      'description': 'test',
+      'email': 'testuser@test.com',
+      'password': 'testtest',
+    });
+      } catch (e) {
+
+    error = " $e";
+  }
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -60,12 +89,12 @@ late TextStyle standardText;  // Standard TextStyle: Can be overwritten with "st
 class MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 2;
 
-  List<Widget> _pages = [
-    YourChallenges(),
-    Placeholder(),
-    CreateChallenge(),
-    CurrentChallenges(),
-    MyAccountState()
+  final List<Widget> _pages = [
+    const YourChallenges(),
+    const Placeholder(),
+    const CreateChallenge(),
+    const CurrentChallenges(),
+    const MyAccountState()
   ];
 
   void navigateToPage(int index) {

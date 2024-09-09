@@ -8,11 +8,11 @@ class ChallengeCreatedConfirmation extends StatefulWidget {
   final String data;
 
   const ChallengeCreatedConfirmation({
-    Key? key,
+    super.key,
     required this.duration,
     required this.onNavigate,
     required this.data,
-  }) : super(key: key);
+  });
 
   @override
   _ChallengeCreatedConfirmationState createState() => _ChallengeCreatedConfirmationState();

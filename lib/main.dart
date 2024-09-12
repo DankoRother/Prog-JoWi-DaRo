@@ -37,7 +37,7 @@ void main() async {
   try {
     final userCollection = FirebaseFirestore.instance.collection('userbase');
     await userCollection.add({
-      'username': 'testuser',
+      'username': 'johannes',
       'description': 'test',
       'email': 'testuser@test.com',
       'password': 'testtest',
@@ -47,6 +47,8 @@ void main() async {
     error = " $e";
   }
 }
+
+
 
 
 class MyApp extends StatelessWidget {

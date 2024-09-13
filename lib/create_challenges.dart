@@ -600,6 +600,7 @@ class CreateChallengeState extends State<CreateChallenge> {
                                   width: 200,
                                   child: TextField(
                                     controller: _obstacle,
+                                    maxLength: 20,
                                     decoration: const InputDecoration(
                                       border: OutlineInputBorder(),
                                       hintText: 'Enter obstacle',
@@ -765,7 +766,7 @@ class CreateChallengeState extends State<CreateChallenge> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              'Please log in to create new Challenges! \n Hier könnte deine Werbung stehen.',
+              'Please log in to create new Challenges! \n Go to Accountpage to log in',
               style: TextStyle(
                 fontSize: 20,
                 color: Colors.black54,

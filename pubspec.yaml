@@ -36,6 +36,7 @@ dependencies:
   cloud_firestore: ^5.4.0
 
 
+
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.6
@@ -52,14 +53,20 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
 
+  flutter_launcher_icons: ^0.10.0
+
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
-
+flutter_icons:
+  android: true
+  ios: true
+  image_path: assets/launcher.icon.png
 # The following section is specific to Flutter packages.
 flutter:
   assets:
     - assets/background_splasherscreen.png
     - assets/account_background.png
+    - assets/launcher_icon.png
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

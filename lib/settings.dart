@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'date_notifier.dart'; // Achten Sie darauf, dass dieser Import korrekt ist
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -17,7 +18,7 @@ class SettingsPage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.close, color: Colors.white,),
+            icon: const Icon(Icons.close, color: Colors.white),
             iconSize: 30,
             onPressed: () {
               Navigator.of(context).pop();
@@ -35,9 +36,94 @@ class SettingsPage extends StatelessWidget {
         ),
         automaticallyImplyLeading: false, // Entfernt den Zurückpfeil
       ),
-      body: const Center(
-        child: Text('Choose your Language etc.'),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Zeige das simulierte Datum an
+          ValueListenableBuilder<DateTime>(
+            valueListenable: simulatedDate,
+            builder: (context, value, child) {
+              return Text(
+                'Current Date: ${value.toLocal()}',
+                style: const
+                TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  fontStyle: FontStyle.italic,
+                  color: Colors.white
+                ),
+              );
+            },
+          ),
+          const SizedBox(height: 20),
+          // Buttons zum Ändern des Datums
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () => _changeDate(-1),
+                child: const Text('- DAY'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue[900],
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+              ElevatedButton(
+                onPressed: () => _changeDate(1),
+                child: const Text('+ DAY'),
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue[900],
+                  padding: const EdgeInsets.symmetric(
+                      horizontal: 16.0, vertical: 12.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: _resetToCurrentDate,
+            child: const Text('CURRENT DATE'),
+            style: ElevatedButton.styleFrom(
+              foregroundColor: Colors.white,
+              backgroundColor: Colors.pink,
+              padding: const EdgeInsets.symmetric(
+                  horizontal: 16.0, vertical: 12.0),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(25),
+              ),
+            ),
+          ),
+          const SizedBox(height: 40),
+          const Center(
+            child: Text(
+                'Choose your Language etc.',
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  // Funktion zum Ändern des Datums
+  void _changeDate(int days) {
+    simulatedDate.value = simulatedDate.value.add(Duration(days: days));
+  }
+
+  // Funktion zum Zurücksetzen auf das aktuelle Datum
+  void _resetToCurrentDate() {
+    simulatedDate.value = DateTime.now();
   }
 }

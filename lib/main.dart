@@ -8,6 +8,7 @@ import 'my_account.dart';
 import 'chat.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
 String error = "abc";
 void main() async {
@@ -16,6 +17,12 @@ void main() async {
     options:
     DefaultFirebaseOptions.currentPlatform,
   );
+  // Web-Token holen
+  /*FirebaseMessaging messaging = FirebaseMessaging.instance;
+  String? token = await messaging.getToken();
+
+  print("Firebase Messaging Token: $token");*/
+
   runApp(
     MultiProvider(
       providers: [

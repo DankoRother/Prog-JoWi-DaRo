@@ -192,7 +192,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                         PageRouteBuilder(
                           opaque: false,
                           pageBuilder: (BuildContext context, _, __) => EditChallenge(
-                            //challengeId: challenge['id'], // Übergebe die Challenge-ID, wenn nötig
+                            challengeId: challenge['id'], // Richtiges Komma statt Strichpunkt
+                            challengeProgess: challenge['daysPassed'], // Übergebe die Challenge-ID, wenn nötig
                           ),
                         ),
                       );

@@ -18,6 +18,7 @@ class CurrentChallenges extends StatefulWidget {
 
 class _CurrentChallengesState extends State<CurrentChallenges> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore-Instanz
+  //bool _isExpanded = false;
 
   late Future<List<Map<String, dynamic>>> _challengesFuture;
 
@@ -47,10 +48,36 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       final frequency = data['frequency'] as String;
       final obstacle = data['obstacle'] as String;
       final title = data['title'] as String;
+      final successfulDays = (data['successfulDays'] ?? 0) as int;
 
       final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
-      final int daysPassed = currentDate.difference(createdAtDate).inDays;
+      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1;
 
+      final double _successRate = daysPassed > 0 ? successfulDays / daysPassed : 0;
+
+      String rank;
+      Color rankColor;
+      Icon rankIcon;
+
+      if (_successRate >= 0.8) {
+        rank = 'Gold';
+        rankColor = Colors.amber; // Goldene Farbe
+        rankIcon = Icon(Icons.star, color: rankColor, size: 30,); // Star-Icon
+      } else if (_successRate >= 0.75) {
+        rank = 'Silver';
+        rankColor = Colors.grey.shade400; // Silberne Farbe
+        rankIcon = Icon(Icons.star_half, color: rankColor, size: 28,); // Halber Stern
+      } else if (_successRate >= 0.5) {
+        rank = 'Bronze';
+        rankColor = Colors.brown; // Bronzefarbene Farbe
+        rankIcon = Icon(Icons.emoji_events, color: rankColor, size: 26,); // Trophäen-Icon
+      } else {
+        rank = 'Participant';
+        rankColor = Colors.black54; // Neutrale Farbe
+        rankIcon = Icon(Icons.person, color: rankColor, size: 24,); // Benutzer-Icon
+      }
+
+      final currentRank = rank; //rank is not safed in database because in real life there´s no opportunity to manipulate the date and therefore no need to safe the rank in the database
 
       challenges.add({
         'id': doc.id, // Document ID zur Identifikation der Challenge
@@ -61,6 +88,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         'obstacle': obstacle,
         'createdAt': createdAt,
         'daysPassed': daysPassed, // Verstrichene Tage hinzufügen
+        'currentRank': currentRank,
+        'rankColor': rankColor, // Hinzufügen von Farbe
+        'rankIcon': rankIcon,   // Hinzufügen von Icon
       });
     }
     return challenges;
@@ -187,7 +217,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                   final challenge = challenges[index];
                   return InkWell(
                     onTap: () {
-                      Navigator.push(
+                      /*Navigator.push(
                         context,
                         PageRouteBuilder(
                           opaque: false,
@@ -196,24 +226,23 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                             challengeProgess: challenge['daysPassed'], // Übergebe die Challenge-ID, wenn nötig
                           ),
                         ),
-                      );
+                      );*/
                     },
                     child: Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.symmetric(vertical: 10.0),
-                      width: 300,
-                      height: 280,
                       decoration: BoxDecoration(
-                        gradient: const LinearGradient(
-                          colors: [Colors.pink, Colors.white],
+                        color: Colors.blueGrey.shade600,
+                        /*gradient: const LinearGradient(
+                          colors: [Colors.pink, Colors.blueGrey],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
+                        ),*/
+                        border: Border.all(
+                          color: challenges[index]['rankColor'],
+                          width: 3, // Dicke der Umrandung
                         ),
                         borderRadius: BorderRadius.circular(15),
-                        border: Border.all(
-                          color: Colors.black54,
-                          width: 3,
-                        ),
                       ),
                       child: Stack(
                         children: [
@@ -221,11 +250,11 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0, right: 15.0),
                             child: Column(
                               children: [
-                                Text(
+                                /*Text(
                                   challenge['title'],
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 20,
+                                    fontSize: 25,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
@@ -353,15 +382,21 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                   color: Colors.blueGrey[50],
                                                   borderRadius: BorderRadius.circular(10),
                                                   border: Border.all(
-                                                    color: Colors.black54,
+                                                    color: challenges[index]['rankColor'], // Verwende die Rank-Farbe
                                                     width: 3,
                                                   ),
                                                 ),
-                                                child: Text(
-                                                  'first Place', // TODO: Logik für Rang fehlt
-                                                  style: const TextStyle(
-                                                    fontSize: 20,
-                                                  ),
+                                                child: Row(
+                                                  children: [
+                                                    challenges[index]['rankIcon'], // Verwende das Rank-Icon
+                                                    const SizedBox(width: 10),
+                                                    Text(
+                                                      challenges[index]['currentRank'], // Rank-Text
+                                                      style: const TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
                                             ],
@@ -370,19 +405,243 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                       ),
                                     ],
                                   ),
+                                ),*/
+                                ExpansionTile(
+                                  title: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        challenge['title'],
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 10),
+                                      ElevatedButton.icon(onPressed: () {
+                                        Navigator.of(context).push(
+                                          PageRouteBuilder(
+                                            opaque: false,
+                                            pageBuilder: (BuildContext context, _, __) => EditChallenge(
+                                              challengeId: challenge['id'], // Übergebe die Challenge-ID
+                                              challengeProgess: challenge['daysPassed'], // Übergebe den Fortschritt
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                        icon: const Icon(
+                                          Icons.fitness_center_sharp,
+                                          size: 25,
+                                        ),
+                                        label: const Text(
+                                            'Participate',
+                                            style: TextStyle(
+                                              fontSize: 15,
+                                            )
+                                        ),
+                                        style: ElevatedButton.styleFrom(
+                                          foregroundColor: Colors.white,
+                                          backgroundColor: Colors.pink,
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16.0, vertical: 12.0),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  /*initiallyExpanded: _isExpanded, // Setzt den initialen Zustand
+                                  onExpansionChanged: (bool expanded) {
+                                    setState(() {
+                                      _isExpanded = expanded; // Speichert, ob es expanded ist
+                                    });
+                                  },*/
+                                  children: [
+                                    Container(
+                                      child: Column(
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blueGrey[50],
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: Colors.blue.shade900,
+                                                        width: 3,
+                                                      ),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(Icons.timeline_sharp, color: Colors.blue.shade900),
+                                                            const SizedBox(width: 10),
+                                                            const Text(
+                                                              'Progress',
+                                                              style: TextStyle(fontSize: 20),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blueGrey[50],
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: Colors.pink,
+                                                        width: 3,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      'Obstacle',
+                                                      style: const TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 5),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blueGrey[50],
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: Colors.black54,
+                                                        width: 3,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      'Rank', // Hier sollte die Rang-Logik implementiert werden
+                                                      style: const TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              Column(
+                                                crossAxisAlignment: CrossAxisAlignment.end,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blueGrey[50],
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: Colors.blue.shade900,
+                                                        width: 3,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      '${challenge['daysPassed']} days/ ${challenge['finalDuration']} days',
+                                                      style: const TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 7),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blueGrey[50],
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: Colors.pink,
+                                                        width: 3,
+                                                      ),
+                                                    ),
+                                                    child: Text(
+                                                      challenge['obstacle'],
+                                                      style: const TextStyle(
+                                                        fontSize: 20,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 7),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.blueGrey[50],
+                                                      borderRadius: BorderRadius.circular(10),
+                                                      border: Border.all(
+                                                        color: challenges[index]['rankColor'], // Verwende die Rank-Farbe
+                                                        width: 3,
+                                                      ),
+                                                    ),
+                                                    child: Row(
+                                                      children: [
+                                                        challenges[index]['rankIcon'], // Verwende das Rank-Icon
+                                                        const SizedBox(width: 10),
+                                                        Text(
+                                                          challenges[index]['currentRank'], // Rank-Text
+                                                          style: const TextStyle(
+                                                            fontSize: 20,
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ]
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 20),
+                                          // Neue Spalte für die Buttons
+                                          Column(
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                challenge['description'],
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 15,
+                                                ),
+                                              ),
+                                              Text(
+                                                'Created at: ${challenge['createdAt']}',
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10,
+                                                ),
+                                              ),
+                                              const SizedBox(height: 10), // Abstand zwischen den Buttons
+                                              IconButton(
+                                                icon: const Icon(
+                                                    Icons.delete,
+                                                    color: Colors.white,
+                                                    size: 25,
+                                                ),
+                                                onPressed: () {
+                                                  _deleteChallenge(challenge['id']);
+                                                  setState(() {});
+                                                },
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ],
-                            ),
-                          ),
-                          Positioned(
-                            top: 6,
-                            right: 10,
-                            child: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.black54),
-                              onPressed: () {
-                                _deleteChallenge(challenge['id']);
-                                setState(() {});
-                              },
                             ),
                           ),
                         ],

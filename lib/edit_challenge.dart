@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'date_notifier.dart';
 
 
@@ -51,7 +50,6 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
   }
 
   Future<void> _loadEditableDates() async {
-    final today = simulatedDate.value.toUtc().toLocal().toString().split(' ')[0];
     final docRef = _firestore.collection('challenge').doc(widget.challengeId);
     final doc = await docRef.get();
 
@@ -105,7 +103,6 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
       final doc = await docRef.get();
 
       if (doc.exists) {
-        final data = doc.data()!;
         await docRef.update({
           success ? 'successfulDays' : 'failedDays': FieldValue.increment(1),
           'lastUpdated': Timestamp.now(),

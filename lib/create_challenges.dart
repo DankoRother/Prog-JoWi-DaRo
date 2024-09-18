@@ -20,7 +20,7 @@ class CreateChallenge extends StatefulWidget {
 class CreateChallengeState extends State<CreateChallenge> {
   final _formKey = GlobalKey<FormState>();
   int _currentStep = 0;
-  int _duration = 30;
+  int _duration = 7;
   String? _selectedUnit = 'D';
   String? _selectedFrequency = 'daily';
   final TextEditingController _title = TextEditingController();
@@ -32,7 +32,7 @@ class CreateChallengeState extends State<CreateChallenge> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.pink,
-          content: Text('Bitte alle Felder ausfüllen'),
+          content: Text('Do not forget the obstacle of your challenge'),
         ),
       );
       return false; // Rückgabewert anpassen
@@ -226,6 +226,7 @@ class CreateChallengeState extends State<CreateChallenge> {
                     // Einheitliche Höhe für beide Felder
                     child: TextFormField(
                       controller: _title,
+                      maxLength: 50,
                       textAlignVertical: TextAlignVertical.center,
                       style: standardText.copyWith(
                         color: Colors.white,
@@ -242,14 +243,14 @@ class CreateChallengeState extends State<CreateChallenge> {
                           color: Colors.white,
                           size: screenHeight * 0.02, // Einheitliche Icon-Größe
                         ),
-                        /*hintText: 'Give your Challenge a name',
+                        hintText: 'Give your Challenge a name',
                           hintStyle: standardText.copyWith(
                             color: Colors.white,
-                            fontStyle: FontStyle.italic,
-                            fontSize: screenHeight * 0.02, // Einheitliche Schriftgröße
-                          ),*/
+                            fontSize: screenHeight * 0.03, // Einheitliche Schriftgröße
+                            fontStyle: FontStyle.italic
+                          ),
                         border: const OutlineInputBorder(),
-                        fillColor: Colors.pink[700],
+                        fillColor: Colors.pink,
                         filled: true,
                       ),
                       validator: (value) {
@@ -294,18 +295,18 @@ class CreateChallengeState extends State<CreateChallenge> {
                           color: Colors.white,
                           size: screenHeight * 0.02, // Einheitliche Icon-Größe
                         ),
-                        /*hintText: 'Describe the purpose of your challenge',
-                          hintStyle: TextStyle(
+                        hintText: 'What is the purpose of this Challenge?',
+                        hintStyle: standardText.copyWith(
                             color: Colors.white,
-                            fontStyle: FontStyle.italic,
-                            fontSize: screenHeight * 0.02, // Einheitliche Schriftgröße
-                          ),*/
+                            fontSize: screenHeight * 0.03, // Einheitliche Schriftgröße
+                            fontStyle: FontStyle.italic
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(screenWidth *
                               0.01),
                           borderSide: const BorderSide(color: Colors.black54),
                         ),
-                        fillColor: Colors.pink[700],
+                        fillColor: Colors.pink,
                         filled: true,
                       ),
                       keyboardType: TextInputType.multiline,

@@ -1,7 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
+import 'date_notifier.dart';
+
 
 class EditChallenge extends StatefulWidget {
-  const EditChallenge({super.key});
+  final String challengeId;// Challenge-ID als Parameter
+  final int challengeProgess;
+
+  const EditChallenge({super.key, required this.challengeId, required this.challengeProgess});
 
   @override
   _EditChallengeState createState() => _EditChallengeState();
@@ -9,11 +16,16 @@ class EditChallenge extends StatefulWidget {
 
 class _EditChallengeState extends State<EditChallenge> with SingleTickerProviderStateMixin {
   final double _opacity = 1.0;
-  int day = 10;
-
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
   IconData _currentIcon = Icons.thumb_up_off_alt_outlined;
+  late int _challengeProgress;
+
+  // Firestore-Instanz
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Set für bereits bearbeitete Daten
+  Set<String> _editableDates = Set();
 
   @override
   void initState() {
@@ -32,6 +44,24 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
     )..addListener(() {
       setState(() {});
     });
+
+    _loadEditableDates();
+    // Initialisiere challengeProgress
+    _challengeProgress = widget.challengeProgess;
+  }
+
+  Future<void> _loadEditableDates() async {
+    final today = simulatedDate.value.toUtc().toLocal().toString().split(' ')[0];
+    final docRef = _firestore.collection('challenge').doc(widget.challengeId);
+    final doc = await docRef.get();
+
+    if (doc.exists) {
+      final data = doc.data()!;
+      final editableDatesList = List<String>.from(data['editableDates'] ?? []);
+      setState(() {
+        _editableDates = Set.from(editableDatesList);
+      });
+    }
   }
 
   @override
@@ -53,14 +83,49 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
       });
     });
 
+    // Speichern der Daten in Firestore, nur wenn der Tag unterschiedlich ist
+    _checkAndUpdateChallengeResults(icon == Icons.sentiment_satisfied_alt);
+
     // Warte 2 Sekunden, bevor die Seite geschlossen wird
     Future.delayed(const Duration(seconds: 3), () {
       Navigator.of(context).pop(); // Schließe die Seite und navigiere zurück
     });
   }
 
+  Future<void> _checkAndUpdateChallengeResults(bool success) async {
+    final today = simulatedDate.value.toUtc().toLocal().toString().split(' ')[0];
+
+    if (_editableDates.contains(today)) {
+      print('Bereits heute aktualisiert!');
+      return;
+    }
+
+    try {
+      final docRef = _firestore.collection('challenge').doc(widget.challengeId);
+      final doc = await docRef.get();
+
+      if (doc.exists) {
+        final data = doc.data()!;
+        await docRef.update({
+          success ? 'successfulDays' : 'failedDays': FieldValue.increment(1),
+          'lastUpdated': Timestamp.now(),
+          'editableDates': FieldValue.arrayUnion([today]),
+        });
+        setState(() {
+          _editableDates.add(today);
+        });
+        print('Ergebnis erfolgreich aktualisiert!');
+      }
+    } catch (e) {
+      print('Fehler beim Aktualisieren: $e');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    final today = simulatedDate.value.toUtc().toLocal().toString().split(' ')[0];
+    final isDateEditable = !_editableDates.contains(today);
+
     return Scaffold(
       backgroundColor: Colors.black.withOpacity(0.5),
       body: Stack(
@@ -84,7 +149,7 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            'Day $day',
+                            'Day ${_challengeProgress}',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 25,
@@ -92,7 +157,7 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
                           ),
                           const SizedBox(height: 20),
                           Text(
-                            'Have you reached your obstacle at Day $day?',
+                            'Have you reached your obstacle at Day ${_challengeProgress}?',
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 15,
@@ -105,9 +170,9 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               ElevatedButton.icon(
-                                onPressed: () {
+                                onPressed: isDateEditable ? () {
                                   _showSmileyAnimation(Icons.sentiment_satisfied_alt);
-                                },
+                                } : null,
                                 label: const Text(
                                   'Yes',
                                   style: TextStyle(
@@ -117,9 +182,9 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
                                 icon: const Icon(Icons.thumb_up_off_alt_outlined),
                               ),
                               ElevatedButton.icon(
-                                onPressed: () {
+                                onPressed: isDateEditable ? () {
                                   _showSmileyAnimation(Icons.sentiment_dissatisfied);
-                                },
+                                } : null,
                                 label: const Text(
                                   'No',
                                   style: TextStyle(
@@ -130,11 +195,9 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
                               ),
                             ],
                           ),
-                          // Entfernen der Textanzeige für die Response-Nachricht
                         ],
                       ),
                     ),
-                    // Sanfte Fade-In und Fade-Out Animation für das Icon
                     if (_currentIcon != Icons.thumb_up_off_alt_outlined && _currentIcon != Icons.thumb_down_alt_outlined)
                       Center(
                         child: FadeTransition(
@@ -144,7 +207,7 @@ class _EditChallengeState extends State<EditChallenge> with SingleTickerProvider
                             color: _currentIcon == Icons.sentiment_satisfied_alt
                                 ? Colors.pink
                                 : Colors.pink,
-                            size: 250, // Größeres Icon für bessere Sichtbarkeit
+                            size: 250,
                           ),
                         ),
                       ),

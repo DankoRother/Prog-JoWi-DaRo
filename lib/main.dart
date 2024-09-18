@@ -4,7 +4,7 @@ import 'authentication_provider.dart';
 import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
-import 'my_account.dart';
+import 'accountController.dart';
 import 'chat.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -13,6 +13,7 @@ import 'firebase_options.dart';
 String error = "abc";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options:
     DefaultFirebaseOptions.currentPlatform,
@@ -26,7 +27,7 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (context) => AuthProvider()),
       ],
       child: const MyApp(),
     ),

@@ -1,13 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:prog2_jowi_daro/logInPrompt.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';// Importiere Provider für AuthProvider
-
 import 'settings.dart';
 import 'edit_challenge.dart';
 import 'authentication_provider.dart';// Importiere AuthProvider
 import 'main.dart';
 import 'date_notifier.dart';
+import 'logInPrompt.dart';
 
 class CurrentChallenges extends StatefulWidget {
   const CurrentChallenges({super.key});
@@ -48,9 +49,10 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       final obstacle = data['obstacle'] as String;
       final title = data['title'] as String;
       final successfulDays = (data['successfulDays'] ?? 0) as int;
+      final failedDays = (data['failedDays'] ?? 0) as int;
 
       final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
-      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1;
+      final int daysPassed = currentDate.difference(createdAtDate).inDays; //TODO: macht das sinn mit +1 oder lieber challenge bei tag 0 anfangen lassen
 
       final int adjustedDaysPassed = daysPassed > finalDuration ? finalDuration : daysPassed;
 
@@ -92,6 +94,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         'currentRank': currentRank,
         'rankColor': rankColor, // Hinzufügen von Farbe
         'rankIcon': rankIcon,   // Hinzufügen von Icon
+        'successfulDays': successfulDays,
+        'failedDays': failedDays,
       });
     }
     return challenges;
@@ -179,7 +183,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         )
             : null,
       ),
-      body: isLoggedIn ? _buildChallengesPage() : _buildLoginPromptPage(),
+      body: isLoggedIn ? _buildChallengesPage() : LogInPrompt(),
     );
   }
 
@@ -396,7 +400,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                       ),
                                                     ),
                                                     child: Text(
-                                                      '${challenge['daysPassed']} / ${challenge['finalDuration']} DAY',
+                                                      '${challenge['daysPassed']} / ${challenge['finalDuration']} Days',
                                                       style: const TextStyle(
                                                         fontSize: 20,
                                                       ),
@@ -450,11 +454,68 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                               ),
                                             ],
                                           ),
-                                          const SizedBox(height: 10),
+                                          const SizedBox(height: 15),
                                           // Neue Spalte für die Buttons
                                           Column(
-                                            crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
+                                                Row(
+                                                mainAxisAlignment: MainAxisAlignment.center,
+                                                crossAxisAlignment: CrossAxisAlignment.center,
+                                                children: [
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            const Text(
+                                                              'Days passed:',
+                                                              style: TextStyle(fontSize: 20),
+                                                            ),
+                                                            const SizedBox(width: 10),
+                                                            Text(
+                                                              challenge['successfulDays'].toString(),
+                                                              style: TextStyle(fontSize: 20),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                  const SizedBox(width: 15),
+                                                  Container(
+                                                    padding: const EdgeInsets.all(10),
+                                                    margin: const EdgeInsets.symmetric(vertical: 5),
+                                                    decoration: BoxDecoration(
+                                                      color: Colors.white,
+                                                      borderRadius: BorderRadius.circular(10),
+                                                    ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            const Text(
+                                                              'Days failed:',
+                                                              style: TextStyle(fontSize: 20),
+                                                            ),
+                                                            const SizedBox(width: 10),
+                                                            Text(
+                                                              challenge['failedDays'].toString(),
+                                                              style: TextStyle(fontSize: 20),
+                                                            )
+                                                          ],
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                              const SizedBox(height: 15),
                                               Container(
                                                 padding: const EdgeInsets.all(10),
                                                 margin: const EdgeInsets.symmetric(vertical: 5),
@@ -509,29 +570,6 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
           },
         );
       },
-    );
-  }
-
-  // Widget für nicht eingeloggte Benutzer
-  Widget _buildLoginPromptPage() {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Please log in to see your Challenges! \n Go to Accountpage to log in',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.black54,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

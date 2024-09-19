@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //import 'package:flutter/src/material/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import 'authentication_provider.dart';
 import 'settings.dart';
 import 'current_challenges.dart';
 import 'main.dart';
 import 'challenge_created_confirmation.dart';
 import 'addfriend_createchallenge.dart';
+import 'logInPrompt.dart';
 
 class CreateChallenge extends StatefulWidget {
   const CreateChallenge({super.key});
@@ -32,7 +32,7 @@ class CreateChallengeState extends State<CreateChallenge> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           backgroundColor: Colors.pink,
-          content: Text('Do not forget the obstacle of your challenge'),
+          content: Text('Do not forget to add an obstacle in your challenge'),
         ),
       );
       return false; // Rückgabewert anpassen
@@ -136,7 +136,7 @@ class CreateChallengeState extends State<CreateChallenge> {
               child: Text(
                 isLoggedIn
                     ? 'Create a new Challenge'
-                    : 'Create a new Challenge',
+                    : 'New Challenges',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -169,7 +169,7 @@ class CreateChallengeState extends State<CreateChallenge> {
           ),
         ),
       ),
-      body: isLoggedIn ? _buildChallengeForm() : _buildLoginPrompt(),
+      body: isLoggedIn ? _buildChallengeForm() : LogInPrompt(),
     );
   }
 
@@ -575,8 +575,17 @@ class CreateChallengeState extends State<CreateChallenge> {
                                     }).toList(),
                                     onChanged: (newValue) {
                                       setState(() {
-                                        _selectedFrequency =
-                                            newValue; // Aktualisiere den Wert im State
+                                        _selectedFrequency = newValue; // Aktualisiere den Wert im State
+
+                                        // Überprüfe die Auswahl und zeige eine Snackbar, wenn erforderlich
+                                        if (newValue == 'weekly' || newValue == 'biweekly') {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Please note that $newValue is mocked and does not work. (You can edit the challenge daily.)'),
+                                              duration: Duration(seconds: 4), // Dauer der Snackbar
+                                            ),
+                                          );
+                                        }
                                       });
                                     },
                                     hint: const Text('Select intensity'),
@@ -756,28 +765,6 @@ class CreateChallengeState extends State<CreateChallenge> {
           ],
         );
       },
-    );
-  }
-
-  Widget _buildLoginPrompt() {
-    return const Center(
-      child: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Please log in to create new Challenges! \n Go to Accountpage to log in',
-              style: TextStyle(
-                fontSize: 20,
-                color: Colors.black54,
-                fontStyle: FontStyle.italic,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

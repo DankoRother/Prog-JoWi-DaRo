@@ -35,6 +35,8 @@ dependencies:
   provider: ^6.1.2
   cloud_firestore: ^5.4.0
   bcrypt: ^1.0.8
+  http: ^0.13.3
+  google_fonts: ^4.0.0
 
 
 
@@ -70,6 +72,11 @@ flutter:
     - assets/background_splasherscreen.png
     - assets/account_background.png
     - assets/launcher_icon.png
+
+  fonts:
+    - family: NewAmsterdam
+      fonts:
+        - asset: assets/fonts/NewAmsterdam-Regular.ttf
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

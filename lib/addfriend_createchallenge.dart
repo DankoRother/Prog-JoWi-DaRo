@@ -37,7 +37,12 @@ class AddFriendToChallenge extends StatelessWidget {
         automaticallyImplyLeading: false, // Entfernt den Zurückpfeil
       ),
       body: const Center(
-        child: Text('Here you can add the friends you´d like to challenge.'),
+        child: Text(
+            'Here you can add the friends you´d like to challenge.',
+          style: TextStyle(
+            color: Colors.white
+          ),
+        ),
       ),
     );
   }

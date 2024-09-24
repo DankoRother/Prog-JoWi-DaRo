@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'chatBot_service.dart';
-import 'settings.dart';
+import 'appBar.dart';
 
 class ChatScreen extends StatefulWidget {
   @override
@@ -48,32 +48,10 @@ class _ChatScreenState extends State<ChatScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                'Ask ChatGPT for inspiration',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-            ),
-          ],
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.blueGrey.shade400],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+      appBar: buildAppBar(
+        context: context,
+        loggedInTitle: 'Ask AI for Inspiration', // Titel wenn eingeloggt
+        loggedOutTitle: 'Ask AI for Inspiration', // Titel wenn nicht eingeloggt
       ),
       body: Column(
         children: [

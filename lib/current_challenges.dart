@@ -1,6 +1,5 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:prog2_jowi_daro/logInPrompt.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';// Importiere Provider für AuthProvider
 import 'settings.dart';
@@ -9,6 +8,7 @@ import 'authentication_provider.dart';// Importiere AuthProvider
 import 'main.dart';
 import 'date_notifier.dart';
 import 'logInPrompt.dart';
+import 'appBar.dart';
 
 class CurrentChallenges extends StatefulWidget {
   const CurrentChallenges({super.key});
@@ -54,7 +54,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
       final int daysPassed = currentDate.difference(createdAtDate).inDays; //TODO: macht das sinn mit +1 oder lieber challenge bei tag 0 anfangen lassen
 
-      final int adjustedDaysPassed = daysPassed > finalDuration ? finalDuration : daysPassed;
+      final int adjustedDaysPassed = daysPassed >= finalDuration ? finalDuration : daysPassed;
 
       final double _successRate = adjustedDaysPassed > 0 ? successfulDays / adjustedDaysPassed : 0;
 
@@ -66,11 +66,11 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         rank = 'Gold';
         rankColor = Colors.amber; // Goldene Farbe
         rankIcon = Icon(Icons.star, color: rankColor, size: 30,); // Star-Icon
-      } else if (_successRate >= 0.75) {
+      } else if (_successRate < 0.8 && _successRate >= 0.6) {
         rank = 'Silver';
         rankColor = Colors.grey.shade400; // Silberne Farbe
         rankIcon = Icon(Icons.star_half, color: rankColor, size: 28,); // Halber Stern
-      } else if (_successRate >= 0.5) {
+      } else if (_successRate < 0.6 && _successRate >= 0.4) {
         rank = 'Bronze';
         rankColor = Colors.brown; // Bronzefarbene Farbe
         rankIcon = Icon(Icons.emoji_events, color: rankColor, size: 26,); // Trophäen-Icon
@@ -79,6 +79,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         rankColor = Colors.black54; // Neutrale Farbe
         rankIcon = Icon(Icons.person, color: rankColor, size: 24,); // Benutzer-Icon
       }
+
 
       final currentRank = rank; //rank is not safed in database because in real life there´s no opportunity to manipulate the date and therefore no need to safe the rank in the database
 
@@ -238,7 +239,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12), // Abrunden der Ecken
                               child: LinearProgressIndicator(
-                                value: challenge['daysPassed'] / challenge['finalDuration'], // Berechnung des Fortschritts
+                                value: challenge['daysPassed'] / (challenge['finalDuration']), // Berechnung des Fortschritts
                                 backgroundColor: Colors.blueGrey.shade600,
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent),
                               ),
@@ -248,21 +249,27 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0, right: 15.0),
                             child: Column(
                               children: [
-                                if (completedChallenge) // Hinweistext für abgeschlossene Challenges
-                                  Center(
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(16.0),
-                                      child: Text(
-                                        '${challenges[index]['title']} completed as ${challenges[index]['currentRank']}',
-                                        style: TextStyle(
+                              if (completedChallenge) // Hinweistext für abgeschlossene Challenges
+                              Column(
+                                  children: [
+                                    Text(
+                                      '${challenges[index]['title']} completed at rank ${challenges[index]['currentRank']}',
+                                      style: TextStyle(
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                           fontSize: 20,
                                           fontStyle: FontStyle.italic
-                                        ),
                                       ),
+                                      textAlign: TextAlign.center,
                                     ),
-                                  ),
+                                    SizedBox(height: 10),
+                                    Icon(
+                                      Icons.check_circle_outline_sharp,
+                                      color: challenges[index]['rankColor'],
+                                      size: 40,
+                                    )
+                                  ]
+                                ),
                                 ExpansionTile(
                                   title: Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -283,6 +290,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                             pageBuilder: (BuildContext context, _, __) => EditChallenge(
                                               challengeId: challenge['id'], // Übergebe die Challenge-ID
                                               challengeProgess: challenge['daysPassed'], // Übergebe den Fortschritt
+                                              challengeObstacle: challenge['obstacle'],
                                             ),
                                           ),
                                         );
@@ -310,6 +318,30 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                     ],
                                   ),
                                   children: [
+                                    Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          'Note:',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 20,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Progress Day 0 marks already the first day of ${challenge['title']}, so you can directly start participating in your Challenge. '
+                                          'Your final rank will be revealed at Challenge Day (duration: ${challenge['finalDuration']} Days) + 1. '
+                                          '\n Challenge Day: ${challenge['daysPassed'] +1}',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10,),
                                     Container(
                                       child: Column(
                                         children: [
@@ -357,11 +389,19 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                         width: 3,
                                                       ),
                                                     ),
-                                                    child: Text(
-                                                      'Obstacle',
-                                                      style: const TextStyle(
-                                                        fontSize: 20,
-                                                      ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(Icons.whatshot, color: Colors.pink),
+                                                            const SizedBox(width: 10),
+                                                            const Text(
+                                                              'Obstacle',
+                                                              style: TextStyle(fontSize: 20),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                   const SizedBox(height: 5),
@@ -376,11 +416,19 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                         width: 3,
                                                       ),
                                                     ),
-                                                    child: Text(
-                                                      'Rank', // Hier sollte die Rang-Logik implementiert werden
-                                                      style: const TextStyle(
-                                                        fontSize: 20,
-                                                      ),
+                                                    child: Column(
+                                                      children: [
+                                                        Row(
+                                                          children: [
+                                                            Icon(Icons.workspace_premium_sharp, color: Colors.black54),
+                                                            const SizedBox(width: 10),
+                                                            const Text(
+                                                              'Rank',
+                                                              style: TextStyle(fontSize: 20),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                                 ],
@@ -474,7 +522,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                         Row(
                                                           children: [
                                                             const Text(
-                                                              'Days passed:',
+                                                              'Successful Days:',
                                                               style: TextStyle(fontSize: 20),
                                                             ),
                                                             const SizedBox(width: 10),
@@ -500,7 +548,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                         Row(
                                                           children: [
                                                             const Text(
-                                                              'Days failed:',
+                                                              'Failed Days:',
                                                               style: TextStyle(fontSize: 20),
                                                             ),
                                                             const SizedBox(width: 10),

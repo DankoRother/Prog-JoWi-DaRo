@@ -9,6 +9,7 @@ import 'main.dart';
 import 'challenge_created_confirmation.dart';
 import 'addfriend_createchallenge.dart';
 import 'logInPrompt.dart';
+import 'appBar.dart';
 
 class CreateChallenge extends StatefulWidget {
   const CreateChallenge({super.key});
@@ -108,7 +109,7 @@ class CreateChallengeState extends State<CreateChallenge> {
         _description.clear();
         _obstacle.clear();
         setState(() {
-          _duration = 30;
+          _duration = 7;
           _selectedUnit = 'D';
         });
       });
@@ -127,47 +128,10 @@ class CreateChallengeState extends State<CreateChallenge> {
     final isLoggedIn = authProvider.isLoggedIn;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                isLoggedIn
-                    ? 'Create a new Challenge'
-                    : 'New Challenges',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
-                ),
-              ),
-            ),
-            if (isLoggedIn)
-              IconButton(
-                icon: const Icon(Icons.settings),
-                color: Colors.white,
-                iconSize: 30,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const SettingsPage()),
-                  );
-                },
-              ),
-          ],
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.pink, Colors.blueGrey.shade400],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
+      appBar: buildAppBar(
+        context: context,
+        loggedInTitle: 'Create your new Challenge', // Titel wenn eingeloggt
+        loggedOutTitle: 'Create new Challenge', // Titel wenn nicht eingeloggt
       ),
       body: isLoggedIn ? _buildChallengeForm() : LogInPrompt(),
     );
@@ -176,7 +140,7 @@ class CreateChallengeState extends State<CreateChallenge> {
   Widget _buildChallengeForm() {
     return Stepper(
       currentStep: _currentStep,
-      onStepTapped: (step) => setState(() => _currentStep = step),
+      //onStepTapped: (step) => setState(() => _currentStep = step),
       //TODO: entscheiden ob bearbeitung direkt über stepperleiste notwendig sein soll
       onStepContinue: () {
         if (_currentStep < 2) {

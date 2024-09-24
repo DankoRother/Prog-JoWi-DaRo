@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
+import 'accountController.dart';
+import 'register.dart';
 import 'authentication_provider.dart'; // Make sure to import your AuthProvider
 import 'main.dart';
 import 'interest_selection.dart';
@@ -12,9 +13,7 @@ class RegisterDetailsPage extends StatefulWidget {
   final String tempUsername;
   final String tempPassword;
   final Map<int, String> allInterests;
-
-
-  final MyUserData? currentUser; // Add currentUser to the constructor
+  final VoidCallback onRegistrationComplete; // Add this callback for registration completion
 
   const RegisterDetailsPage({
     Key? key,
@@ -23,13 +22,15 @@ class RegisterDetailsPage extends StatefulWidget {
     required this.tempUsername,
     required this.tempPassword,
     required this.allInterests,
-    this.currentUser,
+    required this.onRegistrationComplete, // Add this to the constructor
   }) : super(key: key);
 
   @override
   _RegisterDetailsPageState createState() => _RegisterDetailsPageState();
 }
 
+// For better register performance
+bool isRegistering = false;
 class _RegisterDetailsPageState extends State<RegisterDetailsPage> {
   final TextEditingController userNameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
@@ -41,20 +42,6 @@ class _RegisterDetailsPageState extends State<RegisterDetailsPage> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
 
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.blueGrey.shade400, Colors.pink],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-        ),
-        title: const Text("Complete Registration"),
-      ),
       body: StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Padding(
@@ -193,12 +180,16 @@ class _RegisterDetailsPageState extends State<RegisterDetailsPage> {
                             // Complete Registration button
                             ElevatedButton(
                               style: ButtonStyle(
-                                backgroundColor: WidgetStateProperty.all(
-                                    Colors.blue[900]),
+                                backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
                               ),
-                              onPressed: () {
-                                final authProvider = Provider.of<AuthProvider>(context, listen: false);
-                                authProvider.attemptRegister(
+                              onPressed: isRegistering
+                                  ? null // Disable the button while registering
+                                  : () async {
+                                setState(() {
+                                  isRegistering = true; // Disable the button
+                                });
+
+                                await authProvider.attemptRegister(
                                   context,
                                   widget.tempUsername,
                                   widget.tempPassword,
@@ -206,23 +197,22 @@ class _RegisterDetailsPageState extends State<RegisterDetailsPage> {
                                   emailController.text,
                                   shortDescriptionController.text,
                                   selectedInterests,
-                                ).then((_) {
-                                  // Handle successful registration (e.g., navigate to login or account page)
-                                  // You'll need to implement this based on your app's structure
-                                  print('Registration successful!');
-                                }).catchError((error) {
-                                  // Handle registration error
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Registration failed: $error')),
-                                  );
+                                      () {
+                                    widget.onRegistrationComplete(); // Trigger the callback to navigate to the Account page
+                                  },
+                                );
+
+                                setState(() {
+                                  isRegistering = false; // Re-enable the button
                                 });
                               },
                               child: Text(
-                                textAlign: TextAlign.center,
                                 "Complete Registration",
+                                textAlign: TextAlign.center,
                                 style: standardText,
                               ),
                             ),
+
                           ],
                         ),
                         SizedBox(height: widget.screenHeight * 0.015),

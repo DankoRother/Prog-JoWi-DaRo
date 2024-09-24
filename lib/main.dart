@@ -1,6 +1,7 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'authentication_provider.dart';
+import 'authentication_provider.dart' as MyAuthProvider;
 import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
@@ -8,59 +9,64 @@ import 'accountController.dart';
 import 'chat.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'firebase_options.dart';
-String error = "abc";
+import 'firebase_options.dart'; // Import your Firebase options
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Firebase before running the app
   await Firebase.initializeApp(
-    options:
-    DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
-  // Web-Token holen
-  /*FirebaseMessaging messaging = FirebaseMessaging.instance;
-  String? token = await messaging.getToken();
 
-  print("Firebase Messaging Token: $token");*/
+  // Ensure Firebase Auth persistence
+  await FirebaseAuth.instance.setPersistence(Persistence.LOCAL);
 
+  // Wrap the app with MultiProvider and provide AuthProvider globally
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => MyAuthProvider.AuthProvider()), // AuthProvider provided globally
       ],
-      child: const MyApp(),
+      child: MyApp(),
     ),
   );
-  // Get all documents
-  FirebaseFirestore.instance
-      .collection('userbase')
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-    for (var doc in querySnapshot.docs) {
-      print(doc.data());
-
-  }
-  });
-  try {
-    final userCollection = FirebaseFirestore.instance.collection('userbase');
-    await userCollection.add({
-      'username': 'johannes',
-      'description': 'test',
-      'email': 'testuser@test.com',
-      'password': 'testtest',
-    });
-      } catch (e) {
-
-    error = " $e";
-  }
 }
 
-
-
-
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+// Use StatefulWidget and WidgetsBindingObserver to monitor app lifecycle
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+
+// This method listens to app lifecycle state changes
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // When the app is resumed, only check if the user was previously logged in
+      final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false);
+      if (authProvider.isLoggedIn) {
+        authProvider.checkLoginStatus(); // Recheck the user's login status only if logged in
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -70,6 +76,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const WelcomeScreen(),
         '/currentChallenges': (context) => const CurrentChallenges(),
+        '/account': (context) => const MyAccountState(), // Added account route
       },
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
@@ -77,7 +84,6 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      //home: WelcomeScreen(),
     );
   }
 }
@@ -91,35 +97,61 @@ class MyHomePage extends StatefulWidget {
   State<MyHomePage> createState() => MyHomePageState();
 }
 
-double screenHeight = 1440.0; // Default value, so that nothing happens in case of missing initialization
-double screenWidth = 3168.0; // Default value, so that nothing happens in case of missing initialization
-double screenWidthAndHeight = screenWidth+screenHeight;
-late TextStyle standardText;  // Standard TextStyle: Can be overwritten with "standardText.copyWith(data-to-be-overwritten)" if necessary
+double screenHeight = 1440.0;
+double screenWidth = 3168.0;
+double screenWidthAndHeight = screenWidth + screenHeight;
+late TextStyle standardText;
 
 class MyHomePageState extends State<MyHomePage> {
   var selectedIndex = 2;
+  bool _isAccountInitialized = false;
 
   final List<Widget> _pages = [
     const YourChallenges(),
-    const Placeholder(),
+    const SizedBox.shrink(), // Placeholder removed
     const CreateChallenge(),
     const CurrentChallenges(),
-    const MyAccountState()
+    const MyAccountState(), // Account page
   ];
 
   void navigateToPage(int index) {
     setState(() {
       selectedIndex = index;
+      if (index == 4 && !_isAccountInitialized) {
+        _initializeMyAccountState(); // Only reinitialize if not already done
+      }
     });
   }
+
+  Future<void> _initializeMyAccountState() async {
+    final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false);
+
+    // First, ensure the user is logged in and data is loaded
+    await authProvider.checkLoginStatus();
+
+    // If the user is logged in, skip calling fetchUserData again
+    if (authProvider.isLoggedIn && authProvider.currentUser != null) {
+      setState(() {
+        _isAccountInitialized = true;
+        _pages[4] = const MyAccountState(); // Reload the account page
+      });
+    }
+  }
+
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    screenHeight = MediaQuery.of(context).size.height;  // Set the screen height
-    screenWidth = MediaQuery.of(context).size.width;    // Set the screen width
-    screenWidthAndHeight = screenWidth+screenHeight;
-    standardText = TextStyle(                           // TODO: Develop font style that fits the application
+    screenHeight = MediaQuery
+        .of(context)
+        .size
+        .height;
+    screenWidth = MediaQuery
+        .of(context)
+        .size
+        .width;
+    screenWidthAndHeight = screenWidth + screenHeight;
+    standardText = TextStyle(
       color: Colors.white,
       fontSize: screenHeight * 0.02,
       fontWeight: FontWeight.normal,
@@ -129,29 +161,12 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    /*Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = const YourChallenges();
-        break;
-      case 1:
-        page = const Placeholder();
-        break;
-      case 2:
-        page = const CreateChallenge();
-        break;
-      case 3:
-        page = const CurrentChallenges();
-        break;
-      case 4:
-        page = const MyAccountState();
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }*/
-
     return Scaffold(
       body: Container(
-        color: Theme.of(context).colorScheme.primaryContainer,
+        color: Theme
+            .of(context)
+            .colorScheme
+            .primaryContainer,
         child: _pages[selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -197,4 +212,3 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-

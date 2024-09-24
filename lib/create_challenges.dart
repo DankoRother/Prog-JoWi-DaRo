@@ -124,6 +124,7 @@ class CreateChallengeState extends State<CreateChallenge> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context);
+    authProvider.checkLoginStatus();
     final isLoggedIn = authProvider.isLoggedIn;
 
     return Scaffold(

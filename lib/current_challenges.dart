@@ -113,6 +113,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context); // AuthProvider abrufen
+    //authProvider.checkLoginStatus();
     final isLoggedIn = authProvider.isLoggedIn; // Anmeldestatus abrufen
 
     bool canPop = ModalRoute.of(context)?.canPop ?? false;

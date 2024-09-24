@@ -1,16 +1,23 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:prog2_jowi_daro/addfriend_createchallenge.dart';
+import 'package:prog2_jowi_daro/friends.dart';
 import 'package:provider/provider.dart';
 import 'authentication_provider.dart' as MyAuthProvider;
 import 'current_challenges.dart';
 import 'create_challenges.dart';
 import 'welcome_screen.dart';
 import 'accountController.dart';
-import 'chat.dart';
+import 'chatScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'firebase_options.dart'; // Import your Firebase options
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'firebase_options.dart';
+import 'chatBot_service.dart';
+import 'package:google_fonts/google_fonts.dart';
 
+
+String error = "abc";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -84,6 +91,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
+      //home: WelcomeScreen(),
     );
   }
 }
@@ -107,8 +115,8 @@ class MyHomePageState extends State<MyHomePage> {
   bool _isAccountInitialized = false;
 
   final List<Widget> _pages = [
-    const YourChallenges(),
-    const SizedBox.shrink(), // Placeholder removed
+    ChatScreen(),
+    Friends(),
     const CreateChallenge(),
     const CurrentChallenges(),
     const MyAccountState(), // Account page
@@ -138,7 +146,6 @@ class MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -161,6 +168,26 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    /*Widget page;
+    switch (selectedIndex) {
+      case 0:
+        page = const YourChallenges();
+        break;
+      case 1:
+        page = const Placeholder();
+        break;
+      case 2:
+        page = const CreateChallenge();
+        break;
+      case 3:
+        page = const CurrentChallenges();
+        break;
+      case 4:
+        page = const MyAccountState();
+      default:
+        throw UnimplementedError('no widget for $selectedIndex');
+    }*/
+
     return Scaffold(
       body: Container(
         color: Theme
@@ -177,7 +204,7 @@ class MyHomePageState extends State<MyHomePage> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.message_rounded),
-            label: 'Chat',
+            label: 'ChatBot',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.favorite),
@@ -212,3 +239,4 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+

@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'accountController.dart';
 import 'main.dart'; // Import for standardText
 
 class RegisterPage extends StatelessWidget {
   final Function(String, String) onRegister;
-
   RegisterPage({Key? key, required this.onRegister}) : super(key: key);
 
   final TextEditingController _usernameController = TextEditingController();

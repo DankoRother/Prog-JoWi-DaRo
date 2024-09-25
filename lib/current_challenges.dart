@@ -5,10 +5,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';// Importiere Provider fü
 import 'settings.dart';
 import 'edit_challenge.dart';
 import 'authentication_provider.dart';// Importiere AuthProvider
-import 'main.dart';
 import 'date_notifier.dart';
 import 'logInPrompt.dart';
-import 'appBar.dart';
 
 class CurrentChallenges extends StatefulWidget {
   const CurrentChallenges({super.key});
@@ -26,24 +24,26 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
   @override
   void initState() {
     super.initState();
+    // Directly call the update function without checking for null
     _updateChallenges();
   }
 
   void _updateChallenges() {
-    final currentDate = DateTime.now(); // Beispiel für aktuelles Datum
+    final currentDate = DateTime.now();
+    print("A"); // Should print to console
     _challengesFuture = _fetchChallenges(currentDate);
   }
+
 
   Future<List<Map<String, dynamic>>> _fetchChallenges(DateTime currentDate) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.currentUser;
-    _updateChallenges();
-
+    print("B");
     if (user == null) {
-      return []; // Return empty list if user is not logged in
+      return []; // Return empty list if the user is not logged in
     }
 
-    // Fetch user-specific challenges
+    // Fetch user-specific challenges from Firestore
     final challengesSnapshot = await FirebaseFirestore.instance
         .collection('challenge')
         .where(FieldPath.documentId, whereIn: user.challenges) // Filter by user's challenges
@@ -64,7 +64,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       final failedDays = (data['failedDays'] ?? 0) as int;
 
       final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
-      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1; //TODO: macht das sinn mit +1 oder lieber challenge bei tag 0 anfangen lassen
+      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1;
 
       final int adjustedDaysPassed = daysPassed > finalDuration ? finalDuration : daysPassed;
 
@@ -76,23 +76,22 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
       if (_successRate >= 0.8) {
         rank = 'Gold';
-        rankColor = Colors.amber; // Goldene Farbe
-        rankIcon = Icon(Icons.star, color: rankColor, size: 30); // Star-Icon
+        rankColor = Colors.amber;
+        rankIcon = Icon(Icons.star, color: rankColor, size: 30);
       } else if (_successRate < 0.8 && _successRate >= 0.6) {
         rank = 'Silver';
-        rankColor = Colors.grey.shade400; // Silberne Farbe
-        rankIcon = Icon(Icons.star_half, color: rankColor, size: 28); // Halber Stern
+        rankColor = Colors.grey.shade400;
+        rankIcon = Icon(Icons.star_half, color: rankColor, size: 28);
       } else if (_successRate < 0.6 && _successRate >= 0.4) {
         rank = 'Bronze';
-        rankColor = Colors.brown; // Bronzefarbene Farbe
-        rankIcon = Icon(Icons.emoji_events, color: rankColor, size: 26); // Trophäen-Icon
+        rankColor = Colors.brown;
+        rankIcon = Icon(Icons.emoji_events, color: rankColor, size: 26);
       } else {
         rank = 'Participant';
-        rankColor = Colors.black54; // Neutrale Farbe
-        rankIcon = Icon(Icons.person, color: rankColor, size: 24); // Benutzer-Icon
+        rankColor = Colors.black54;
+        rankIcon = Icon(Icons.person, color: rankColor, size: 24);
       }
 
-      // Ensure rankColor and rankIcon are added to the challenge
       challenges.add({
         'id': doc.id,
         'title': title,

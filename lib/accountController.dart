@@ -6,7 +6,7 @@ import 'login.dart';
 import 'account_page.dart';
 import 'register.dart';
 import 'register_details.dart';
-
+import 'edit_account.dart';
 class MyAccountState extends StatefulWidget {
   const MyAccountState({super.key});
 
@@ -14,7 +14,7 @@ class MyAccountState extends StatefulWidget {
   _MyAccountState createState() => _MyAccountState();
 }
 
-enum CurrentPage { start, login, account, register, registerDetails }
+enum CurrentPage { start, login, account, register, registerDetails, editAccount }
 
 class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClientMixin {
   @override
@@ -107,20 +107,23 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
     return Scaffold(
       appBar: AppBar(
         title: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                '$AppBarText',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
+            // Always display the AppBarText aligned to the left
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft, // Align text to the left
+                child: Text(
+                  '$AppBarText',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
                 ),
               ),
             ),
-            if (authProvider.isLoggedIn)
+            // Display the icon buttons only if the user is logged in
+            if (authProvider.isLoggedIn) ...[
               IconButton(
                 icon: const Icon(Icons.logout),
                 color: Colors.white,
@@ -165,6 +168,19 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
                 },
                 tooltip: 'Logout',
               ),
+              IconButton(
+                icon: const Icon(Icons.edit),
+                color: Colors.white,
+                iconSize: 30,
+                onPressed: () async {
+                  _navigateToEditAccount();
+                  setState(() {
+                    _currentPage = CurrentPage.editAccount;
+                  });
+                },
+                tooltip: 'Edit Account',
+              ),
+            ],
           ],
         ),
         flexibleSpace: Container(
@@ -263,6 +279,17 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
             });
           },
         );
+      case CurrentPage.editAccount:
+        return EditAccountPage(
+          screenWidth: MediaQuery.of(context).size.width,
+          screenHeight: MediaQuery.of(context).size.height,
+          authProvider: authProvider,
+          onUpdate: (String newUserName, String newEmail, String newDescription, List<int> newInterests) {
+            setState(() {
+              _currentPage = CurrentPage.account; // Navigate back to account page
+            });
+          },
+        );
       default:
         return startWidget(); // Fallback in case of unknown state
     }
@@ -289,5 +316,9 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
       ),
     );
   }
-
+  void _navigateToEditAccount() {
+    setState(() {
+      _currentPage = CurrentPage.editAccount;
+    });
+  }
 }

@@ -36,6 +36,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
   Future<List<Map<String, dynamic>>> _fetchChallenges(DateTime currentDate) async {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.currentUser;
+    _updateChallenges();
 
     if (user == null) {
       return []; // Return empty list if user is not logged in
@@ -113,16 +114,41 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
 
   Future<void> _deleteChallenge(String challengeId) async {
-    try {
-      await _firestore.collection('challenge').doc(challengeId).delete();
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Challenge deleted successfully')),
-      );
-      _updateChallenges();
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failing to delete Challenge: $e')),
-      );
+    Future<void> _removeUserFromChallenge(String challengeId) async {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final user = authProvider.currentUser;
+
+      if (user == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('You need to be logged in to remove a challenge')),
+        );
+        return;
+      }
+
+      try {
+        // Step 1: Remove the challenge ID from the user's challenges list
+        await _firestore.collection('users').doc(user.uid).update({
+          'challenges': FieldValue.arrayRemove([challengeId]), // Remove challenge ID from user's challenges list
+        });
+
+        // Step 2: Remove the user from the challenge's assigned users list
+        await _firestore.collection('challenge').doc(challengeId).update({
+          'userId': FieldValue.delete(), // or 'users': FieldValue.arrayRemove([user.uid]) if challenge stores multiple users
+        });
+
+        // Optionally, if you're tracking the challenges a user is assigned to, you can also remove this assignment.
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Challenge removed from your list successfully')),
+        );
+
+        // Step 3: Update the challenges displayed after removing the challenge
+        _updateChallenges();
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to remove challenge: $e')),
+        );
+      }
     }
   }
 

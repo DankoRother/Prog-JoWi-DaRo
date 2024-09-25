@@ -9,7 +9,7 @@ class AuthProvider extends ChangeNotifier {
   bool _isLoggedIn = false;
   MyUserData? _currentUser;
   StreamSubscription<User?>? _authStateSubscription;
-
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Initialize _firestore
   bool get isLoggedIn => _isLoggedIn;
   MyUserData? get currentUser => _currentUser;
 
@@ -67,30 +67,126 @@ class AuthProvider extends ChangeNotifier {
       print('Error during logout: $e');
     }
   }
+  Future<void> updateCompletedChallenges(String userId) async {
+    try {
+      // Fetch the user's document to get the list of challenge IDs
+      final userSnapshot = await FirebaseFirestore.instance.collection('users').doc(userId).get();
+
+      if (!userSnapshot.exists) {
+        print('User does not exist');
+        return;
+      }
+
+      final userData = userSnapshot.data()!;
+      final List<String> challengeIds = (userData['challenges'] as List<dynamic>).cast<String>();
+
+      if (challengeIds.isEmpty) {
+        // No challenges to calculate, set completedChallenges to 0
+        await FirebaseFirestore.instance.collection('users').doc(userId).update({
+          'completedChallenges': 0,
+        });
+        return;
+      }
+
+      // Fetch all challenges that the user is assigned to
+      final challengesSnapshot = await FirebaseFirestore.instance
+          .collection('challenge')
+          .where(FieldPath.documentId, whereIn: challengeIds)
+          .get();
+
+      int completedChallengesCount = 0;
+
+      for (var doc in challengesSnapshot.docs) {
+        final data = doc.data();
+        final createdAt = (data['createdAt'] as Timestamp).toDate();
+        final finalDuration = data['finalDuration'] as int;
+
+        final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
+        final DateTime currentDate = DateTime.now();
+        final int daysPassed = currentDate.difference(createdAtDate).inDays;
+
+        // If the days passed is equal to or greater than the challenge duration, it's completed
+        if (daysPassed >= finalDuration) {
+          completedChallengesCount++;
+        }
+      }
+
+      // Update the user's completedChallenges count in Firestore
+      await FirebaseFirestore.instance.collection('users').doc(userId).update({
+        'completedChallenges': completedChallengesCount,
+      });
+
+      print('Updated completedChallenges for user $userId: $completedChallengesCount');
+    } catch (e) {
+      print('Error updating completed challenges: $e');
+    }
+  }
 
   Future<void> fetchUserData(String uid) async {
     try {
-      final docSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(uid)
-          .get();
+      final userSnapshot = await _firestore.collection('users').doc(uid).get();
+      if (userSnapshot.exists) {
+        _currentUser = MyUserData.fromMap(userSnapshot.data()!, uid);
 
-      if (docSnapshot.exists) {
-        _currentUser = MyUserData.fromMap(docSnapshot.data()!, uid);
-        print('User data fetched: ${_currentUser!.toMap()}');
-        _isLoggedIn = true;
-      } else {
-        _currentUser = null;
-        _isLoggedIn = false;
+        // After fetching user data, calculate and update completed challenges
+        await calculateCompletedChallenges();
+
+        notifyListeners();
       }
-      notifyListeners();
     } catch (e) {
-      _currentUser = null;
-      _isLoggedIn = false;
       print('Error fetching user data: $e');
-      notifyListeners();
     }
   }
+
+  Future<void> calculateCompletedChallenges() async {
+    if (_currentUser == null) return;
+
+    try {
+      // Fetch all the user's challenges
+      final challengesSnapshot = await _firestore.collection('challenge')
+          .where(FieldPath.documentId, whereIn: _currentUser!.challenges)
+          .get();
+
+      int completedChallengesCount = 0;
+      DateTime currentDate = DateTime.now();
+
+      for (var doc in challengesSnapshot.docs) {
+        final data = doc.data();
+        final createdAt = (data['createdAt'] as Timestamp).toDate();
+        final finalDuration = data['finalDuration'] as int;
+
+        final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
+        final int daysPassed = currentDate.difference(createdAtDate).inDays;
+        final bool completedChallenge = daysPassed >= finalDuration;
+
+        if (completedChallenge) {
+          completedChallengesCount++;
+        }
+      }
+
+      // Update the user's completed challenges count in Firestore
+      await _firestore.collection('users').doc(_currentUser!.uid).update({
+        'completedChallenges': completedChallengesCount,
+      });
+
+      // Update the local user data by creating a new instance of MyUserData
+      _currentUser = MyUserData(
+        uid: _currentUser!.uid,
+        username: _currentUser!.username,
+        name: _currentUser!.name,
+        email: _currentUser!.email,
+        shortDescription: _currentUser!.shortDescription,
+        interests: _currentUser!.interests,
+        challenges: _currentUser!.challenges, // Existing challenges remain the same
+        completedChallenges: completedChallengesCount, // New value for completed challenges
+      );
+
+      notifyListeners(); // Notify listeners that the user data has been updated
+    } catch (e) {
+      print('Error calculating completed challenges: $e');
+    }
+  }
+
 
   Future<void> login(String username, String password, BuildContext context) async {
     if (!_isLoggedIn) {

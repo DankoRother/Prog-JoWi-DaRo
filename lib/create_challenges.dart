@@ -42,65 +42,63 @@ class CreateChallengeState extends State<CreateChallenge> {
   }
 
   Future<void> _saveChallenge() async {
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.currentUser;
+
+    if (user == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You need to be logged in to create a challenge')),
+      );
+      return;
+    }
+
     String title = _title.text;
     String description = _description.text;
     String obstacle = _obstacle.text;
     String? frequency = _selectedFrequency;
 
-    // Faktor basierend auf der ausgewählten Einheit
     int factor;
     switch (_selectedUnit) {
-      case 'D':
-        factor = 1; // Tägliche Einheit, keine Multiplikation nötig
-        break;
-      case 'W':
-        factor = 7; // Wöchentliche Einheit (1 Woche = 7 Tage)
-        break;
-      case 'M':
-        factor = 30; // Monatliche Einheit (1 Monat = 30 Tage)
-        break;
-      case 'Y':
-        factor = 365; // Jährliche Einheit (1 Jahr = 365 Tage)
-        break;
-      default:
-        factor = 1;
+      case 'D': factor = 1; break;
+      case 'W': factor = 7; break;
+      case 'M': factor = 30; break;
+      case 'Y': factor = 365; break;
+      default: factor = 1;
     }
 
-    // Berechnung des Ergebnisses
     int finalDuration = _duration * factor;
 
     try {
-      // Challenge in Firestore-Sammlung "challenge" speichern
-      await FirebaseFirestore.instance.collection('challenge').add({
+      // Add challenge to Firestore
+      final newChallengeRef = await FirebaseFirestore.instance.collection('challenge').add({
         'title': title,
         'description': description,
         'finalDuration': finalDuration,
         'frequency': frequency,
         'obstacle': obstacle,
         'createdAt': Timestamp.now(),
+        'userId': user.uid,  // Associate the challenge with the user
       });
 
+      // Add the challenge ID to the user's list of challenges
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+        'challenges': FieldValue.arrayUnion([newChallengeRef.id]), // Append the new challenge to the user's challenges
+      });
+      // Navigate after success
       Navigator.of(context).push(
         PageRouteBuilder(
           opaque: false,
-          pageBuilder: (context, animation,
-              secondaryAnimation) =>
-              ChallengeCreatedConfirmation(
-                data: _title.text,
-                duration: const Duration(seconds: 5),
-                onNavigate: (int selectedIndex) {
-                  Navigator.of(context)
-                      .pop(); // Schließt die Bestätigungsseite
-
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (
-                          context) => const CurrentChallenges(),
-                    ),
-                  );
-                },
-              ),
+          pageBuilder: (context, animation, secondaryAnimation) => ChallengeCreatedConfirmation(
+            data: _title.text,
+            duration: const Duration(seconds: 5),
+            onNavigate: (int selectedIndex) {
+              Navigator.of(context).pop();
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const CurrentChallenges()),
+              );
+            },
+          ),
         ),
       );
 
@@ -113,14 +111,13 @@ class CreateChallengeState extends State<CreateChallenge> {
           _selectedUnit = 'D';
         });
       });
-
     } catch (e) {
-      // Fehlerbehandlung
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Fehler beim Erstellen der Challenge: $e'),
+        content: Text('Error creating the challenge: $e'),
       ));
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

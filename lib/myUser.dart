@@ -2,44 +2,49 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MyUserData {
-  final String uid; // Firebase uid
-  final String username; // Username added back
+  final String uid;
+  final String username;
   final String name;
   final String email;
   final String shortDescription;
   final List<int> interests;
-  int completedChallenges = 0;
+  List<String> challenges = []; // List of user's challenges
+  int completedChallenges = 0; // This will be updated
 
   MyUserData({
     required this.uid,
-    required this.username, // Add username to the constructor
+    required this.username,
     required this.name,
     required this.email,
     required this.shortDescription,
     required this.interests,
-    this.completedChallenges = 0,
+    this.challenges = const [],
+    this.completedChallenges = 0, // Initialize with 0
   });
 
   factory MyUserData.fromMap(Map<String, dynamic> map, String uid) {
     return MyUserData(
-      uid: uid, // Use Firebase uid passed from the document
-      username: map['username'] ?? 'Unknown', // Fetch username from the document
+      uid: uid,
+      username: map['username'] ?? 'Unknown',
       name: map['name'] ?? 'Unknown',
       email: map['email'] ?? 'Unknown',
       shortDescription: map['shortDescription'] ?? '',
       interests: (map['interests'] as List<dynamic>?)?.cast<int>() ?? [],
-      completedChallenges: map['completedChallenges'] ?? 0,
+      challenges: (map['challenges'] as List<dynamic>?)?.cast<String>() ?? [],
+      completedChallenges: map['completedChallenges'] ??
+          0, // Fetch completed challenges from Firestore
     );
   }
 
   Map<String, dynamic> toMap() {
     return {
-      'uid': uid, // Firebase uid
-      'username': username, // Include username in the map
+      'uid': uid,
+      'username': username,
       'name': name,
       'email': email,
       'shortDescription': shortDescription,
       'interests': interests,
+      'challenges': challenges,
       'completedChallenges': completedChallenges,
     };
   }

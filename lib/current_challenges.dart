@@ -19,6 +19,7 @@ class CurrentChallenges extends StatefulWidget {
 
 class _CurrentChallengesState extends State<CurrentChallenges> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore-Instanz
+  bool isLessOrEqualFilter = true;
 
   late Future<List<Map<String, dynamic>>> _challengesFuture;
 
@@ -52,9 +53,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       final failedDays = (data['failedDays'] ?? 0) as int;
 
       final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
-      final int daysPassed = currentDate.difference(createdAtDate).inDays; //TODO: macht das sinn mit +1 oder lieber challenge bei tag 0 anfangen lassen
+      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1; //TODO: macht das sinn mit +1 oder lieber challenge bei tag 0 anfangen lassen
 
-      final int adjustedDaysPassed = daysPassed >= finalDuration ? finalDuration : daysPassed;
+      final int adjustedDaysPassed = daysPassed > finalDuration ? finalDuration : daysPassed;
 
       final double _successRate = adjustedDaysPassed > 0 ? successfulDays / adjustedDaysPassed : 0;
 
@@ -80,7 +81,6 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         rankIcon = Icon(Icons.person, color: rankColor, size: 24,); // Benutzer-Icon
       }
 
-
       final currentRank = rank; //rank is not safed in database because in real life there´s no opportunity to manipulate the date and therefore no need to safe the rank in the database
 
       challenges.add({
@@ -97,6 +97,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         'rankIcon': rankIcon,   // Hinzufügen von Icon
         'successfulDays': successfulDays,
         'failedDays': failedDays,
+        'adjustedDaysPassed': daysPassed,
       });
     }
     return challenges;
@@ -132,13 +133,32 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             Container(
               alignment: Alignment.center,
               child: Text(
-                isLoggedIn ? 'Your current Challenges' : 'Current Challenges',
+                isLoggedIn ? 'Your Challenges' : 'Challenges',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
                   fontSize: 25,
                 ),
               ),
+            ),
+            Row(
+              children: [
+                Text(
+                  isLessOrEqualFilter ? 'Active' : 'Archive',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  value: isLessOrEqualFilter, // Deine bool-Variable, die den aktuellen Filterzustand speichert
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      isLessOrEqualFilter = newValue;
+                    });
+                  },
+                  activeColor: Colors.pink, // Farbe des aktiven Switch
+                  inactiveThumbColor: Colors.blueGrey.shade400, // Farbe des inaktiven Switch
+                  inactiveTrackColor: Colors.blueGrey.shade200, // Farbe der Switch-Spur im inaktiven Zustand
+                ),
+              ],
             ),
             if (isLoggedIn)
               IconButton(
@@ -151,7 +171,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                     MaterialPageRoute(builder: (context) => const SettingsPage()),
                   );
                 },
-              ),
+              ), // Füge hier den Switch-Button für den Filter hinzu
           ],
         ),
         flexibleSpace: Container(
@@ -207,7 +227,18 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
               return const Center(child: Text('Keine Herausforderungen gefunden'));
             }
 
-            final challenges = snapshot.data!;
+            final challenges = snapshot.data!.where((challenge) {
+              if (isLessOrEqualFilter) {
+                return challenge['adjustedDaysPassed'] <= challenge['finalDuration'];
+              } else {
+                return challenge['adjustedDaysPassed'] > challenge['finalDuration'];
+              }
+            }).toList();
+
+            if (challenges.isEmpty) {
+              return const Center(child: Text('Keine passenden Herausforderungen gefunden'));
+            }
+
 
             return Container(
               decoration: BoxDecoration(

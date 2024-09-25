@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:prog2_jowi_daro/addfriend_createchallenge.dart';
 import 'package:prog2_jowi_daro/friends.dart';
 import 'package:provider/provider.dart';
 import 'authentication_provider.dart' as MyAuthProvider;
@@ -11,9 +10,7 @@ import 'accountController.dart';
 import 'chatScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'firebase_options.dart';
-import 'chatBot_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 

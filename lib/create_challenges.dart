@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 //import 'package:flutter/src/material/colors.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'authentication_provider.dart';
-import 'settings.dart';
 import 'current_challenges.dart';
 import 'main.dart';
 import 'challenge_created_confirmation.dart';
@@ -20,7 +19,7 @@ class CreateChallenge extends StatefulWidget {
 
 class CreateChallengeState extends State<CreateChallenge> {
   final _formKey = GlobalKey<FormState>();
-  int _currentStep = 0;
+  int currentStep = 0;
   int _duration = 7;
   String? _selectedUnit = 'D';
   String? _selectedFrequency = 'daily';
@@ -137,20 +136,20 @@ class CreateChallengeState extends State<CreateChallenge> {
 
   Widget _buildChallengeForm() {
     return Stepper(
-      currentStep: _currentStep,
+      currentStep: currentStep,
       //onStepTapped: (step) => setState(() => _currentStep = step),
       //TODO: entscheiden ob bearbeitung direkt über stepperleiste notwendig sein soll
       onStepContinue: () {
-        if (_currentStep < 2) {
+        if (currentStep < 2) {
           setState(() {
-            _currentStep++;
+            currentStep++;
           });
         }
       },
       onStepCancel: () {
-        if (_currentStep > 0) {
+        if (currentStep > 0) {
           setState(() {
-            _currentStep--;
+            currentStep--;
           });
         }
       },
@@ -159,8 +158,8 @@ class CreateChallengeState extends State<CreateChallenge> {
           title: Text(
             'Start',
             style: TextStyle(
-              color: _currentStep == 0 ? Colors.blue[900] : Colors.black,
-              fontWeight: _currentStep == 0 ? FontWeight.bold : FontWeight
+              color: currentStep == 0 ? Colors.blue[900] : Colors.black,
+              fontWeight: currentStep == 0 ? FontWeight.bold : FontWeight
                   .normal,
             ),
           ),
@@ -296,8 +295,8 @@ class CreateChallengeState extends State<CreateChallenge> {
             title: Text(
               'Commit',
               style: TextStyle(
-                color: _currentStep == 1 ? Colors.blue[900] : Colors.black,
-                fontWeight: _currentStep == 1 ? FontWeight.bold : FontWeight
+                color: currentStep == 1 ? Colors.blue[900] : Colors.black,
+                fontWeight: currentStep == 1 ? FontWeight.bold : FontWeight
                     .normal,
               ),
             ),
@@ -594,8 +593,8 @@ class CreateChallengeState extends State<CreateChallenge> {
             title: Text(
               'Create',
               style: TextStyle(
-                color: _currentStep == 2 ? Colors.blue[900] : Colors.black,
-                fontWeight: _currentStep == 2 ? FontWeight.bold : FontWeight
+                color: currentStep == 2 ? Colors.blue[900] : Colors.black,
+                fontWeight: currentStep == 2 ? FontWeight.bold : FontWeight
                     .normal,
               ),
             ),

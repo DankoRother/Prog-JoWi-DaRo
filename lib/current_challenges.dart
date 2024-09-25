@@ -19,6 +19,7 @@ class CurrentChallenges extends StatefulWidget {
 
 class _CurrentChallengesState extends State<CurrentChallenges> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore-Instanz
+  bool isLessOrEqualFilter = true;
 
   late Future<List<Map<String, dynamic>>> _challengesFuture;
 
@@ -63,9 +64,10 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       final failedDays = (data['failedDays'] ?? 0) as int;
 
       final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
-      final int daysPassed = currentDate.difference(createdAtDate).inDays;
+      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1; //TODO: macht das sinn mit +1 oder lieber challenge bei tag 0 anfangen lassen
 
-      final int adjustedDaysPassed = daysPassed >= finalDuration ? finalDuration : daysPassed;
+      final int adjustedDaysPassed = daysPassed > finalDuration ? finalDuration : daysPassed;
+
       final double _successRate = adjustedDaysPassed > 0 ? successfulDays / adjustedDaysPassed : 0;
 
       String rank;
@@ -102,6 +104,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         'daysPassed': adjustedDaysPassed,
         'successfulDays': successfulDays,
         'failedDays': failedDays,
+        'adjustedDaysPassed': daysPassed,
         'rankColor': rankColor, // Add rankColor
         'rankIcon': rankIcon,   // Add rankIcon
         'currentRank': rank,    // Add rank for display
@@ -110,8 +113,6 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
     return challenges;
   }
-
-
 
   Future<void> _deleteChallenge(String challengeId) async {
     Future<void> _removeUserFromChallenge(String challengeId) async {
@@ -176,6 +177,25 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                 ),
               ),
             ),
+            Row(
+              children: [
+                Text(
+                  isLessOrEqualFilter ? 'Active' : 'Archive',
+                  style: TextStyle(color: Colors.white),
+                ),
+                Switch(
+                  value: isLessOrEqualFilter, // Deine bool-Variable, die den aktuellen Filterzustand speichert
+                  onChanged: (bool newValue) {
+                    setState(() {
+                      isLessOrEqualFilter = newValue;
+                    });
+                  },
+                  activeColor: Colors.pink, // Farbe des aktiven Switch
+                  inactiveThumbColor: Colors.blueGrey.shade400, // Farbe des inaktiven Switch
+                  inactiveTrackColor: Colors.blueGrey.shade200, // Farbe der Switch-Spur im inaktiven Zustand
+                ),
+              ],
+            ),
             if (isLoggedIn)
               IconButton(
                 icon: const Icon(Icons.settings),
@@ -187,7 +207,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                     MaterialPageRoute(builder: (context) => const SettingsPage()),
                   );
                 },
-              ),
+              ), // Füge hier den Switch-Button für den Filter hinzu
           ],
         ),
         flexibleSpace: Container(
@@ -243,7 +263,18 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
               return const Center(child: Text('Keine Herausforderungen gefunden'));
             }
 
-            final challenges = snapshot.data!;
+            final challenges = snapshot.data!.where((challenge) {
+              if (isLessOrEqualFilter) {
+                return challenge['adjustedDaysPassed'] <= challenge['finalDuration'];
+              } else {
+                return challenge['adjustedDaysPassed'] > challenge['finalDuration'];
+              }
+            }).toList();
+
+            if (challenges.isEmpty) {
+              return const Center(child: Text('Keine passenden Herausforderungen gefunden'));
+            }
+
 
             return Container(
               decoration: BoxDecoration(

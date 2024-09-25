@@ -35,10 +35,20 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
   }
 
   Future<List<Map<String, dynamic>>> _fetchChallenges(DateTime currentDate) async {
-    final challengesSnapshot = await _firestore
+    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final user = authProvider.currentUser;
+
+    if (user == null) {
+      return []; // Return empty list if user is not logged in
+    }
+
+    // Fetch user-specific challenges
+    final challengesSnapshot = await FirebaseFirestore.instance
         .collection('challenge')
+        .where(FieldPath.documentId, whereIn: user.challenges) // Filter by user's challenges
         .orderBy('createdAt', descending: true)
         .get();
+
     final List<Map<String, dynamic>> challenges = [];
 
     for (var doc in challengesSnapshot.docs) {
@@ -66,40 +76,40 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       if (_successRate >= 0.8) {
         rank = 'Gold';
         rankColor = Colors.amber; // Goldene Farbe
-        rankIcon = Icon(Icons.star, color: rankColor, size: 30,); // Star-Icon
+        rankIcon = Icon(Icons.star, color: rankColor, size: 30); // Star-Icon
       } else if (_successRate < 0.8 && _successRate >= 0.6) {
         rank = 'Silver';
         rankColor = Colors.grey.shade400; // Silberne Farbe
-        rankIcon = Icon(Icons.star_half, color: rankColor, size: 28,); // Halber Stern
+        rankIcon = Icon(Icons.star_half, color: rankColor, size: 28); // Halber Stern
       } else if (_successRate < 0.6 && _successRate >= 0.4) {
         rank = 'Bronze';
         rankColor = Colors.brown; // Bronzefarbene Farbe
-        rankIcon = Icon(Icons.emoji_events, color: rankColor, size: 26,); // Trophäen-Icon
+        rankIcon = Icon(Icons.emoji_events, color: rankColor, size: 26); // Trophäen-Icon
       } else {
         rank = 'Participant';
         rankColor = Colors.black54; // Neutrale Farbe
-        rankIcon = Icon(Icons.person, color: rankColor, size: 24,); // Benutzer-Icon
+        rankIcon = Icon(Icons.person, color: rankColor, size: 24); // Benutzer-Icon
       }
 
-      final currentRank = rank; //rank is not safed in database because in real life there´s no opportunity to manipulate the date and therefore no need to safe the rank in the database
-
+      // Ensure rankColor and rankIcon are added to the challenge
       challenges.add({
-        'id': doc.id, // Document ID zur Identifikation der Challenge
+        'id': doc.id,
         'title': title,
         'description': description,
         'finalDuration': finalDuration,
         'frequency': frequency,
         'obstacle': obstacle,
         'createdAt': createdAt,
-        'daysPassed': adjustedDaysPassed, // Verstrichene Tage hinzufügen
-        'currentRank': currentRank,
-        'rankColor': rankColor, // Hinzufügen von Farbe
-        'rankIcon': rankIcon,   // Hinzufügen von Icon
+        'daysPassed': adjustedDaysPassed,
         'successfulDays': successfulDays,
         'failedDays': failedDays,
         'adjustedDaysPassed': daysPassed,
+        'rankColor': rankColor, // Add rankColor
+        'rankIcon': rankIcon,   // Add rankIcon
+        'currentRank': rank,    // Add rank for display
       });
     }
+
     return challenges;
   }
 
@@ -133,7 +143,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             Container(
               alignment: Alignment.center,
               child: Text(
-                isLoggedIn ? 'Your Challenges' : 'Challenges',
+                isLoggedIn ? 'Your current Challenges' : 'Current Challenges',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,

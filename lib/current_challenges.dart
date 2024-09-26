@@ -168,7 +168,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             Container(
               alignment: Alignment.center,
               child: Text(
-                isLoggedIn ? 'Your current Challenges' : 'Current Challenges',
+                isLoggedIn
+                    ? (isLessOrEqualFilter ? 'Your Active Challenges' : 'Your Completed Challenges')
+                    : 'Current Challenges',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -178,10 +180,6 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             ),
             Row(
               children: [
-                Text(
-                  isLessOrEqualFilter ? 'Active' : 'Archive',
-                  style: TextStyle(color: Colors.white),
-                ),
                 Switch(
                   value: isLessOrEqualFilter, // Deine bool-Variable, die den aktuellen Filterzustand speichert
                   onChanged: (bool newValue) {
@@ -257,9 +255,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center(child: Text('Fehler beim Laden der Daten: ${snapshot.error}'));
+              return Center(child: Text('Error while fetching data: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('Keine Herausforderungen gefunden'));
+              return const Center(child: Text('No active Challenges found'));
             }
 
             final challenges = snapshot.data!.where((challenge) {
@@ -271,7 +269,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             }).toList();
 
             if (challenges.isEmpty) {
-              return const Center(child: Text('Keine passenden Herausforderungen gefunden'));
+              return const Center(child: Text('No completed Challenges yet'));
             }
 
 
@@ -398,9 +396,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           ),
                                         ),
                                         Text(
-                                          'Progress Day 0 marks already the first day of ${challenge['title']}, so you can directly start participating in your Challenge. '
-                                          'Your final rank will be revealed at Challenge Day (duration: ${challenge['finalDuration']} Days) + 1. '
-                                          '\n Challenge Day: ${challenge['daysPassed'] +1}',
+                                          'You´re Challenge will be moved to the archive once your duration is over (${challenge['finalDuration']} + 1 Day).',
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),

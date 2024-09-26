@@ -11,38 +11,43 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<double> _animation;
-  double _progressValue = 0.0;
+  late AnimationController _controller; // Controller for managing animations
+  late Animation<double> _animation; // Animation for fade effect
+  double _progressValue = 0.0; // Progress value for the linear progress indicator
 
   @override
   void initState() {
     super.initState();
 
+    // Initialize the animation controller with a duration of 1 second
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
-      vsync: this,
+      vsync: this, // Use this as the ticker provider for the animation
     );
 
+    // Create a curved animation based on the controller
     _animation = CurvedAnimation(parent: _controller, curve: Curves.easeIn);
 
+    // Start the animation
     _controller.forward();
 
-    // progrss indicator runs 7 seconds
+    // Timer to increment progress indicator over 7 seconds
     Timer.periodic(const Duration(milliseconds: 70), (Timer timer) {
       setState(() {
-        _progressValue += 0.02; //lifts the progress by 2 %
+        _progressValue += 0.02; // Increase progress by 2%
 
+        // Check if progress has reached 100%
         if (_progressValue >= 1.0) {
-          _progressValue = 1.0; // limit progress to 100 %
-          timer.cancel();
-          // navigate to create challenges page
+          _progressValue = 1.0; // Limit progress to 100%
+          timer.cancel(); // Stop the timer
+
+          // Navigate to the create challenges page after the progress is complete
           Navigator.of(context).pushReplacement(
             PageRouteBuilder(
               pageBuilder: (context, animation1, animation2) => const MyHomePage(title: 'challengr - beat your habits'),
               transitionsBuilder: (context, animation, secondaryAnimation, child) {
                 return FadeTransition(
-                  opacity: animation,
+                  opacity: animation, // Apply fade transition effect
                   child: child,
                 );
               },
@@ -55,20 +60,20 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller.dispose(); // Dispose of the animation controller
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return FadeTransition(
-      opacity: _animation,
+      opacity: _animation, // Apply fade animation to the scaffold
       child: Scaffold(
         body: Container(
           decoration: const BoxDecoration(
             image: DecorationImage(
-              image: AssetImage('assets/background_splasherscreen.png'), // Path to the image
-              fit: BoxFit.cover, // Image should fill the entire screen
+              image: AssetImage('assets/background_splasherscreen.png'), // Path to the splash screen background image
+              fit: BoxFit.cover,
             ),
           ),
           child: Center(
@@ -77,7 +82,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo or other widget
                     const Text(
                       'NOTHING IS IMPOSSIBLE',
                       style: TextStyle(
@@ -86,14 +90,13 @@ class _WelcomeScreenState extends State<WelcomeScreen> with SingleTickerProvider
                         color: Colors.white,
                       ),
                     ),
-                    const SizedBox(height: 50,),
-                    const SizedBox(height: 20), // Abstand zwischen Text und Progress Indicator
+                    const SizedBox(height: 70),
                     Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 50.0), // Padding für den Progress Indicator
+                      padding: const EdgeInsets.symmetric(horizontal: 50.0),
                       child: LinearProgressIndicator(
-                        value: _progressValue,
-                        backgroundColor: Colors.white54, // Hintergrundfarbe des Indikators
-                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white), // Farbe des Fortschritts
+                        value: _progressValue, // Current progress value
+                        backgroundColor: Colors.white54,
+                        valueColor: const AlwaysStoppedAnimation<Color>(Colors.white),
                       ),
                     ),
                   ],

@@ -39,8 +39,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.currentUser;
     print("B");
-    if (user == null) {
-      return []; // Return empty list if the user is not logged in
+    if (user == null || user.challenges.isEmpty) {
+      return []; // Return empty list if the user is not logged in or has no challenges
     }
 
     // Fetch user-specific challenges from Firestore
@@ -113,6 +113,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
     return challenges;
   }
 
+
   Future<void> _deleteChallenge(String challengeId) async {
     Future<void> _removeUserFromChallenge(String challengeId) async {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -168,9 +169,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             Container(
               alignment: Alignment.center,
               child: Text(
-                isLoggedIn
-                    ? (isLessOrEqualFilter ? 'Your Active Challenges' : 'Your Completed Challenges')
-                    : 'Current Challenges',
+                isLoggedIn ? 'Your current Challenges' : 'Current Challenges',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -180,6 +179,10 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             ),
             Row(
               children: [
+                Text(
+                  isLessOrEqualFilter ? 'Active' : 'Archive',
+                  style: TextStyle(color: Colors.white),
+                ),
                 Switch(
                   value: isLessOrEqualFilter, // Deine bool-Variable, die den aktuellen Filterzustand speichert
                   onChanged: (bool newValue) {
@@ -396,7 +399,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                           ),
                                         ),
                                         Text(
-                                          'You´re Challenge will be moved to the archive once your duration is over (${challenge['finalDuration']} + 1 Day).',
+                                          'Progress Day 0 marks already the first day of ${challenge['title']}, so you can directly start participating in your Challenge. '
+                                          'Your final rank will be revealed at Challenge Day (duration: ${challenge['finalDuration']} Days) + 1. '
+                                          '\n Challenge Day: ${challenge['daysPassed'] +1}',
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),

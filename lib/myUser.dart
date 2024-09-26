@@ -8,8 +8,8 @@ class MyUserData {
   final String email;
   final String shortDescription;
   final List<int> interests;
-  List<String> challenges = []; // List of user's challenges
-  int completedChallenges = 0; // This will be updated
+  List<String> challenges;
+  int completedChallenges;
 
   MyUserData({
     required this.uid,
@@ -19,7 +19,7 @@ class MyUserData {
     required this.shortDescription,
     required this.interests,
     this.challenges = const [],
-    this.completedChallenges = 0, // Initialize with 0
+    this.completedChallenges = 0,
   });
 
   factory MyUserData.fromMap(Map<String, dynamic> map, String uid) {
@@ -31,8 +31,7 @@ class MyUserData {
       shortDescription: map['shortDescription'] ?? '',
       interests: (map['interests'] as List<dynamic>?)?.cast<int>() ?? [],
       challenges: (map['challenges'] as List<dynamic>?)?.cast<String>() ?? [],
-      completedChallenges: map['completedChallenges'] ??
-          0, // Fetch completed challenges from Firestore
+      completedChallenges: map['completedChallenges'] ?? 0,
     );
   }
 
@@ -54,14 +53,13 @@ Future<MyUserData?> getUserData(User user) async {
   try {
     final docSnapshot = await FirebaseFirestore.instance
         .collection('users')
-        .doc(user.uid) // Use Firebase uid as the document ID
+        .doc(user.uid)
         .get();
 
     if (docSnapshot.exists) {
-      return MyUserData.fromMap(docSnapshot.data()!, user.uid); // Pass the Firebase uid
-    } else {
-      return null;
+      return MyUserData.fromMap(docSnapshot.data()!, user.uid);
     }
+    return null;
   } catch (e) {
     print('Error fetching user data: $e');
     return null;

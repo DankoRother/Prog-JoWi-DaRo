@@ -7,8 +7,9 @@ import 'account_page.dart';
 import 'register.dart';
 import 'register_details.dart';
 import 'edit_account.dart';
+
 class MyAccountState extends StatefulWidget {
-  const MyAccountState({super.key});
+  const MyAccountState({Key? key}) : super(key: key);
 
   @override
   _MyAccountState createState() => _MyAccountState();
@@ -19,10 +20,11 @@ enum CurrentPage { start, login, account, register, registerDetails, editAccount
 class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
-  String AppBarText = "My Account";
+
+  String appBarText = "My Account";
   late double screenWidth;
   late double screenHeight;
-  CurrentPage _currentPage = CurrentPage.start; // Declare _currentPage
+  CurrentPage _currentPage = CurrentPage.start;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   List<int> interests = [1, 2, 3];
@@ -37,83 +39,58 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
   }
 
   Future<void> _initialize() async {
-    final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false); // Fetch the existing AuthProvider instance
+    final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false);
 
     try {
-      print('Starting login status check...');
-      await authProvider.checkLoginStatus(); // Check if user is logged in
+      await authProvider.checkLoginStatus();
 
       if (authProvider.isLoggedIn) {
-        print('User is logged in');
-        AppBarText = "My Account";
-        // Ensure that valid user data exists, otherwise, fetch it
         if (authProvider.currentUser != null && authProvider.currentUser!.name.isNotEmpty) {
-          print('User data is available: ${authProvider.currentUser!.name}');
-          await _fetchAllInterests(); // Fetch interests
-          setState(() {
-            _currentPage = CurrentPage.account; // Move to account page
-          });
+          await _fetchAllInterests();
+          setState(() => _currentPage = CurrentPage.account);
         } else {
-          // Fetch the user data if it's missing or incomplete
           final firebaseUser = FirebaseAuth.instance.currentUser;
           if (firebaseUser != null) {
             await authProvider.fetchUserData(firebaseUser.uid);
-
             if (authProvider.currentUser != null && authProvider.currentUser!.name.isNotEmpty) {
-              print('Fetched user data successfully: ${authProvider.currentUser!.name}');
-              await _fetchAllInterests(); // Fetch interests
-              setState(() {
-                _currentPage = CurrentPage.account; // Move to account page
-              });
+              await _fetchAllInterests();
+              setState(() => _currentPage = CurrentPage.account);
             } else {
-              // User data is still missing, fallback to login
-              print('Failed to fetch valid user data, fallback to login.');
-              setState(() {
-                _currentPage = CurrentPage.login;
-              });
+              setState(() => _currentPage = CurrentPage.login);
             }
           }
         }
       } else {
-        print('User is not logged in.');
         setState(() {
-          AppBarText = "Log In";
-          _currentPage = CurrentPage.login; // Set to login if not logged in
+          appBarText = "Log In";
+          _currentPage = CurrentPage.login;
         });
       }
     } catch (e) {
-      print('Error during initialization: $e');
-      setState(() {
-        _currentPage = CurrentPage.login; // Fallback to login in case of error
-      });
+      setState(() => _currentPage = CurrentPage.login);
     }
   }
-
-
 
   Future<void> _fetchAllInterests() async {
     final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false);
     final fetchedInterests = await authProvider.fetchAllInterests();
-    setState(() {
-      allInterests.addAll(fetchedInterests);
-    });
+    setState(() => allInterests.addAll(fetchedInterests));
   }
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // This is needed when using AutomaticKeepAliveClientMixin
+    super.build(context);
     final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context);
 
     return Scaffold(
       appBar: AppBar(
         title: Row(
           children: [
-            // Always display the AppBarText aligned to the left
             Expanded(
               child: Container(
-                alignment: Alignment.centerLeft, // Align text to the left
+                alignment: Alignment.centerLeft,
                 child: Text(
-                  '$AppBarText',
+                  appBarText,
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -122,15 +99,13 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
                 ),
               ),
             ),
-            // Display the icon buttons only if the user is logged in
             if (authProvider.isLoggedIn) ...[
               IconButton(
                 icon: const Icon(Icons.logout),
                 color: Colors.white,
                 iconSize: 30,
                 onPressed: () async {
-                  // Show a confirmation dialog before logging out
-                  bool? confirmLogout = await showDialog(
+                  final confirmLogout = await showDialog<bool>(
                     context: context,
                     builder: (BuildContext context) {
                       return AlertDialog(
@@ -150,18 +125,11 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
                     },
                   );
 
-                  // If the user confirms, log out
                   if (confirmLogout == true) {
                     await authProvider.logout();
-                    if (authProvider.currentUser != null) {
-                      authProvider.logout();
-                    }
                     authProvider.checkLoginStatus();
-
-                    // Trigger a state update to re-render the widget after logging out
                     setState(() {
-                      AppBarText = "Log In";
-                      confirmLogout = false;
+                      appBarText = "Log In";
                       _currentPage = CurrentPage.login;
                     });
                   }
@@ -172,11 +140,8 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
                 icon: const Icon(Icons.edit),
                 color: Colors.white,
                 iconSize: 30,
-                onPressed: () async {
-                  _navigateToEditAccount();
-                  setState(() {
-                    _currentPage = CurrentPage.editAccount;
-                  });
+                onPressed: () {
+                  setState(() => _currentPage = CurrentPage.editAccount);
                 },
                 tooltip: 'Edit Account',
               ),
@@ -193,49 +158,38 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
           ),
         ),
       ),
-
       body: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
           screenWidth = constraints.maxWidth;
           screenHeight = constraints.maxHeight;
-
-          // Keep using the _getCurrentPage function to display the content
-          return Center(
-            child: _getCurrentPage(authProvider),
-          );
+          return Center(child: _getCurrentPage(authProvider));
         },
       ),
     );
   }
 
-
-
   Widget _getCurrentPage(MyAuthProvider.AuthProvider authProvider) {
-    // Render the page based on the value of `_currentPage`
     switch (_currentPage) {
       case CurrentPage.login:
-        AppBarText = "Log In";
-        print('Displaying login page...');
+        appBarText = "Log In";
         return LoginPage(
           usernameController: _usernameController,
           passwordController: _passwordController,
           onLogin: () async {
-            print('Navigating to Account Page after successful login');
-            await _fetchAllInterests(); // Fetch interests after login
+            await _fetchAllInterests();
             setState(() {
-              AppBarText = "My Account";
+              appBarText = "My Account";
               _currentPage = CurrentPage.account;
             });
           },
           onNavigateToRegister: () {
             setState(() {
-              AppBarText = "Register";
+              appBarText = "Register";
               _currentPage = CurrentPage.register;
             });
           },
         );
       case CurrentPage.account:
-        print('Displaying account page...');
         final currentUser = authProvider.currentUser;
         if (currentUser != null && currentUser.name.isNotEmpty) {
           authProvider.checkLoginStatus();
@@ -248,15 +202,13 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
             allInterests: allInterests,
           );
         } else {
-          print('User data is invalid, cannot display account page.');
           return const Text('User data not found. Please log in again.');
         }
       case CurrentPage.register:
-        print('Displaying register page...');
         return RegisterPage(
           onRegister: (username, password) {
             setState(() {
-              AppBarText = "Register";
+              appBarText = "Register";
               tempUsername = username;
               tempPassword = password;
               _currentPage = CurrentPage.registerDetails;
@@ -264,8 +216,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
           },
         );
       case CurrentPage.registerDetails:
-        AppBarText = "Complete Registration";
-        print('Displaying register details page...');
+        appBarText = "Complete Registration";
         return RegisterDetailsPage(
           screenWidth: screenWidth,
           screenHeight: screenHeight,
@@ -273,10 +224,8 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
           tempPassword: tempPassword!,
           allInterests: allInterests,
           onRegistrationComplete: () async {
-            await _fetchAllInterests(); // Fetch interests after registration
-            setState(() {
-              _currentPage = CurrentPage.account;
-            });
+            await _fetchAllInterests();
+            setState(() => _currentPage = CurrentPage.account);
           },
         );
       case CurrentPage.editAccount:
@@ -285,40 +234,30 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
           screenHeight: MediaQuery.of(context).size.height,
           authProvider: authProvider,
           onUpdate: (String newUserName, String newEmail, String newDescription, List<int> newInterests) {
-            setState(() {
-              _currentPage = CurrentPage.account; // Navigate back to account page
-            });
+            setState(() => _currentPage = CurrentPage.account);
           },
         );
       default:
-        return startWidget(); // Fallback in case of unknown state
+        return startWidget();
     }
   }
 
   Widget startWidget() {
     return Scaffold(
-      backgroundColor: Colors.blueGrey[400], // Gray background color consistent with the app theme
+      backgroundColor: Colors.blueGrey[400],
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: const [
-            CircularProgressIndicator(), // Loading spinner
+            CircularProgressIndicator(),
             SizedBox(height: 20),
             Text(
               'Loading...',
-              style: TextStyle(
-                fontSize: 18,
-                color: Colors.white, // White text to contrast with the gray background
-              ),
+              style: TextStyle(fontSize: 18, color: Colors.white),
             ),
           ],
         ),
       ),
     );
-  }
-  void _navigateToEditAccount() {
-    setState(() {
-      _currentPage = CurrentPage.editAccount;
-    });
   }
 }

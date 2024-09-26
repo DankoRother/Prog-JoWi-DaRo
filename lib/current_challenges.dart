@@ -39,8 +39,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
     final authProvider = Provider.of<AuthProvider>(context, listen: false);
     final user = authProvider.currentUser;
     print("B");
-    if (user == null) {
-      return []; // Return empty list if the user is not logged in
+    if (user == null || user.challenges.isEmpty) {
+      return []; // Return empty list if the user is not logged in or has no challenges
     }
 
     // Fetch user-specific challenges from Firestore
@@ -112,6 +112,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
     return challenges;
   }
+
 
   Future<void> _deleteChallenge(String challengeId) async {
     Future<void> _removeUserFromChallenge(String challengeId) async {
@@ -259,7 +260,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             } else if (snapshot.hasError) {
               return Center(child: Text('Fehler beim Laden der Daten: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return const Center(child: Text('Keine Herausforderungen gefunden'));
+              return const Center(child: Text('Keine Challenges gefunden'));
             }
 
             final challenges = snapshot.data!.where((challenge) {
@@ -271,7 +272,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             }).toList();
 
             if (challenges.isEmpty) {
-              return const Center(child: Text('Keine passenden Herausforderungen gefunden'));
+              return const Center(child: Text('Keine passenden Challenges gefunden'));
             }
 
 

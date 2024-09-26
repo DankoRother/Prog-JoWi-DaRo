@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'main.dart'; // Import for standardText
-
-// Assuming you have a way to navigate to CurrentChallenges in your main app structure
-// You might need to use a Navigator or a callback here
-import 'current_challenges.dart';
 
 class AccountPage extends StatelessWidget {
   final String userName;
@@ -39,7 +34,9 @@ class AccountPage extends StatelessWidget {
         SizedBox(height: screenHeight * 0.022),
         Container(
           padding: EdgeInsets.symmetric(
-              vertical: screenHeight * 0.012, horizontal: screenWidth * 0.07),
+            vertical: screenHeight * 0.012,
+            horizontal: screenWidth * 0.07,
+          ),
           decoration: BoxDecoration(
             color: Colors.blueGrey,
             borderRadius: BorderRadius.circular(10),
@@ -47,50 +44,40 @@ class AccountPage extends StatelessWidget {
           child: Column(
             children: [
               Text(
-                textAlign: TextAlign.center,
-                maxLines: 1,
                 userName,
-                style: standardText.copyWith(
-                  fontSize: standardText.fontSize! * 1.4,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               SizedBox(height: screenHeight * 0.005),
               Text(
-                textAlign: TextAlign.center,
                 shortDescription,
-                style: standardText.copyWith(color: Colors.grey[300]),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey[300]),
               ),
               SizedBox(height: screenHeight * 0.010),
               Text(
-                textAlign: TextAlign.center,
                 email,
-                style: standardText.copyWith(color: Colors.grey),
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey),
               ),
               SizedBox(height: screenHeight * 0.025),
               ElevatedButton(
                 style: ButtonStyle(
-                    backgroundColor: WidgetStateProperty.all(Colors.blue[900])),
-                onPressed: () {
-                  // Navigate to CurrentChallenges
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const CurrentChallenges()),
-                  );
-                },
-                child: Text(
-                  textAlign: TextAlign.center,
-                  "Laufende Challenges",
-                  style: standardText,
+                  backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
                 ),
+                onPressed: () {
+                  Navigator.pushNamed(context, '/currentChallenges');
+                },
+                child: const Text("Ongoing Challenges"),
               ),
               SizedBox(height: screenHeight * 0.015),
               Text(
+                "Completed Challenges: $completedChallenges",
                 textAlign: TextAlign.center,
-                "Abgeschlossene Challenges: $completedChallenges",
-                style: standardText.copyWith(
-                  fontSize: standardText.fontSize! * 1.2,
-                ),
+                style: const TextStyle(fontSize: 18),
               ),
               SizedBox(height: screenHeight * 0.015),
               Wrap(

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'authentication_provider.dart';
-import 'main.dart';
 import 'interest_selection.dart';
 
 class EditAccountPage extends StatefulWidget {
   final double screenWidth;
   final double screenHeight;
   final AuthProvider authProvider;
-  final Function(String, String, String, List<int>) onUpdate; // Callback to update parent state
+  final Function(String, String, String, List<int>) onUpdate;
 
   const EditAccountPage({
     Key? key,
@@ -26,19 +25,25 @@ class _EditAccountPageState extends State<EditAccountPage> {
   late TextEditingController userNameController;
   late TextEditingController emailController;
   late TextEditingController shortDescriptionController;
-  late List<int> selectedInterests;
+  List<int> selectedInterests = [];
+  Map<int, String> allInterests = {};
 
   @override
   void initState() {
     super.initState();
-    // Fetch the current user details from authProvider
     final currentUser = widget.authProvider.currentUser;
-
-    // Initialize controllers with current user data
     userNameController = TextEditingController(text: currentUser?.name ?? '');
     emailController = TextEditingController(text: currentUser?.email ?? '');
     shortDescriptionController = TextEditingController(text: currentUser?.shortDescription ?? '');
     selectedInterests = List.from(currentUser?.interests ?? []);
+    _fetchInterests();
+  }
+
+  Future<void> _fetchInterests() async {
+    final interests = await widget.authProvider.fetchAllInterests();
+    setState(() {
+      allInterests = interests;
+    });
   }
 
   @override
@@ -70,6 +75,8 @@ class _EditAccountPageState extends State<EditAccountPage> {
             ),
             SizedBox(height: widget.screenHeight * 0.022),
             _buildUserForm(),
+            _buildInterestChips(),
+            _buildUpdateButton(),
           ],
         ),
       ),
@@ -79,8 +86,9 @@ class _EditAccountPageState extends State<EditAccountPage> {
   Widget _buildUserForm() {
     return Container(
       padding: EdgeInsets.symmetric(
-          vertical: widget.screenHeight * 0.012,
-          horizontal: widget.screenWidth * 0.014),
+        vertical: widget.screenHeight * 0.012,
+        horizontal: widget.screenWidth * 0.014,
+      ),
       decoration: BoxDecoration(
         color: Colors.blueGrey,
         borderRadius: BorderRadius.circular(10),
@@ -90,64 +98,67 @@ class _EditAccountPageState extends State<EditAccountPage> {
           TextField(
             controller: userNameController,
             textAlign: TextAlign.center,
-            maxLines: 1,
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             decoration: const InputDecoration(hintText: 'Enter new username'),
           ),
           SizedBox(height: widget.screenHeight * 0.015),
           TextField(
             controller: emailController,
             textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.normal, color: Colors.grey[800]),
-            decoration: InputDecoration(hintText: 'Enter new email', filled: true, fillColor: Colors.blueGrey[300]),
+            decoration: const InputDecoration(hintText: 'Enter new email'),
           ),
-          SizedBox(height: widget.screenHeight * 0.001),
+          SizedBox(height: widget.screenHeight * 0.015),
           TextField(
             controller: shortDescriptionController,
             textAlign: TextAlign.center,
-            maxLines: 1,
-            maxLength: 200,
-            style: TextStyle(fontWeight: FontWeight.normal),
-            decoration: InputDecoration(
-                hintText: 'Enter a short description about yourself',
-                filled: true,
-                fillColor: Colors.blueGrey[300]),
+            decoration: const InputDecoration(hintText: 'Enter a short description'),
           ),
-          SizedBox(height: widget.screenHeight * 0.025),
-          ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
-            ),
-            onPressed: () async {
-              // Update user data
-              await widget.authProvider.updateUserData(
-                userNameController.text,
-                emailController.text,
-                shortDescriptionController.text,
-              );
-
-              // Update user interests
-              await widget.authProvider.updateUserInterests(selectedInterests);
-
-              // Call the callback to update the parent state
-              widget.onUpdate(
-                userNameController.text,
-                emailController.text,
-                shortDescriptionController.text,
-                selectedInterests,
-              );
-
-              // Close the dialog
-              Navigator.pop(context);
-            },
-            child: Text(
-              "Submit Changes",
-              style: TextStyle(fontSize: 16, color: Colors.white),
-            ),
-          ),
-          SizedBox(height: widget.screenHeight * 0.015),
         ],
       ),
+    );
+  }
+
+  Widget _buildInterestChips() {
+    return Wrap(
+      spacing: 8.0,
+      runSpacing: 8.0,
+      children: selectedInterests.map((interestId) {
+        return Chip(
+          label: Text(allInterests[interestId] ?? 'Unknown'),
+          backgroundColor: Colors.blueGrey[300],
+          onDeleted: () {
+            setState(() {
+              selectedInterests.remove(interestId);
+            });
+          },
+        );
+      }).toList(),
+    );
+  }
+
+  Widget _buildUpdateButton() {
+    return ElevatedButton(
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
+      ),
+      onPressed: () async {
+        await widget.authProvider.updateUserData(
+          userNameController.text,
+          emailController.text,
+          shortDescriptionController.text,
+        );
+
+        await widget.authProvider.updateUserInterests(selectedInterests);
+
+        widget.onUpdate(
+          userNameController.text,
+          emailController.text,
+          shortDescriptionController.text,
+          selectedInterests,
+        );
+
+        Navigator.pop(context);
+      },
+      child: const Text("Submit Changes"),
     );
   }
 }

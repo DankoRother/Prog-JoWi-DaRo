@@ -5,8 +5,8 @@ import 'authentication_provider.dart';
 class LoginPage extends StatelessWidget {
   final TextEditingController usernameController;
   final TextEditingController passwordController;
-  final VoidCallback onLogin; // Callback for successful login
-  final VoidCallback? onNavigateToRegister; // Callback for navigating to register
+  final VoidCallback onLogin;
+  final VoidCallback? onNavigateToRegister;
 
   const LoginPage({
     Key? key,
@@ -16,7 +16,7 @@ class LoginPage extends StatelessWidget {
     this.onNavigateToRegister,
   }) : super(key: key);
 
-  Future<void> attemptLogin(BuildContext context) async {
+  Future<void> _attemptLogin(BuildContext context) async {
     if (usernameController.text.isNotEmpty && passwordController.text.isNotEmpty) {
       try {
         final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -27,18 +27,18 @@ class LoginPage extends StatelessWidget {
         );
 
         if (authProvider.isLoggedIn) {
-          onLogin(); // Use the onLogin callback passed from the parent
+          onLogin();
         }
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error during login: $e'),
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error during login: $e'),
+          ),
+        );
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Please fill in all fields.'),
-        ),
+        const SnackBar(content: Text('Please fill in all fields.')),
       );
     }
   }
@@ -50,7 +50,7 @@ class LoginPage extends StatelessWidget {
 
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: screenWidth * 0.05),
-      child: SingleChildScrollView( // To prevent overflow on smaller screens
+      child: SingleChildScrollView(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -68,7 +68,7 @@ class LoginPage extends StatelessWidget {
                 controller: passwordController,
                 obscureText: true,
                 decoration: const InputDecoration(labelText: 'Password'),
-                onSubmitted: (_) => attemptLogin(context),
+                onSubmitted: (_) => _attemptLogin(context),
               ),
             ),
             SizedBox(height: screenHeight * 0.02),
@@ -76,9 +76,7 @@ class LoginPage extends StatelessWidget {
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
               ),
-              onPressed: () {
-                attemptLogin(context);
-              },
+              onPressed: () => _attemptLogin(context),
               child: Text(
                 'Login',
                 style: TextStyle(
@@ -92,9 +90,7 @@ class LoginPage extends StatelessWidget {
               style: ButtonStyle(
                 backgroundColor: MaterialStateProperty.all(Colors.pink[700]),
               ),
-              onPressed: onNavigateToRegister != null
-                  ? onNavigateToRegister
-                  : null,
+              onPressed: onNavigateToRegister,
               child: Text(
                 'Register',
                 style: TextStyle(

@@ -100,10 +100,10 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         'frequency': frequency,
         'obstacle': obstacle,
         'createdAt': createdAt,
-        'daysPassed': adjustedDaysPassed,
+        'adjustedDaysPassed': adjustedDaysPassed,
         'successfulDays': successfulDays,
         'failedDays': failedDays,
-        'adjustedDaysPassed': daysPassed,
+        'daysPassed': daysPassed,
         'rankColor': rankColor, // Add rankColor
         'rankIcon': rankIcon,   // Add rankIcon
         'currentRank': rank,    // Add rank for display
@@ -265,9 +265,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
             final challenges = snapshot.data!.where((challenge) {
               if (isLessOrEqualFilter) {
-                return challenge['adjustedDaysPassed'] <= challenge['finalDuration'];
+                return challenge['daysPassed'] <= challenge['finalDuration'];
               } else {
-                return challenge['adjustedDaysPassed'] > challenge['finalDuration'];
+                return challenge['daysPassed'] > challenge['finalDuration'];
               }
             }).toList();
 
@@ -289,7 +289,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                 itemCount: challenges.length,
                 itemBuilder: (context, index) {
                   final challenge = challenges[index];
-                  final completedChallenge = challenge['daysPassed'] >= challenge['finalDuration'];
+                  final completedChallenge = challenge['daysPassed'] > challenge['finalDuration']; //TODO: ausprobieren ob es so funktioniert
                   return Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -307,7 +307,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(12), // Abrunden der Ecken
                               child: LinearProgressIndicator(
-                                value: challenge['daysPassed'] / (challenge['finalDuration']), // Berechnung des Fortschritts
+                                value: challenge['adjustedDaysPassed'] / (challenge['finalDuration']), //TODO: maybe daysPassed // Berechnung des Fortschritts
                                 backgroundColor: Colors.blueGrey.shade600,
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent),
                               ),
@@ -516,7 +516,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                       ),
                                                     ),
                                                     child: Text(
-                                                      '${challenge['daysPassed']} / ${challenge['finalDuration']} Days',
+                                                      '${challenge['adjustedDaysPassed']} / ${challenge['finalDuration']} Days',
                                                       style: const TextStyle(
                                                         fontSize: 20,
                                                       ),

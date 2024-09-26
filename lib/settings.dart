@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'date_notifier.dart'; // Achten Sie darauf, dass dieser Import korrekt ist
+import 'date_notifier.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -9,7 +9,7 @@ class SettingsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Settings',
+          'Settings', // Title of the app bar
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -17,11 +17,12 @@ class SettingsPage extends StatelessWidget {
           ),
         ),
         actions: [
+          // Close button to navigate back
           IconButton(
             icon: const Icon(Icons.close, color: Colors.white),
             iconSize: 30,
             onPressed: () {
-              Navigator.of(context).pop();
+              Navigator.of(context).pop(); // Close the settings page
             },
           ),
         ],
@@ -34,34 +35,33 @@ class SettingsPage extends StatelessWidget {
             ),
           ),
         ),
-        automaticallyImplyLeading: false, // Entfernt den Zurückpfeil
+        automaticallyImplyLeading: false, // Remove the back arrow
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Zeige das simulierte Datum an
+          // Display the simulated date
           ValueListenableBuilder<DateTime>(
-            valueListenable: simulatedDate,
+            valueListenable: simulatedDate, // Listen for changes in the simulated date
             builder: (context, value, child) {
               return Text(
-                'Current Date: ${value.toLocal()}',
-                style: const
-                TextStyle(
+                'Current Date: ${value.toLocal()}', // Show the current local date
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                   fontStyle: FontStyle.italic,
-                  color: Colors.white
+                  color: Colors.white,
                 ),
               );
             },
           ),
           const SizedBox(height: 20),
-          // Buttons zum Ändern des Datums
+          // Buttons to change the date
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () => _changeDate(-1),
+                onPressed: () => _changeDate(-1), // Decrease the date by one day
                 child: const Text('- DAY'),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
@@ -75,8 +75,8 @@ class SettingsPage extends StatelessWidget {
               ),
               const SizedBox(width: 20),
               ElevatedButton(
-                onPressed: () => _changeDate(1),
-                child: const Text('+ DAY'),
+                onPressed: () => _changeDate(1), // Increase the date by one day
+                child: const Text('+ DAY'), // Button label
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.blue[900],
@@ -91,8 +91,8 @@ class SettingsPage extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           ElevatedButton(
-            onPressed: _resetToCurrentDate,
-            child: const Text('CURRENT DATE'),
+            onPressed: _resetToCurrentDate, // Reset to the current date
+            child: const Text('CURRENT DATE'), // Button label
             style: ElevatedButton.styleFrom(
               foregroundColor: Colors.white,
               backgroundColor: Colors.pink,
@@ -106,10 +106,10 @@ class SettingsPage extends StatelessWidget {
           const SizedBox(height: 40),
           const Center(
             child: Text(
-                'Choose your Language etc.',
-                style: TextStyle(
-                  color: Colors.white,
-                ),
+              'Choose your Language etc.',
+              style: TextStyle(
+                color: Colors.white,
+              ),
             ),
           ),
         ],
@@ -117,13 +117,13 @@ class SettingsPage extends StatelessWidget {
     );
   }
 
-  // Funktion zum Ändern des Datums
+  // Function to change the date by a specified number of days
   void _changeDate(int days) {
-    simulatedDate.value = simulatedDate.value.add(Duration(days: days));
+    simulatedDate.value = simulatedDate.value.add(Duration(days: days)); // Update the simulated date
   }
 
-  // Funktion zum Zurücksetzen auf das aktuelle Datum
+  // Function to reset the date to the current date
   void _resetToCurrentDate() {
-    simulatedDate.value = DateTime.now();
+    simulatedDate.value = DateTime.now(); // Set simulated date to now
   }
 }

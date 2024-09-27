@@ -44,7 +44,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
   void initState() {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 2));
-    _confettiController.play(); // Startet die Konfetti-Animation
+    _confettiController.play(); // starts confetti animation
     startTimer();
 
     Timer(widget.duration, () {
@@ -55,7 +55,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
       });
 
       Timer(const Duration(seconds: 1), () {
-        widget.onNavigate(3); // Navigiere zur CurrentChallenges-Seite
+        widget.onNavigate(3); // navigate to current challenges page
       });
     });
   }
@@ -111,7 +111,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
               ),
             ),
           ),
-          // Füge hier das Konfetti-Widget hinzu
+          //confetti widget
           Align(
             alignment: Alignment.topCenter,
             child: ConfettiWidget(
@@ -123,7 +123,7 @@ class _ChallengeCreatedConfirmationState extends State<ChallengeCreatedConfirmat
                 Colors.blue.shade900,
                 Colors.white,
                 Colors.blueGrey,
-              ], // Optional: Farben für das Konfetti definieren
+              ],
               numberOfParticles: 50,
               emissionFrequency: 0.1,
             ),

@@ -34,7 +34,7 @@ class AddFriendToChallenge extends StatelessWidget {
             ),
           ),
         ),
-        automaticallyImplyLeading: false, // Entfernt den Zurückpfeil
+        automaticallyImplyLeading: false, //remove the manual backwards arrow
       ),
       body: const Center(
         child: Text(

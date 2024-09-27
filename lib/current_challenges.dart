@@ -1,10 +1,10 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';// Importiere Provider für AuthProvider
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'settings.dart';
 import 'edit_challenge.dart';
-import 'authentication_provider.dart';// Importiere AuthProvider
+import 'authentication_provider.dart';
 import 'date_notifier.dart';
 import 'logInPrompt.dart';
 
@@ -12,11 +12,12 @@ class CurrentChallenges extends StatefulWidget {
   const CurrentChallenges({super.key});
 
   @override
-  CurrentChallengesState createState() => CurrentChallengesState();
+  _CurrentChallengesState createState() => _CurrentChallengesState();
 }
 
-class CurrentChallengesState extends State<CurrentChallenges> {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore-Instanz
+class _CurrentChallengesState extends State<CurrentChallenges> {
+  final FirebaseFirestore _firestore = FirebaseFirestore
+      .instance; // Firestore-Instanz
   bool isLessOrEqualFilter = true;
 
   late Future<List<Map<String, dynamic>>> _challengesFuture;
@@ -43,13 +44,15 @@ class CurrentChallengesState extends State<CurrentChallenges> {
     final user = authProvider.currentUser;
     print("B");
     if (user == null || user.challenges.isEmpty) {
-      return []; // Return empty list if the user is not logged in or has no challenges
+      return [
+      ]; // Return empty list if the user is not logged in or has no challenges
     }
 
     // Fetch user-specific challenges from Firestore
     final challengesSnapshot = await FirebaseFirestore.instance
         .collection('challenge')
-        .where(FieldPath.documentId, whereIn: user.challenges) // Filter by user's challenges
+        .where(FieldPath.documentId,
+        whereIn: user.challenges) // Filter by user's challenges
         .orderBy('createdAt', descending: true)
         .get();
 
@@ -66,12 +69,21 @@ class CurrentChallengesState extends State<CurrentChallenges> {
       final successfulDays = (data['successfulDays'] ?? 0) as int;
       final failedDays = (data['failedDays'] ?? 0) as int;
 
-      final DateTime createdAtDate = DateTime(createdAt.year, createdAt.month, createdAt.day);
-      final int daysPassed = currentDate.difference(createdAtDate).inDays + 1;
+      // calculate duration progress based on current date or choosen date
+      final DateTime createdAtDate = DateTime(
+          createdAt.year, createdAt.month, createdAt.day);
+      final int daysPassed = currentDate
+          .difference(createdAtDate)
+          .inDays + 1;
 
-      final int adjustedDaysPassed = daysPassed > finalDuration ? finalDuration : daysPassed;
+      //making sure that duration progress is not increased after challenge is completed
+      final int adjustedDaysPassed = daysPassed > finalDuration
+          ? finalDuration
+          : daysPassed;
 
-      final double _successRate = adjustedDaysPassed > 0 ? successfulDays / adjustedDaysPassed : 0;
+      //calculating current rank for user and each challenge
+      final double _successRate = adjustedDaysPassed > 0 ? successfulDays /
+          adjustedDaysPassed : 0;
 
       String rank;
       Color rankColor;
@@ -107,15 +119,14 @@ class CurrentChallengesState extends State<CurrentChallenges> {
         'successfulDays': successfulDays,
         'failedDays': failedDays,
         'daysPassed': daysPassed,
-        'rankColor': rankColor, // Add rankColor
-        'rankIcon': rankIcon,   // Add rankIcon
-        'currentRank': rank,    // Add rank for display
+        'rankColor': rankColor,
+        'rankIcon': rankIcon,
+        'currentRank': rank,
       });
     }
 
     return challenges;
   }
-
 
   Future<void> _deleteChallenge(String challengeId) async {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
@@ -162,6 +173,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
     final authProvider = Provider.of<AuthProvider>(context); // AuthProvider abrufen
     final isLoggedIn = authProvider.isLoggedIn; // Anmeldestatus abrufen
 
+    //checks if page is lying on stack or not
     bool canPop = ModalRoute.of(context)?.canPop ?? false;
 
     return Scaffold(
@@ -169,36 +181,39 @@ class CurrentChallengesState extends State<CurrentChallenges> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Container(
-              alignment: Alignment.center,
-              child: Text(
-                isLoggedIn ? 'Your current Challenges' : 'Current Challenges',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 25,
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  isLoggedIn
+                      ? (isLessOrEqualFilter ? 'Your Active Challenges' : 'Your Completed Challenges')
+                      : 'Challenges',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 25,
+                  ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ),
-            Row(
-              children: [
-                Text(
-                  isLessOrEqualFilter ? 'Active' : 'Archive',
-                  style: TextStyle(color: Colors.white),
-                ),
-                Switch(
-                  value: isLessOrEqualFilter, // Deine bool-Variable, die den aktuellen Filterzustand speichert
-                  onChanged: (bool newValue) {
-                    setState(() {
-                      isLessOrEqualFilter = newValue;
-                    });
-                  },
-                  activeColor: Colors.pink, // Farbe des aktiven Switch
-                  inactiveThumbColor: Colors.blueGrey.shade400, // Farbe des inaktiven Switch
-                  inactiveTrackColor: Colors.blueGrey.shade200, // Farbe der Switch-Spur im inaktiven Zustand
-                ),
-              ],
-            ),
+            if (isLoggedIn)
+              Row(
+                children: [
+                  //button for archive
+                  Switch(
+                    value: isLessOrEqualFilter,
+                    onChanged: (bool newValue) {
+                      setState(() {
+                        isLessOrEqualFilter = newValue;
+                      });
+                    },
+                    activeColor: Colors.pink, // Farbe des aktiven Switch
+                    inactiveThumbColor: Colors.blueGrey.shade400, // Farbe des inaktiven Switch
+                    inactiveTrackColor: Colors.blueGrey.shade200, // Farbe der Switch-Spur im inaktiven Zustand
+                  ),
+                ],
+              ),
             if (isLoggedIn)
               IconButton(
                 icon: const Icon(Icons.settings),
@@ -210,7 +225,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                     MaterialPageRoute(builder: (context) => const SettingsPage()),
                   );
                 },
-              ), // Füge hier den Switch-Button für den Filter hinzu
+              ),
           ],
         ),
         flexibleSpace: Container(
@@ -244,19 +259,22 @@ class CurrentChallengesState extends State<CurrentChallenges> {
         )
             : null,
       ),
+
+      //checks if user is logged in, otherwise build logInPrompt()
       body: isLoggedIn ? _buildChallengesPage() : LogInPrompt(),
     );
   }
 
-  // Widget für eingeloggte Benutzer mit geladenen Challenges
   Widget _buildChallengesPage() {
     return ValueListenableBuilder<DateTime>(
-      valueListenable: simulatedDate, // Beobachte das manipulierte Datum
+      valueListenable: simulatedDate, // simluated Date is noticed here
       builder: (context, simulatedDate, child) {
         final DateTime currentDate = DateTime(simulatedDate.year, simulatedDate.month, simulatedDate.day);
-        _fetchChallenges(currentDate);
+
+        //fetch challenges based on currentDate
+
         return FutureBuilder<List<Map<String, dynamic>>>(
-          future: _fetchChallenges(currentDate), // Verwende die Methode ohne Parameter
+          future: _fetchChallenges(currentDate),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -266,6 +284,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
               return const Center(child: Text('No active Challenges found'));
             }
 
+            //check if challenges are active or completed and creating array based on this topic
             final challenges = snapshot.data!.where((challenge) {
               if (isLessOrEqualFilter) {
                 return challenge['daysPassed'] <= challenge['finalDuration'];
@@ -287,12 +306,16 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                   colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.dstATop),
                 ),
               ),
+
+              //build container for every challenge based on the number of challenges found in firestore
               child: ListView.builder(
                 padding: const EdgeInsets.all(16.0),
                 itemCount: challenges.length,
                 itemBuilder: (context, index) {
                   final challenge = challenges[index];
-                  final completedChallenge = challenge['daysPassed'] > challenge['finalDuration']; //TODO: ausprobieren ob es so funktioniert
+
+                  //check if challenge is completed or not
+                  final completedChallenge = challenge['daysPassed'] > challenge['finalDuration'];
                   return Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.symmetric(vertical: 10.0),
@@ -300,7 +323,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                         color: Colors.blueGrey.shade600,
                         border: Border.all(
                           color: challenges[index]['rankColor'],
-                          width: 3, // Dicke der Umrandung
+                          width: 3,
                         ),
                         borderRadius: BorderRadius.circular(15),
                       ),
@@ -308,9 +331,9 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                         children: [
                           Positioned.fill(
                             child: ClipRRect(
-                              borderRadius: BorderRadius.circular(12), // Abrunden der Ecken
+                              borderRadius: BorderRadius.circular(12),
                               child: LinearProgressIndicator(
-                                value: challenge['adjustedDaysPassed'] / (challenge['finalDuration']), //TODO: maybe daysPassed // Berechnung des Fortschritts
+                                value: challenge['adjustedDaysPassed'] / (challenge['finalDuration']),
                                 backgroundColor: Colors.blueGrey.shade600,
                                 valueColor: AlwaysStoppedAnimation<Color>(Colors.pinkAccent),
                               ),
@@ -320,7 +343,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                             padding: const EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15.0, right: 15.0),
                             child: Column(
                               children: [
-                              if (completedChallenge) // Hinweistext für abgeschlossene Challenges
+                              if (completedChallenge) //text for completed challenges
                               Column(
                                   children: [
                                     Text(
@@ -354,13 +377,15 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                                         ),
                                       ),
                                       const SizedBox(height: 10),
+
+                                      //button to get to editchallenge page and hand over the needed information
                                       ElevatedButton.icon(onPressed: completedChallenge ? null : () {
                                         Navigator.of(context).push(
                                           PageRouteBuilder(
                                             opaque: false,
                                             pageBuilder: (BuildContext context, _, __) => EditChallenge(
-                                              challengeId: challenge['id'], // Übergebe die Challenge-ID
-                                              challengeProgess: challenge['daysPassed'], // Übergebe den Fortschritt
+                                              challengeId: challenge['id'],
+                                              challengeProgess: challenge['daysPassed'],
                                               challengeObstacle: challenge['obstacle'],
                                             ),
                                           ),
@@ -402,9 +427,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                                           ),
                                         ),
                                         Text(
-                                          'Progress Day 0 marks already the first day of ${challenge['title']}, so you can directly start participating in your Challenge. '
-                                          'Your final rank will be revealed at Challenge Day (duration: ${challenge['finalDuration']} Days) + 1. '
-                                          '\n Challenge Day: ${challenge['daysPassed'] +1}',
+                                          'Your Challenge can be found in the archive once the duration is over (${challenge['finalDuration']} + 1 Day).',
                                           style: TextStyle(
                                             color: Colors.white,
                                           ),
@@ -552,16 +575,16 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                                                       color: Colors.white,
                                                       borderRadius: BorderRadius.circular(10),
                                                       border: Border.all(
-                                                        color: challenges[index]['rankColor'], // Verwende die Rank-Farbe
+                                                        color: challenges[index]['rankColor'],
                                                         width: 3,
                                                       ),
                                                     ),
                                                     child: Row(
                                                       children: [
-                                                        challenges[index]['rankIcon'], // Verwende das Rank-Icon
+                                                        challenges[index]['rankIcon'],
                                                         const SizedBox(width: 10),
                                                         Text(
-                                                          challenges[index]['currentRank'], // Rank-Text
+                                                          challenges[index]['currentRank'],
                                                           style: const TextStyle(
                                                             fontSize: 20,
                                                           ),
@@ -658,7 +681,7 @@ class CurrentChallengesState extends State<CurrentChallenges> {
                                                   fontSize: 10,
                                                 ),
                                               ),
-                                              const SizedBox(height: 10), // Abstand zwischen den Buttons
+                                              const SizedBox(height: 10),
                                               IconButton(
                                                 icon: const Icon(
                                                     Icons.delete,

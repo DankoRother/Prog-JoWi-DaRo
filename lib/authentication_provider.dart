@@ -281,10 +281,16 @@ class AuthProvider extends ChangeNotifier {
           );
         }
       } catch (e) {
+        String snackBarText = "";
+        if(e.toString() == "[firebase_auth/invalid-email] The email address is badly formatted.") {
+            snackBarText = "Please enter a valid E-Mail";
+        }
+        else snackBarText  = e.toString();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             backgroundColor: Colors.pink[900],
-            content: Text('Error during registration: $e'),
+            content:
+              Text('Error during registration: $snackBarText'),
           ),
         );
       }

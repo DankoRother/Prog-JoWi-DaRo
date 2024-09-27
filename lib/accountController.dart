@@ -229,12 +229,22 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
           },
         );
       case CurrentPage.editAccount:
+      // Render edit account page and pass the onUpdate callback
         return EditAccountPage(
-          screenWidth: MediaQuery.of(context).size.width,
-          screenHeight: MediaQuery.of(context).size.height,
+          screenWidth: screenWidth,
+          screenHeight: screenHeight,
           authProvider: authProvider,
           onUpdate: (String newUserName, String newEmail, String newDescription, List<int> newInterests) {
-            setState(() => _currentPage = CurrentPage.account);
+            // Update state to go back to the account page after a successful update
+            setState(() {
+              _currentPage = CurrentPage.account;
+
+              // Optionally, update the user data in the state if needed
+              authProvider.currentUser!.name = newUserName;
+              authProvider.currentUser!.email = newEmail;
+              authProvider.currentUser!.shortDescription = newDescription;
+              authProvider.currentUser!.interests = newInterests;
+            });
           },
         );
       default:

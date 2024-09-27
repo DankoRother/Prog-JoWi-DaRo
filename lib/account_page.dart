@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'main.dart';
 class AccountPage extends StatelessWidget {
   final String userName;
   final String email;
@@ -46,22 +46,23 @@ class AccountPage extends StatelessWidget {
               Text(
                 userName,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 20,
+                style: standardText.copyWith(
                   fontWeight: FontWeight.bold,
-                ),
+                  fontSize: screenHeight*0.04,
+                  color: Colors.pink[600]
+                )
               ),
               SizedBox(height: screenHeight * 0.005),
               Text(
                 shortDescription,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey[300]),
+                style: standardText
               ),
               SizedBox(height: screenHeight * 0.010),
               Text(
                 email,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.grey),
+                style: standardText
               ),
               SizedBox(height: screenHeight * 0.025),
               ElevatedButton(
@@ -71,7 +72,10 @@ class AccountPage extends StatelessWidget {
                 onPressed: () {
                   Navigator.pushNamed(context, '/currentChallenges');
                 },
-                child: const Text("Ongoing Challenges"),
+                child: Text(
+                    "Ongoing Challenges",
+                  style: standardText,
+                ),
               ),
               SizedBox(height: screenHeight * 0.015),
               Text(

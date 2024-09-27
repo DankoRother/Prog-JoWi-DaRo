@@ -12,10 +12,10 @@ class CurrentChallenges extends StatefulWidget {
   const CurrentChallenges({super.key});
 
   @override
-  _CurrentChallengesState createState() => _CurrentChallengesState();
+  CurrentChallengesState createState() => CurrentChallengesState();
 }
 
-class _CurrentChallengesState extends State<CurrentChallenges> {
+class CurrentChallengesState extends State<CurrentChallenges> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance; // Firestore-Instanz
   bool isLessOrEqualFilter = true;
 
@@ -26,12 +26,15 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
     super.initState();
     // Directly call the update function without checking for null
     _updateChallenges();
+    _fetchChallenges(DateTime.now());
   }
 
   void _updateChallenges() {
     final currentDate = DateTime.now();
     print("A"); // Should print to console
-    _challengesFuture = _fetchChallenges(currentDate);
+    setState(() {
+      _challengesFuture = _fetchChallenges(currentDate);
+    });
   }
 
 
@@ -115,7 +118,6 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
 
   Future<void> _deleteChallenge(String challengeId) async {
-    Future<void> _removeUserFromChallenge(String challengeId) async {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final user = authProvider.currentUser;
 
@@ -134,7 +136,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
         // Step 2: Remove the user from the challenge's assigned users list
         await _firestore.collection('challenge').doc(challengeId).update({
-          'userId': FieldValue.delete(), // or 'users': FieldValue.arrayRemove([user.uid]) if challenge stores multiple users
+          'users': FieldValue.arrayRemove([user.uid]),
         });
 
         // Optionally, if you're tracking the challenges a user is assigned to, you can also remove this assignment.
@@ -145,18 +147,19 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
 
         // Step 3: Update the challenges displayed after removing the challenge
         _updateChallenges();
+        setState(() {
+          _challengesFuture = _fetchChallenges(DateTime.now());
+        });
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to remove challenge: $e')),
         );
       }
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = Provider.of<AuthProvider>(context); // AuthProvider abrufen
-    //authProvider.checkLoginStatus();
     final isLoggedIn = authProvider.isLoggedIn; // Anmeldestatus abrufen
 
     bool canPop = ModalRoute.of(context)?.canPop ?? false;
@@ -223,8 +226,8 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             ? MouseRegion(
           onEnter: (PointerEnterEvent event) {
             ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                backgroundColor: Colors.pink,
+              SnackBar(
+                backgroundColor: Colors.pink[900],
                 content: Text('Back to previous page'),
               ),
             );
@@ -251,7 +254,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       valueListenable: simulatedDate, // Beobachte das manipulierte Datum
       builder: (context, simulatedDate, child) {
         final DateTime currentDate = DateTime(simulatedDate.year, simulatedDate.month, simulatedDate.day);
-
+        _fetchChallenges(currentDate);
         return FutureBuilder<List<Map<String, dynamic>>>(
           future: _fetchChallenges(currentDate), // Verwende die Methode ohne Parameter
           builder: (context, snapshot) {
@@ -664,7 +667,12 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                                                 ),
                                                 onPressed: () {
                                                   _deleteChallenge(challenge['id']);
-                                                  setState(() {});
+                                                  _updateChallenges();
+                                                  _fetchChallenges(currentDate);
+                                                  setState(() {
+                                                    _challengesFuture = _fetchChallenges(DateTime.now());
+
+                                                  });
                                                 },
                                               ),
                                             ],

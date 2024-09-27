@@ -2,12 +2,12 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class MyUserData {
-  final String uid;
-  final String username;
-  final String name;
-  final String email;
-  final String shortDescription;
-  final List<int> interests;
+  String uid;
+  String username;
+  String name;
+  String email;
+  String shortDescription;
+  List<int> interests;
   List<String> challenges;
   int completedChallenges;
 

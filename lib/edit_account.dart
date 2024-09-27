@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'authentication_provider.dart';
-import 'interest_selection.dart';
 
 class EditAccountPage extends StatefulWidget {
   final double screenWidth;
@@ -27,6 +26,13 @@ class _EditAccountPageState extends State<EditAccountPage> {
   late TextEditingController shortDescriptionController;
   List<int> selectedInterests = [];
   Map<int, String> allInterests = {};
+  bool isLoading = false;
+  bool _isValidEmail(String email) {
+    String emailPattern =
+        r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$';
+    RegExp regex = RegExp(emailPattern);
+    return regex.hasMatch(email);
+  }
 
   @override
   void initState() {
@@ -136,29 +142,61 @@ class _EditAccountPageState extends State<EditAccountPage> {
   }
 
   Widget _buildUpdateButton() {
-    return ElevatedButton(
+    return isLoading
+        ? const CircularProgressIndicator()
+        : ElevatedButton(
       style: ButtonStyle(
         backgroundColor: MaterialStateProperty.all(Colors.blue[900]),
       ),
-      onPressed: () async {
-        await widget.authProvider.updateUserData(
-          userNameController.text,
-          emailController.text,
-          shortDescriptionController.text,
-        );
-
-        await widget.authProvider.updateUserInterests(selectedInterests);
-
-        widget.onUpdate(
-          userNameController.text,
-          emailController.text,
-          shortDescriptionController.text,
-          selectedInterests,
-        );
-
-        Navigator.pop(context);
-      },
+      onPressed: _submitChanges,
       child: const Text("Submit Changes"),
     );
   }
+
+  Future<void> _submitChanges() async {
+    if (!_isValidEmail(emailController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Please enter a valid email address'),
+          backgroundColor: Colors.pink[900],
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      // First, update user data
+      await widget.authProvider.updateUserData(
+        userNameController.text,
+        emailController.text,
+        shortDescriptionController.text,
+      );
+
+      // Then, update user interests
+      await widget.authProvider.updateUserInterests(selectedInterests);
+
+      // After successful update, trigger the onUpdate callback
+      widget.onUpdate(
+        userNameController.text,
+        emailController.text,
+        shortDescriptionController.text,
+        selectedInterests,
+      );
+
+      // Navigate back to the account page using the callback
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error updating profile: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
 }

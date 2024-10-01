@@ -8,6 +8,7 @@ import 'register.dart';
 import 'register_details.dart';
 import 'edit_account.dart';
 
+/// A stateful widget that manages the account-related pages and navigation.
 class MyAccountState extends StatefulWidget {
   const MyAccountState({Key? key}) : super(key: key);
 
@@ -15,21 +16,41 @@ class MyAccountState extends StatefulWidget {
   _MyAccountState createState() => _MyAccountState();
 }
 
+/// Enumeration of the different pages within the account section.
 enum CurrentPage { start, login, account, register, registerDetails, editAccount }
 
 class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClientMixin {
   @override
   bool get wantKeepAlive => true;
 
+  /// The text displayed in the app bar.
   String appBarText = "My Account";
+
+  /// Screen width for responsive layout.
   late double screenWidth;
+
+  /// Screen height for responsive layout.
   late double screenHeight;
+
+  /// The currently active page.
   CurrentPage _currentPage = CurrentPage.start;
+
+  /// Controller for the username input field.
   final TextEditingController _usernameController = TextEditingController();
+
+  /// Controller for the password input field.
   final TextEditingController _passwordController = TextEditingController();
+
+  /// List of interest IDs selected by the user.
   List<int> interests = [1, 2, 3];
+
+  /// Map of all available interests.
   final Map<int, String> allInterests = {};
+
+  /// Temporary storage for username during registration.
   String? tempUsername;
+
+  /// Temporary storage for password during registration.
   String? tempPassword;
 
   @override
@@ -38,6 +59,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
     _initialize();
   }
 
+  /// Initializes the account state by checking login status and fetching data.
   Future<void> _initialize() async {
     final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false);
 
@@ -71,6 +93,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
     }
   }
 
+  /// Fetches all available interests from the authentication provider.
   Future<void> _fetchAllInterests() async {
     final authProvider = Provider.of<MyAuthProvider.AuthProvider>(context, listen: false);
     final fetchedInterests = await authProvider.fetchAllInterests();
@@ -100,6 +123,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
               ),
             ),
             if (authProvider.isLoggedIn) ...[
+              // Logout button.
               IconButton(
                 icon: const Icon(Icons.logout),
                 color: Colors.white,
@@ -136,6 +160,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
                 },
                 tooltip: 'Logout',
               ),
+              // Edit account button.
               IconButton(
                 icon: const Icon(Icons.edit),
                 color: Colors.white,
@@ -148,6 +173,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
             ],
           ],
         ),
+        // Gradient background for the app bar.
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -168,6 +194,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
     );
   }
 
+  /// Returns the widget corresponding to the current page state.
   Widget _getCurrentPage(MyAuthProvider.AuthProvider authProvider) {
     switch (_currentPage) {
       case CurrentPage.login:
@@ -206,9 +233,10 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
         }
       case CurrentPage.register:
         return RegisterPage(
-          onRegister: (username, password) {
+          onRegister: (username, password) async {
+            await _fetchAllInterests(); // Fetch interests before navigating
             setState(() {
-              appBarText = "Register";
+              appBarText = "Register Details";
               tempUsername = username;
               tempPassword = password;
               _currentPage = CurrentPage.registerDetails;
@@ -222,24 +250,30 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
           screenHeight: screenHeight,
           tempUsername: tempUsername!,
           tempPassword: tempPassword!,
-          allInterests: allInterests,
+          allInterests: allInterests, // Ensure this line exists
           onRegistrationComplete: () async {
             await _fetchAllInterests();
             setState(() => _currentPage = CurrentPage.account);
           },
+          onBack: () { // Handler for navigating back to the register page.
+            setState(() {
+              appBarText = "Register";
+              _currentPage = CurrentPage.register;
+            });
+          },
         );
       case CurrentPage.editAccount:
-      // Render edit account page and pass the onUpdate callback
+      // Render edit account page and pass the onUpdate callback.
         return EditAccountPage(
           screenWidth: screenWidth,
           screenHeight: screenHeight,
           authProvider: authProvider,
           onUpdate: (String newUserName, String newEmail, String newDescription, List<int> newInterests) {
-            // Update state to go back to the account page after a successful update
+            // Update state to go back to the account page after a successful update.
             setState(() {
               _currentPage = CurrentPage.account;
 
-              // Optionally, update the user data in the state if needed
+              // Optionally, update the user data in the state if needed.
               authProvider.currentUser!.name = newUserName;
               authProvider.currentUser!.email = newEmail;
               authProvider.currentUser!.shortDescription = newDescription;
@@ -252,6 +286,7 @@ class _MyAccountState extends State<MyAccountState> with AutomaticKeepAliveClien
     }
   }
 
+  /// Displays a loading widget while the current page is being determined.
   Widget startWidget() {
     return Scaffold(
       backgroundColor: Colors.blueGrey[400],

@@ -15,32 +15,45 @@ class InterestSelectionDialog extends StatefulWidget {
 }
 
 class _InterestSelectionDialogState extends State<InterestSelectionDialog> {
-  late List<int> _dialogSelectedInterests;
+  late List<int> tempSelectedInterests;
 
   @override
   void initState() {
     super.initState();
-    _dialogSelectedInterests = List.from(widget.selectedInterests);
+    tempSelectedInterests = List<int>.from(widget.selectedInterests);
   }
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
-      title: const Text('Select Interests'),
+      title: const Text(
+        'Select Interests',
+        style: TextStyle(
+          fontWeight: FontWeight.bold,
+          color: Colors.pink,
+        ),
+      ),
       content: SingleChildScrollView(
         child: Column(
-          children: widget.allInterests.entries
-              .where((entry) => !_dialogSelectedInterests.contains(entry.key))
-              .map((entry) {
+          mainAxisSize: MainAxisSize.min,
+          children: widget.allInterests.entries.map((entry) {
             return CheckboxListTile(
               title: Text(entry.value),
-              value: _dialogSelectedInterests.contains(entry.key),
+              value: tempSelectedInterests.contains(entry.key),
               onChanged: (bool? value) {
                 setState(() {
-                  if (value!) {
-                    _dialogSelectedInterests.add(entry.key);
+                  if (value == true) {
+                    if (tempSelectedInterests.length < 5) {
+                      tempSelectedInterests.add(entry.key);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('You can select up to 5 interests.'),
+                        ),
+                      );
+                    }
                   } else {
-                    _dialogSelectedInterests.remove(entry.key);
+                    tempSelectedInterests.remove(entry.key);
                   }
                 });
               },
@@ -48,12 +61,14 @@ class _InterestSelectionDialogState extends State<InterestSelectionDialog> {
           }).toList(),
         ),
       ),
-      actions: <Widget>[
+      actions: [
         TextButton(
-          onPressed: () {
-            Navigator.of(context).pop(_dialogSelectedInterests);
-          },
-          child: const Text('OK'),
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () => Navigator.of(context).pop(tempSelectedInterests),
+          child: const Text('Confirm'),
         ),
       ],
     );

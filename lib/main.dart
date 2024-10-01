@@ -1,6 +1,8 @@
+// main.dart
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:prog2_jowi_daro/friends.dart';
+import 'package:prog2_jowi_daro/friends.dart'; // Ensure this points to FriendsPage
 import 'package:provider/provider.dart';
 import 'authentication_provider.dart' as MyAuthProvider;
 import 'current_challenges.dart';
@@ -13,8 +15,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-
 String error = "abc";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -58,8 +60,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     super.dispose();
   }
 
-
-// This method listens to app lifecycle state changes
+  // This method listens to app lifecycle state changes
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
@@ -71,7 +72,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -79,6 +79,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
       initialRoute: '/',
       routes: {
         '/': (context) => const WelcomeScreen(),
+        '/home': (context) => const MyHomePage(title: 'challengr - beat your habits'),
         '/currentChallenges': (context) => const CurrentChallenges(),
         '/account': (context) => const MyAccountState(), // Added account route
       },
@@ -86,8 +87,12 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.white),
         scaffoldBackgroundColor: Colors.blueGrey[400],
         useMaterial3: true,
+        textTheme: GoogleFonts.latoTextTheme(
+          Theme.of(context).textTheme,
+        ),
       ),
       debugShowCheckedModeBanner: false,
+      // Remove or comment out the 'home' parameter to avoid conflicts
       //home: WelcomeScreen(),
     );
   }
@@ -95,7 +100,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
-
   final String title;
 
   @override
@@ -108,12 +112,12 @@ double screenWidthAndHeight = screenWidth + screenHeight;
 late TextStyle standardText;
 
 class MyHomePageState extends State<MyHomePage> {
-  var selectedIndex = 2;
+  int selectedIndex = 3; // Default to 'Challenges' tab
   bool _isAccountInitialized = false;
 
   final List<Widget> _pages = [
     ChatScreen(),
-    Friends(),
+    FriendsPage(), // Updated to FriendsPage
     const CreateChallenge(),
     const CurrentChallenges(),
     const MyAccountState(), // Account page
@@ -146,14 +150,8 @@ class MyHomePageState extends State<MyHomePage> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    screenHeight = MediaQuery
-        .of(context)
-        .size
-        .height;
-    screenWidth = MediaQuery
-        .of(context)
-        .size
-        .width;
+    screenHeight = MediaQuery.of(context).size.height;
+    screenWidth = MediaQuery.of(context).size.width;
     screenWidthAndHeight = screenWidth + screenHeight;
     standardText = TextStyle(
       color: Colors.white,
@@ -165,32 +163,9 @@ class MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    /*Widget page;
-    switch (selectedIndex) {
-      case 0:
-        page = const YourChallenges();
-        break;
-      case 1:
-        page = const Placeholder();
-        break;
-      case 2:
-        page = const CreateChallenge();
-        break;
-      case 3:
-        page = const CurrentChallenges();
-        break;
-      case 4:
-        page = const MyAccountState();
-      default:
-        throw UnimplementedError('no widget for $selectedIndex');
-    }*/
-
     return Scaffold(
       body: Container(
-        color: Theme
-            .of(context)
-            .colorScheme
-            .primaryContainer,
+        color: Theme.of(context).colorScheme.primaryContainer,
         child: _pages[selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -204,7 +179,7 @@ class MyHomePageState extends State<MyHomePage> {
             label: 'ChatBot',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
+            icon: Icon(Icons.people),
             label: 'Friends',
           ),
           BottomNavigationBarItem(
@@ -236,4 +211,3 @@ class MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-

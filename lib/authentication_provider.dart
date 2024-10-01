@@ -1,3 +1,5 @@
+// authentication_provider.dart
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -5,19 +7,35 @@ import 'package:bcrypt/bcrypt.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'myUser.dart';
 
+/// A provider that manages authentication and user data.
 class AuthProvider extends ChangeNotifier {
+  /// Indicates whether the user is currently logged in.
   bool _isLoggedIn = false;
+
+  /// The current user's data.
   MyUserData? _currentUser;
+
+  /// Subscription to authentication state changes.
   StreamSubscription<User?>? _authStateSubscription;
+
+  /// Firestore instance for database operations.
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  /// Getter for login status.
   bool get isLoggedIn => _isLoggedIn;
+
+  /// Getter for current user data.
   MyUserData? get currentUser => _currentUser;
 
+  /// Subscription to the user's document in Firestore.
+  StreamSubscription<DocumentSnapshot>? _userDocSubscription;
+
+  /// Initializes the authentication provider by setting up listeners.
   AuthProvider() {
     _initializeUser();
   }
 
+  /// Initializes the user by listening to authentication state changes.
   Future<void> _initializeUser() async {
     _authStateSubscription =
         FirebaseAuth.instance.authStateChanges().listen((User? user) async {
@@ -37,6 +55,20 @@ class AuthProvider extends ChangeNotifier {
         });
   }
 
+  /// Fetches user data from Firestore and listens for real-time updates.
+  Future<void> fetchUserData(String uid) async {
+    // Cancel any existing subscription to prevent memory leaks.
+    await _userDocSubscription?.cancel();
+
+    _userDocSubscription = _firestore.collection('users').doc(uid).snapshots().listen((userSnapshot) {
+      if (userSnapshot.exists) {
+        _currentUser = MyUserData.fromMap(userSnapshot.data()!, uid);
+        notifyListeners();
+      }
+    });
+  }
+
+  /// Checks the current login status of the user.
   Future<void> checkLoginStatus() async {
     final firebaseUser = FirebaseAuth.instance.currentUser;
     if (firebaseUser != null) {
@@ -51,6 +83,7 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Logs out the current user.
   Future<void> logout() async {
     try {
       await FirebaseAuth.instance.signOut();
@@ -62,10 +95,367 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  /// Logs in a user with the provided username and password.
+  Future<void> login(
+      String username, String password, BuildContext context) async {
+    if (!_isLoggedIn && username.isNotEmpty && password.isNotEmpty) {
+      try {
+        // Query Firestore for the user with the given username.
+        final querySnapshot = await _firestore
+            .collection('users')
+            .where('username', isEqualTo: username)
+            .get();
+
+        if (querySnapshot.docs.isNotEmpty) {
+          final userData = querySnapshot.docs.first.data();
+          final storedHashedPassword = userData['password'];
+          final email = userData['email'];
+
+          // Verify the password using bcrypt.
+          if (BCrypt.checkpw(password, storedHashedPassword)) {
+            // Sign in with Firebase Authentication.
+            UserCredential authResult =
+            await FirebaseAuth.instance.signInWithEmailAndPassword(
+              email: email,
+              password: password,
+            );
+
+            // Fetch user data after successful authentication.
+            await fetchUserData(authResult.user!.uid);
+
+            if (_currentUser != null) {
+              _isLoggedIn = true;
+              notifyListeners();
+            } else {
+              print('Error: User data not correctly assigned.');
+            }
+          } else {
+            // Show error if password does not match.
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                backgroundColor: Colors.pink[900],
+                content: Text('Incorrect username or password.'),
+              ),
+            );
+          }
+        } else {
+          // Show error if username is not found.
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.pink[900],
+              content: Text('Incorrect username or password.'),
+            ),
+          );
+        }
+      } catch (e) {
+        // Show error for any exceptions during login.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              backgroundColor: Colors.pink[900],
+              content: Text('Error during login: $e')),
+        );
+      }
+    } else {
+      // Show error if username or password fields are empty.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.pink[900],
+          content: Text('Please fill in all fields.'),
+        ),
+      );
+    }
+  }
+
+  /// Attempts to register a new user with the provided details.
+  Future<void> attemptRegister(
+      BuildContext context,
+      String username,
+      String password,
+      String name,
+      String email,
+      String shortDescription,
+      List<int> interests,
+      VoidCallback onRegistrationSuccess,
+      ) async {
+    if (username.isNotEmpty &&
+        password.isNotEmpty &&
+        name.isNotEmpty &&
+        email.isNotEmpty &&
+        shortDescription.isNotEmpty) {
+      try {
+        // Check if the username is already taken.
+        final querySnapshot = await _firestore
+            .collection('users')
+            .where('username', isEqualTo: username)
+            .get();
+
+        if (querySnapshot.docs.isEmpty) {
+          // Hash the password using bcrypt.
+          String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
+          // Create a new user with Firebase Authentication.
+          UserCredential authResult =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+            email: email,
+            password: password,
+          );
+          String uid = authResult.user!.uid;
+
+          // Store user details in Firestore.
+          await _firestore.collection('users').doc(uid).set({
+            'username': username,
+            'password': hashedPassword,
+            'name': name,
+            'email': email,
+            'shortDescription': shortDescription,
+            'interests': interests,
+            'completedChallenges': 0,
+            'friends': [], // Initialize with empty friends list.
+          });
+
+          // Automatically log in the user after registration.
+          await login(username, password, context);
+
+          // Callback after successful registration.
+          onRegistrationSuccess();
+
+          // Show success message.
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.blue[900],
+              content: Text('Registration successful! You are now logged in.'),
+            ),
+          );
+        } else {
+          // Show error if username is already taken.
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              backgroundColor: Colors.pink[900],
+              content: Text('Username already taken.'),
+            ),
+          );
+        }
+      } catch (e) {
+        // Handle specific Firebase authentication errors.
+        String snackBarText = "";
+        if(e.toString() == "[firebase_auth/invalid-email] The email address is badly formatted.") {
+          snackBarText = "Please enter a valid E-Mail";
+        }
+        else if(e.toString() == "[firebase_auth/weak-password] Password should be at least 6 characters.") {
+          snackBarText = "Password has to be at least 6 characters";
+        }
+        else snackBarText  = e.toString();
+
+        // Show error message.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.pink[900],
+            content:
+            Text('Error during registration: $snackBarText'),
+          ),
+        );
+      }
+    } else {
+      // Show error if any registration fields are empty.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.pink[900],
+          content: Text('Please fill in all fields.'),
+        ),
+      );
+    }
+  }
+
+  /// Updates the user's challenge list.
+  void updateUserChallenges(List<String> challenges) {
+    if (_currentUser != null) {
+      _currentUser!.challenges = challenges;
+      notifyListeners(); // Trigger rebuilds where AuthProvider is used.
+    }
+  }
+
+  /// Fetches all available interests from Firestore.
+  Future<Map<int, String>> fetchAllInterests() async {
+    try {
+      final interestsSnapshot = await _firestore.collection('interests').get();
+
+      Map<int, String> allInterests = {};
+      for (var doc in interestsSnapshot.docs) {
+        if (doc.exists) {
+          final data = doc.data();
+          if (data.containsKey('interestId') && data.containsKey('name')) {
+            final interestId = data['interestId'];
+            final name = data['name'];
+            if (interestId is int && name is String) {
+              allInterests[interestId] = name;
+            }
+          }
+        }
+      }
+      return allInterests;
+    } catch (e) {
+      print('Error fetching all interests: $e');
+      return {};
+    }
+  }
+
+  /// Updates the user's basic data (name, email, short description).
+  Future<void> updateUserData(
+      String newUserName, String newEmail, String newShortDescription) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).update({
+        'name': newUserName,
+        'email': newEmail,
+        'shortDescription': newShortDescription,
+      });
+
+      if (_currentUser != null) {
+        _currentUser = MyUserData.fromMap({
+          ..._currentUser!.toMap(),
+          'name': newUserName,
+          'email': newEmail,
+          'shortDescription': newShortDescription,
+        }, user.uid);
+        notifyListeners();
+      }
+    } else {
+      print('User not logged in. Cannot update data.');
+    }
+  }
+
+  /// Updates the user's interests.
+  Future<void> updateUserInterests(List<int> newInterests) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      await _firestore.collection('users').doc(user.uid).update({'interests': newInterests});
+
+      if (_currentUser != null) {
+        _currentUser = MyUserData.fromMap({
+          ..._currentUser!.toMap(),
+          'interests': newInterests,
+        }, user.uid);
+        notifyListeners();
+      }
+    } else {
+      print('User not logged in. Cannot update interests.');
+    }
+  }
+
+  /// Adds a new friend by username.
+  Future<void> addFriend(String friendUsername, BuildContext context) async {
+    try {
+      // Find the user by username.
+      final querySnapshot = await _firestore
+          .collection('users')
+          .where('username', isEqualTo: friendUsername)
+          .get();
+
+      if (querySnapshot.docs.isEmpty) {
+        // Show error if user is not found.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.pink[900],
+            content: Text('User with username "$friendUsername" not found.'),
+          ),
+        );
+        return;
+      }
+
+      final friendDoc = querySnapshot.docs.first;
+      final friendData = MyUserData.fromMap(friendDoc.data(), friendDoc.id);
+
+      if (friendData.uid == _currentUser!.uid) {
+        // Prevent adding oneself as a friend.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.pink[900],
+            content: Text('You cannot add yourself as a friend.'),
+          ),
+        );
+        return;
+      }
+
+      if (_currentUser!.friends.contains(friendData.uid)) {
+        // Prevent adding the same friend multiple times.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.pink[900],
+            content: Text('${friendData.username} is already your friend.'),
+          ),
+        );
+        return;
+      }
+
+      // Update current user's friends list.
+      _currentUser!.friends.add(friendData.uid);
+      await _firestore.collection('users').doc(_currentUser!.uid).update({
+        'friends': _currentUser!.friends,
+      });
+
+      // Show success message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Added ${friendData.username} as a friend!'),
+        ),
+      );
+    } catch (e) {
+      print('Error adding friend: $e');
+      // Show error message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.pink[900],
+          content: Text('Failed to add friend: $e'),
+        ),
+      );
+    }
+  }
+
+  /// Removes a friend by their UID.
+  Future<void> removeFriend(String friendUid, BuildContext context) async {
+    try {
+      if (!_currentUser!.friends.contains(friendUid)) {
+        // Show error if the user is not in the friends list.
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.pink[900],
+            content: Text('This user is not in your friends list.'),
+          ),
+        );
+        return;
+      }
+
+      // Remove the friend from the list.
+      _currentUser!.friends.remove(friendUid);
+      await _firestore.collection('users').doc(_currentUser!.uid).update({
+        'friends': _currentUser!.friends,
+      });
+
+      // Show success message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.green,
+          content: Text('Removed friend successfully.'),
+        ),
+      );
+    } catch (e) {
+      print('Error removing friend: $e');
+      // Show error message.
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: Colors.pink[900],
+          content: Text('Failed to remove friend: $e'),
+        ),
+      );
+    }
+  }
+
+  /// Updates the user's list of completed challenges.
   Future<void> updateCompletedChallenges(String userId) async {
     try {
       final userSnapshot =
-      await FirebaseFirestore.instance.collection('users').doc(userId).get();
+      await _firestore.collection('users').doc(userId).get();
 
       if (!userSnapshot.exists) return;
 
@@ -73,14 +463,11 @@ class AuthProvider extends ChangeNotifier {
       (userSnapshot['challenges'] as List<dynamic>).cast<String>();
 
       if (challengeIds.isEmpty) {
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(userId)
-            .update({'completedChallenges': 0});
+        await _firestore.collection('users').doc(userId).update({'completedChallenges': 0});
         return;
       }
 
-      final challengesSnapshot = await FirebaseFirestore.instance
+      final challengesSnapshot = await _firestore
           .collection('challenge')
           .where(FieldPath.documentId, whereIn: challengeIds)
           .get();
@@ -96,35 +483,22 @@ class AuthProvider extends ChangeNotifier {
         if (daysPassed >= finalDuration) completedChallengesCount++;
       }
 
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(userId)
-          .update({'completedChallenges': completedChallengesCount});
+      await _firestore.collection('users').doc(userId).update({'completedChallenges': completedChallengesCount});
     } catch (e) {
       print('Error updating completed challenges: $e');
     }
   }
 
-  Future<void> fetchUserData(String uid) async {
-    try {
-      final userSnapshot = await _firestore.collection('users').doc(uid).get();
-      if (userSnapshot.exists) {
-        _currentUser = MyUserData.fromMap(userSnapshot.data()!, uid);
-        await calculateCompletedChallenges();
-        notifyListeners();
-      }
-    } catch (e) {
-      print('Error fetching user data: $e');
-    }
-  }
-
+  /// Calculates the number of completed challenges for the current user.
   Future<void> calculateCompletedChallenges() async {
     if (_currentUser == null) return;
 
     try {
       final challengesSnapshot = await _firestore
           .collection('challenge')
-          .where(FieldPath.documentId, whereIn: _currentUser!.challenges)
+          .where(FieldPath.documentId, whereIn: _currentUser!.challenges.length > 10
+          ? _currentUser!.challenges.sublist(0, 10)
+          : _currentUser!.challenges)
           .get();
 
       int completedChallengesCount = 0;
@@ -161,215 +535,19 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> login(
-      String username, String password, BuildContext context) async {
-    if (!_isLoggedIn && username.isNotEmpty && password.isNotEmpty) {
-      try {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('username', isEqualTo: username)
-            .get();
-
-        if (querySnapshot.docs.isNotEmpty) {
-          final userData = querySnapshot.docs.first.data();
-          final storedHashedPassword = userData['password'];
-          final email = userData['email'];
-
-          if (BCrypt.checkpw(password, storedHashedPassword)) {
-            UserCredential authResult =
-            await FirebaseAuth.instance.signInWithEmailAndPassword(
-              email: email,
-              password: password,
-            );
-
-            await fetchUserData(authResult.user!.uid);
-
-            if (_currentUser != null) {
-              _isLoggedIn = true;
-              notifyListeners();
-            } else {
-              print('Error: User data not correctly assigned.');
-            }
-          } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                backgroundColor: Colors.pink[900],
-                content: Text('Incorrect username or password.'),
-              ),
-            );
-          }
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.pink[900],
-              content: Text('Incorrect username or password.'),
-            ),
-          );
-        }
-      } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-              backgroundColor: Colors.pink[900],
-              content: Text('Error during login: $e')),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.pink[900],
-          content: Text('Please fill in all fields.'),
-        ),
-      );
+  /// Updates the user's list of challenges.
+  void updateUserChallengesList(List<String> challenges) {
+    if (_currentUser != null) {
+      _currentUser!.challenges = challenges;
+      notifyListeners();
     }
   }
 
-  Future<void> attemptRegister(
-      BuildContext context,
-      String username,
-      String password,
-      String name,
-      String email,
-      String shortDescription,
-      List<int> interests,
-      VoidCallback onRegistrationSuccess,
-      ) async {
-    if (username.isNotEmpty &&
-        password.isNotEmpty &&
-        name.isNotEmpty &&
-        email.isNotEmpty &&
-        shortDescription.isNotEmpty) {
-      try {
-        final querySnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .where('username', isEqualTo: username)
-            .get();
-
-        if (querySnapshot.docs.isEmpty) {
-          String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
-          UserCredential authResult =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
-            email: email,
-            password: password,
-          );
-          String uid = authResult.user!.uid;
-
-          await FirebaseFirestore.instance.collection('users').doc(uid).set({
-            'username': username,
-            'password': hashedPassword,
-            'name': name,
-            'email': email,
-            'shortDescription': shortDescription,
-            'interests': interests,
-            'completedChallenges': 0,
-          });
-
-          await login(username, password, context);
-          onRegistrationSuccess();
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.blue[900],
-              content: Text('Registration successful! You are now logged in.'),
-            ),
-          );
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              backgroundColor: Colors.pink[900],
-              content: Text('Username already taken.'),
-            ),
-          );
-        }
-      } catch (e) {
-        String snackBarText = "";
-        if(e.toString() == "[firebase_auth/invalid-email] The email address is badly formatted.") {
-            snackBarText = "Please enter a valid E-Mail";
-        }
-        else snackBarText  = e.toString();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.pink[900],
-            content:
-              Text('Error during registration: $snackBarText'),
-          ),
-        );
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          backgroundColor: Colors.pink[900],
-          content: Text('Please fill in all fields.'),
-        ),
-      );
+  /// Updates the user's list of friends.
+  void updateUserFriendsList(List<String> friends) {
+    if (_currentUser != null) {
+      _currentUser!.friends = friends;
+      notifyListeners();
     }
-  }
-
-  Future<Map<int, String>> fetchAllInterests() async {
-    try {
-      final interestsSnapshot =
-      await FirebaseFirestore.instance.collection('interests').get();
-
-      Map<int, String> allInterests = {};
-      for (var doc in interestsSnapshot.docs) {
-        allInterests[doc['interestId'] as int] = doc['name'];
-      }
-      return allInterests;
-    } catch (e) {
-      print('Error fetching all interests: $e');
-      return {};
-    }
-  }
-
-  Future<void> updateUserData(
-      String newUserName, String newEmail, String newShortDescription) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update({
-        'name': newUserName,
-        'email': newEmail,
-        'shortDescription': newShortDescription,
-      });
-
-      if (_currentUser != null) {
-        _currentUser = MyUserData.fromMap({
-          ..._currentUser!.toMap(),
-          'name': newUserName,
-          'email': newEmail,
-          'shortDescription': newShortDescription,
-        }, user.uid);
-        notifyListeners();
-      }
-    } else {
-      print('User not logged in. Cannot update data.');
-    }
-  }
-
-  Future<void> updateUserInterests(List<int> newInterests) async {
-    final user = FirebaseAuth.instance.currentUser;
-    if (user != null) {
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update({'interests': newInterests});
-
-      if (_currentUser != null) {
-        _currentUser = MyUserData.fromMap({
-          ..._currentUser!.toMap(),
-          'interests': newInterests,
-        }, user.uid);
-        notifyListeners();
-      }
-    } else {
-      print('User not logged in. Cannot update interests.');
-    }
-  }
-
-  @override
-  void dispose() {
-    _authStateSubscription?.cancel();
-    super.dispose();
   }
 }

@@ -163,7 +163,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          isLoggedIn ? 'Your Challenges' : 'Challenges',
+          isLoggedIn
+              ? (isLessOrEqualFilter ? 'Your Active Challenges' : 'Your Completed Challenges')
+              : 'Challenges',
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
@@ -173,7 +175,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [Colors.blueGrey.shade400, Colors.pink],
+              colors: [Colors.pink, Colors.blueGrey.shade400],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -200,6 +202,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                 icon: Icon(
                   Icons.settings,
                   color: Colors.white,
+                  size: 30,
                 ),
                 onPressed: () {
                   // Navigate to the settings page
@@ -232,7 +235,7 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
               return const Center(child: CircularProgressIndicator());
             }
 
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            if (!snapshot.hasData) {
               return const Center(child: Text('No active Challenges found'));
             }
 
@@ -246,13 +249,29 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             }).toList();
 
             if (challenges.isEmpty) {
-              return const Center(child: Text('No Challenges found'));
+              if (isLessOrEqualFilter) {
+                return const Center(child: Text(
+                    'No active Challenges found.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                ));
+              } else {
+                return const Center(child: Text(
+                    'No Challenges completed yet.',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                ));
+              }
             }
 
             return Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/background_login.png'),
+                  image: AssetImage('assets/account_background.png'),
                   fit: BoxFit.cover,
                   colorFilter: ColorFilter.mode(Colors.black.withOpacity(0.7), BlendMode.dstATop),
                 ),

@@ -8,6 +8,7 @@ import 'logInPrompt.dart'; // Ensure correct import path
 import 'edit_challenge.dart'; // Ensure correct import path
 import 'date_notifier.dart'; // Ensure correct import path
 import 'main.dart'; // Ensure correct import path
+import 'settings.dart'; // Ensure correct import path
 
 class CurrentChallenges extends StatefulWidget {
   const CurrentChallenges({Key? key}) : super(key: key);
@@ -193,6 +194,19 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
                 activeColor: Colors.pink,
                 inactiveThumbColor: Colors.blueGrey.shade400,
                 inactiveTrackColor: Colors.blueGrey.shade200,
+              ),
+              // Settings button
+              IconButton(
+                icon: Icon(
+                  Icons.settings,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  // Navigate to the settings page
+                  Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => SettingsPage()),
+                  );
+                },
               ),
             ],
           ),

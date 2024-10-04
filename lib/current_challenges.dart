@@ -1,5 +1,6 @@
 // current_challenges.dart
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:provider/provider.dart';
@@ -164,7 +165,9 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
       appBar: AppBar(
         title: Text(
           isLoggedIn
-              ? (isLessOrEqualFilter ? 'Your Active Challenges' : 'Your Completed Challenges')
+              ? (isLessOrEqualFilter
+              ? 'Your Active Challenges'
+              : 'Your Completed Challenges')
               : 'Challenges',
           style: TextStyle(
             color: Colors.white,
@@ -181,6 +184,27 @@ class _CurrentChallengesState extends State<CurrentChallenges> {
             ),
           ),
         ),
+        leading: isLoggedIn && canPop
+            ? MouseRegion(
+          onEnter: (PointerEnterEvent event) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                backgroundColor: Colors.pink,
+                content: Text('Back to previous page'),
+              ),
+            );
+          },
+          onExit: (PointerExitEvent event) {
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          },
+          child: IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
+            onPressed: () {
+              Navigator.pop(context);
+            },
+          ),
+        )
+            : null,
         actions: isLoggedIn
             ? [
           Row(
